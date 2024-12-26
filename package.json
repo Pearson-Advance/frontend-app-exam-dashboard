@@ -1,10 +1,10 @@
 {
-  "name": "@edx/frontend-template-application",
+  "name": "@edx/frontend-app-exam-dashboard",
   "version": "0.1.0",
   "description": "Frontend application template",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openedx/frontend-template-application.git"
+    "url": "git+https://github.com/Pearson-Advance/frontend-app-exam-dashboard"
   },
   "browserslist": [
     "extends @edx/browserslist-config"
@@ -24,14 +24,14 @@
       "pre-commit": "npm run lint"
     }
   },
-  "author": "edX",
-  "license": "AGPL-3.0",
-  "homepage": "https://github.com/openedx/frontend-template-application#readme",
+  "author": "edunext contact@edunext.co",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/Pearson-Advance/frontend-app-exam-dashboard#readme",
   "publishConfig": {
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/openedx/frontend-template-application/issues"
+    "url": "https://github.com/Pearson-Advance/frontend-app-exam-dashboard/issues"
   },
   "dependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
@@ -60,6 +60,8 @@
     "@openedx/frontend-build": "14.2.2",
     "glob": "7.2.3",
     "husky": "7.0.4",
-    "jest": "29.7.0"
+    "webpack-cli": "4.10.0",
+    "jest": "29.0.0",
+    "ts-jest": "^29.1.2"
   }
 }
