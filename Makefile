@@ -41,4 +41,3 @@ pull_translations:
 	            translations/frontend-template-application/src/i18n/messages:frontend-template-application
 
 	$(intl_imports) frontend-platform paragon frontend-component-header frontend-component-footer frontend-template-application
-
