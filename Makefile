@@ -1,17 +1,21 @@
-intl_imports = ./node_modules/.bin/intl-imports.js
+transifex_resource = frontend-template-application
+transifex_langs = "ar,fr,es_419,zh_CN"
+
 transifex_utils = ./node_modules/.bin/transifex-utils.js
 i18n = ./src/i18n
 transifex_input = $(i18n)/transifex_input.json
+tx_url1 = https://www.transifex.com/api/2/project/edx-platform/resource/$(transifex_resource)/translation/en/strings/
+tx_url2 = https://www.transifex.com/api/2/project/edx-platform/resource/$(transifex_resource)/source/
 
 # This directory must match .babelrc .
-transifex_temp = ./temp/babel-plugin-formatjs
+transifex_temp = ./temp/babel-plugin-react-intl
 
 precommit:
 	npm run lint
 	npm audit
 
 requirements:
-	npm ci
+	npm install
 
 i18n.extract:
 	# Pulling display strings from .jsx files into .json files...
@@ -29,15 +33,22 @@ detect_changed_source_translations:
 	# Checking for changed translations...
 	git diff --exit-code $(i18n)
 
-# Pulls translations using atlas.
-pull_translations:
-	mkdir src/i18n/messages
-	cd src/i18n/messages \
-	   && atlas pull $(ATLAS_OPTIONS) \
-	            translations/frontend-platform/src/i18n/messages:frontend-platform \
-	            translations/paragon/src/i18n/messages:paragon \
-	            translations/frontend-component-footer/src/i18n/messages:frontend-component-footer \
-	            translations/frontend-component-header/src/i18n/messages:frontend-component-header \
-	            translations/frontend-template-application/src/i18n/messages:frontend-template-application
+# Pushes translations to Transifex.  You must run make extract_translations first.
+push_translations:
+	# Pushing strings to Transifex...
+	tx push -s
+	# Fetching hashes from Transifex...
+	./node_modules/reactifex/bash_scripts/get_hashed_strings.sh $(tx_url1)
+	# Writing out comments to file...
+	$(transifex_utils) $(transifex_temp) --comments
+	# Pushing comments to Transifex...
+	./node_modules/reactifex/bash_scripts/put_comments.sh $(tx_url2)
 
-	$(intl_imports) frontend-platform paragon frontend-component-header frontend-component-footer frontend-template-application
+# Pulls translations from Transifex.
+pull_translations:
+	tx pull -f --mode reviewed --languages=$(transifex_langs)
+
+# This target is used by Travis.
+validate-no-uncommitted-package-lock-changes:
+	# Checking for package-lock.json changes...
+	git diff --exit-code package-lock.json
