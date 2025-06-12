@@ -1,9 +1,5 @@
 name: Default CI
-<<<<<<< HEAD
 on:
-=======
-on: 
->>>>>>> vue/reset-olive-version
   push:
     branches:
       - 'master'
@@ -13,38 +9,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-<<<<<<< HEAD
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: Setup Nodejs Env
+      run: echo "NODE_VER=`cat .nvmrc`" >> $GITHUB_ENV
     - name: Setup Nodejs
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v3
       with:
-        node-version-file: '.nvmrc'
+        node-version: ${{ env.NODE_VER }}
     - name: Install dependencies
       run: npm ci
-=======
-    strategy:
-      matrix:
-        node: [16]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Setup Nodejs
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node }}
-    - name: Install dependencies
-      run: npm ci
-    - name: Validate package-lock.json changes
-      run: make validate-no-uncommitted-package-lock-changes
->>>>>>> vue/reset-olive-version
     - name: Lint
       run: npm run lint
     - name: Test
@@ -53,10 +31,5 @@ jobs:
       run: npm run build
     - name: i18n_extract
       run: npm run i18n_extract
-<<<<<<< HEAD
-=======
-    - name: is-es5
-      run: npm run is-es5
     - name: Coverage
       uses: codecov/codecov-action@v3
->>>>>>> vue/reset-olive-version

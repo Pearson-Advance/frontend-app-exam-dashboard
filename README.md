@@ -1,4 +1,4 @@
-# Fronend App Exam Dashboard
+# Frontend App Exam Dashboard
 ## Introduction
 This MFE application for WebNG/CertPREP integrations offers an extensive range of features to vouchers and exam administration for users that are eligible. This MFE is placed on a top-level tab named "Exams", which is a peer to "Courses".
 
