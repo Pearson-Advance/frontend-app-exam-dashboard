@@ -8,8 +8,6 @@ import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
 import ReactDOM from 'react-dom';
 
 import Header from '@edx/frontend-component-header';
-import FooterSlot from '@openedx/frontend-slot-footer';
-import messages from './i18n';
 import App from './components';
 import './index.scss';
 
@@ -18,7 +16,6 @@ subscribe(APP_READY, () => {
     <AppProvider>
       <Header />
       <App />
-      <FooterSlot />
     </AppProvider>,
     document.getElementById('root'),
   );
@@ -29,5 +26,5 @@ subscribe(APP_INIT_ERROR, (error) => {
 });
 
 initialize({
-  messages,
+  messages: [],
 });
