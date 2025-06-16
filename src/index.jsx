@@ -7,21 +7,16 @@ import {
 import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
 import ReactDOM from 'react-dom';
 
-import Header from '@edx/frontend-component-header';
-import Footer from '@edx/frontend-component-footer';
+import Main from 'features/Main';
 
 import appMessages from './i18n';
-
-import App from './components';
 
 import './index.scss';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider>
-      <Header />
-      <App />
-      <Footer />
+      <Main />
     </AppProvider>,
     document.getElementById('root'),
   );
