@@ -6,8 +6,8 @@ import { Container } from '@edx/paragon';
 const SchedulePage = () => (
   <>
     <Header
-      src={`${getConfig().LOGO_URL}`}
-      logoUrl={`${getConfig().LMS_BASE_URL}`}
+      src={getConfig().LOGO_URL}
+      logoUrl={getConfig().LMS_BASE_URL}
     />
     <div className="pageWrapper p-4">
       <Container size="xl" className="bg-white rounded p-2">

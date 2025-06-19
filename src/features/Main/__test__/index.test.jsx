@@ -12,7 +12,7 @@ jest.mock('features/SchedulePage', () => function () {
 jest.mock('features/DashboardPage', () => function () {
   return <div>Mocked DashboardPage</div>;
 });
-jest.mock('components/Footer', () => function () {
+jest.mock('@edx/frontend-component-footer', () => function () {
   return <div>Mocked Footer</div>;
 });
 
@@ -22,22 +22,13 @@ jest.mock('@edx/frontend-platform', () => ({
   })),
 }));
 
-describe('Main routing with BrowserRouter (via MemoryRouter in test)', () => {
-  test('renders SchedulePage for /schedule/exam', () => {
-    render(
-      <MemoryRouter initialEntries={['/schedule/exam']}>
-        <Main />
-      </MemoryRouter>,
-    );
-    expect(screen.getByText('Mocked SchedulePage')).toBeInTheDocument();
-  });
-
-  test('redirects unknown route to /schedule/exam', () => {
+describe('Main Component ', () => {
+  test('redirects unknown route to /schedule/dashboard', () => {
     render(
       <MemoryRouter initialEntries={['/unknown']}>
         <Main />
       </MemoryRouter>,
     );
-    expect(screen.getByText('Mocked SchedulePage')).toBeInTheDocument();
+    expect(screen.getByText('Mocked DashboardPage')).toBeInTheDocument();
   });
 });

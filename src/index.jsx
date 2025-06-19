@@ -30,4 +30,5 @@ initialize({
   messages: [
     appMessages,
   ],
+  requireAuthenticatedUser: true,
 });
