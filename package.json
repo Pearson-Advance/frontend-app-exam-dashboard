@@ -43,12 +43,15 @@
     "@fortawesome/react-fontawesome": "^0.2.1",
     "core-js": "3.31.0",
     "prop-types": "15.8.1",
+    "provinces-ca": "1.0.1",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-paragon-topaz": "1.39.0",
     "react-router": "5.3.3",
     "react-router-dom": "5.3.3",
-    "regenerator-runtime": "0.13.11"
+    "regenerator-runtime": "0.13.11",
+    "states-us": "1.1.1",
+    "world-countries": "5.1.0"
   },
   "devDependencies": {
     "@edx/browserslist-config": "^1.1.1",

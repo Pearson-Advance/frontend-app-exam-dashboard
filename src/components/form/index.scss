@@ -1,0 +1,65 @@
+@import 'react-paragon-topaz/src/variables.scss';
+
+.form-wrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+}
+
+.form-title {
+  color: $primary-dark;
+
+  @media screen and (max-width: 576px) {
+    font-size: 24px;
+  }
+}
+
+.form-subtitle {
+  color: #002646;
+  font-size: 16px;
+}
+
+.form-select {
+  width: 99%;
+  max-height: 50px;
+
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
+}
+
+.form-phone {
+  display: flex;
+  width: 100%;
+}
+
+.form-phone-input input.form-control {
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-input input.form-control {
+  border: 1px solid #ced4da;
+}
+
+.form-input input.form-control.is-invalid {
+  border-color: #da3100;
+}
+
+.form-input input.form-control:hover {
+  outline: 2px solid #ced4da;
+}
+
+.form-input-disabled input.form-control,
+.form-input-disabled input.form-control:hover {
+  padding-left: 0;
+  outline: none;
+  background-color: #fff;
+  border: none;
+}
+
+.form-input-disabled .pgn__form-control-floating-label-text {
+  position: relative;
+  left: -15px;
+}

@@ -16,11 +16,22 @@ jest.mock('react-paragon-topaz', () => ({
   Header: ({ src, logoUrl }) => (
     <div data-testid="header" data-src={src} data-url={logoUrl}>Mock Header</div>
   ),
+  Button: () => (
+    <div data-testid="button">Button</div>
+  ),
+  Select: () => (
+    <div data-testid="select">Select</div>
+  ),
 }));
 
-jest.mock('@edx/paragon', () => ({
-  Container: ({ children }) => <div data-testid="container">{children}</div>,
-}));
+jest.mock('@edx/paragon', () => {
+  const actualParagon = jest.requireActual('@edx/paragon');
+
+  return {
+    ...actualParagon,
+    Container: ({ children }) => <div data-testid="container">{children}</div>,
+  };
+});
 
 jest.mock('components/TermsConditions', () => function ({ onAccept, onCancel }) {
   return (
@@ -59,8 +70,9 @@ describe('SchedulePage', () => {
 
   test('renders form component after accepting terms', () => {
     render(<SchedulePage />);
+
     fireEvent.click(screen.getByText('Accept'));
     expect(screen.queryByTestId('terms')).not.toBeInTheDocument();
-    expect(screen.getByText('Form Component')).toBeInTheDocument();
+    expect(screen.getByText('Verify your identity')).toBeInTheDocument();
   });
 });
