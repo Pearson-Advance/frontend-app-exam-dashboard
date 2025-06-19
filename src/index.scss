@@ -6,6 +6,9 @@
 @import "~@edx/frontend-component-header/dist/index";
 @import "~@edx/frontend-component-footer/dist/footer";
 
+@import "react-paragon-topaz/src/styles/Form/Form.scss";
+@import "react-paragon-topaz/src/styles/shared.scss";
+
 @import 'assets/variables.scss';
 
 .pageWrapper{

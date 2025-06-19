@@ -1,0 +1,22 @@
+@import 'assets/variables.scss';
+
+.terms-section {
+  text-align: justify;
+
+  h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    color: $primary-dark;
+  }
+
+  p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .terms-content {
+    border: 1px solid $gray-20;
+    border-radius: 8px;
+  }
+}
