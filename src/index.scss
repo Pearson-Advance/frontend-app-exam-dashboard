@@ -5,3 +5,9 @@
 
 @import "~@edx/frontend-component-header/dist/index";
 @import "~@edx/frontend-component-footer/dist/footer";
+
+@import 'assets/variables.scss';
+
+.pageWrapper{
+  background-color: $bg-main-color;
+}
