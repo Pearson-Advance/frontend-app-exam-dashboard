@@ -1,7 +1,8 @@
 @import 'assets/variables.scss';
+@import 'react-paragon-topaz/src/variables.scss';
 
 .terms-section {
-  text-align: justify;
+  padding: 2rem;
 
   h3 {
     font-size: 1.4rem;
@@ -19,4 +20,23 @@
     border: 1px solid $gray-20;
     border-radius: 8px;
   }
+
+  .description-text {
+    color: $blue-90;
+  }
+
+  .pgn__form-checkbox-input {
+    min-width: 18px;
+  }
+
+  .pgn__form-text-invalid {
+    font-size: 0.8rem;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.section-buttons {
+  padding: 2rem;
+  border-top: 1px solid $gray-20;
 }
