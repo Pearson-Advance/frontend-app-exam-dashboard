@@ -19,7 +19,7 @@ const SchedulePage = () => {
         logoUrl={getConfig().LMS_BASE_URL}
       />
       <div className="pageWrapper p-4">
-        <Container size="xl" className="bg-white rounded p-3">
+        <Container size="xl" className="bg-white rounded p-0">
           {!acceptedTerms && (
           <TermsConditions
             onAccept={() => setAcceptedTerms(true)}

@@ -5,13 +5,10 @@ import '@testing-library/jest-dom';
 import TermsConditions from 'components/TermsConditions';
 
 describe('TermsConditions', () => {
-  let onAcceptMock;
-  let onCancelMock;
+  const onAcceptMock = jest.fn();
+  const onCancelMock = jest.fn();
 
   beforeEach(() => {
-    onAcceptMock = jest.fn();
-    onCancelMock = jest.fn();
-
     render(<TermsConditions onAccept={onAcceptMock} onCancel={onCancelMock} />);
   });
 
@@ -24,7 +21,7 @@ describe('TermsConditions', () => {
 
   test('shows error if checkbox not checked and continue clicked', () => {
     fireEvent.click(screen.getByRole('button', { name: /continue/i }));
-    expect(screen.getByText(/you must accept to continue/i)).toBeInTheDocument();
+    expect(screen.getByText(/You must agree to the terms and conditions to continue./i)).toBeInTheDocument();
     expect(onAcceptMock).not.toHaveBeenCalled();
   });
 

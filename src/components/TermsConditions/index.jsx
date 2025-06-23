@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form } from '@edx/paragon';
 import { Button } from 'react-paragon-topaz';
 
-import { termsText } from 'components/TermsConditions/termsText';
+import { TermsText } from 'components/TermsConditions/TermsText';
 import './index.scss';
 
 const TermsConditions = ({ onAccept, onCancel }) => {
@@ -19,29 +19,38 @@ const TermsConditions = ({ onAccept, onCancel }) => {
     onAccept();
   };
 
+  const handleCheckboxChange = (e) => {
+    setChecked(e.target.checked);
+    setShowError(false);
+  };
+
   return (
     <Form onSubmit={handleContinueButton}>
       <div className="terms-section">
-        <h3>Terms and Conditions</h3>
-        <p>For security reasons, we need the following information to verify your identity</p>
+        <h3 className="pt-2">Terms and Conditions</h3>
+        <p className="pb-2 description-text">For security reasons, we need the following information to verify your identity</p>
         <div className="p-4 terms-content">
-          {termsText()}
+          {TermsText()}
         </div>
-        <div className="d-flex py-3 flex-column align-items-end">
-          <Form.Checkbox
-            name="terms"
-            checked={checked}
-            onChange={(e) => {
-              setChecked(e.target.checked);
-              setShowError(false);
-            }}
-          >
-            I have read and agree to the above terms and conditions
-          </Form.Checkbox>
-          {showError && <p className="text-danger">You must accept to continue</p>}
+        <div className="d-flex pt-4 flex-column align-items-end">
+          <div>
+            <Form.Checkbox
+              name="terms"
+              checked={checked}
+              onChange={handleCheckboxChange}
+              isInvalid={showError}
+            >
+              I have read and agree to the above terms and conditions
+            </Form.Checkbox>
+            {showError && (
+              <Form.Control.Feedback type="invalid">
+                You must agree to the terms and conditions to continue.
+              </Form.Control.Feedback>
+            )}
+          </div>
         </div>
       </div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between section-buttons">
         <Button
           type="button"
           className="btntpz btn-text btn-tertiary mr-2"
@@ -52,7 +61,6 @@ const TermsConditions = ({ onAccept, onCancel }) => {
         <Button
           type="submit"
           variant="outline-primary"
-          className="btntpz btn btn-outline-primary"
         >
           Continue
         </Button>
