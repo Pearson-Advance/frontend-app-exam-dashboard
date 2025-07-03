@@ -5,11 +5,24 @@ import '@testing-library/jest-dom';
 
 import SchedulePage from 'features/SchedulePage';
 
+import { updateUserData } from 'features/data/api';
+
+jest.mock('constants', () => ({
+  countries: [
+    { name: 'United States of America', dialingCode: '+1', cca3: 'USA' },
+  ],
+}));
+
 jest.mock('@edx/frontend-platform', () => ({
   getConfig: () => ({
     LOGO_URL: 'logo.png',
     LMS_BASE_URL: 'https://lms.example.com',
+    WEBNG_PLUGIN_API_BASE_URL: 'https://mfe.example.com',
   }),
+}));
+
+jest.mock('features/data/api', () => ({
+  updateUserData: jest.fn(),
 }));
 
 jest.mock('react-paragon-topaz', () => ({
@@ -39,6 +52,32 @@ jest.mock('components/TermsConditions', () => function ({ onAccept, onCancel }) 
       TermsConditions Component
       <button type="button" onClick={onAccept}>Accept</button>
       <button type="button" onClick={onCancel}>Cancel</button>
+    </div>
+  );
+});
+
+jest.mock('components/form', () => function MockForm({ onSubmit }) {
+  return (
+    <div>
+      <p>Verify your identity</p>
+      <button
+        onClick={() => onSubmit({
+          firstName: { value: 'John' },
+          lastName: { value: 'Doe' },
+          email: { value: 'test@example.com' },
+          dialingCode: { value: 'United States' },
+          phone: { value: '1111111111' },
+          address: { value: '123 Main St' },
+          apartment: { value: '' },
+          city: { value: 'Miami' },
+          state: { value: 'FL' },
+          postalCode: { value: '12345' },
+          country: { value: 'United States of America' },
+        })}
+        type="button"
+      >
+        Submit
+      </button>
     </div>
   );
 });
@@ -74,5 +113,28 @@ describe('SchedulePage', () => {
     fireEvent.click(screen.getByText('Accept'));
     expect(screen.queryByTestId('terms')).not.toBeInTheDocument();
     expect(screen.getByText('Verify your identity')).toBeInTheDocument();
+  });
+
+  test('calls updateUserData and redirects on successful submit', async () => {
+    updateUserData.mockResolvedValue({});
+
+    render(<SchedulePage />);
+    fireEvent.click(screen.getByText('Accept'));
+    fireEvent.click(screen.getByText('Submit'));
+
+    expect(updateUserData).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      first_name: 'John',
+      last_name: 'Doe',
+      postal_code: '12345',
+      phone_country_code: '1',
+      state: 'FL',
+      profile: {
+        country: 'United States of America',
+        city: 'Miami',
+        mailing_address: '123 Main St',
+        phone_number: '1111111111',
+      },
+    });
   });
 });

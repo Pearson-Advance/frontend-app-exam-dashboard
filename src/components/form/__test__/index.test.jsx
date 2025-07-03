@@ -10,6 +10,10 @@ import '@testing-library/jest-dom';
 
 import IdentityForm from 'components/form';
 
+jest.mock('@edx/frontend-platform/logging', () => ({
+  logError: jest.fn(),
+}));
+
 jest.mock('react-paragon-topaz', () => {
   // eslint-disable-next-line global-require
   const PropTypes = require('prop-types');
