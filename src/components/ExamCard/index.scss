@@ -1,0 +1,169 @@
+@import 'react-paragon-topaz/src/variables.scss';
+@import 'assets/variables.scss';
+
+.card-wrapper {
+  border: 1px solid $card-border-color;
+  border-radius: 8px;
+}
+
+div .pgn__card {
+  width: 50%;
+
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
+}
+
+.card-header-background {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  min-height: 140px;
+  width: 100%;
+  position: relative;
+}
+
+.card-header-image {
+  position: absolute;
+  top: 50px;
+  left: 25px;
+  width: 110px;
+  height: 112px;
+  max-width: 112px;
+  max-height: 112px;
+  object-fit: cover;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: $bg-badge-complete;
+}
+
+.scheduled-background {
+  background-image: url('../../assets/ExamCard/d_exam_schedule_card.png');
+}
+
+.completed-background {
+  background-image: url('../../assets/ExamCard/d_exam_schedule_card.png');
+}
+
+.unscheduled-background {
+  background-image: url('../../assets/ExamCard/d_schedule_exam_card.png');
+}
+
+.scheduled-background,
+.completed-background,
+.unscheduled-background {
+  background-color: $bg-card-exam;
+  object-fit: cover;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.custom-badge {
+  position: absolute;
+  width: fit-content;
+  height: 28px;
+  border-radius: 14px;
+  padding: 4px 16px;
+  right: 30px;
+  top: 30px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 700;
+
+  @media screen and (max-width: 576px) {
+    right: 15px;
+    top: 20px;
+  }
+}
+
+.card-header-container {
+  position: relative;
+  width: 100%;
+}
+
+#dropdown-overlay {
+  position: absolute;
+  top: 1.8rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+#dropdown-toggle:hover {
+  background-color: $primary-dark;
+  color: white;
+}
+
+#dropdown-toggle {
+  outline-color: $primary-dark;
+  border-color: $primary-dark;
+  color: $primary-dark;
+}
+
+.badge-complete {
+  background-color: $bg-badge-complete;
+  color: white;
+}
+
+.badge-scheduled {
+  background-color: $bg-badge-scheduled;
+  color: black;
+}
+
+.badge-unscheduled {
+  background-color: $bg-badge-unscheduled;
+  color: #333;
+}
+
+.custom-card-header {
+  color: $primary-dark;
+  font-size: 20px;
+  padding-top: 40px;
+
+  @media screen and (max-width: 576px) {
+    max-width: 90%;
+  }
+}
+
+.pgn__card .pgn__card-section,
+.list-item {
+  color: $blue-90;
+  font-size: 14px;
+}
+
+.pgn__card-section {
+  max-height: 180px;
+  overflow: auto;
+
+  @media screen and (min-width: 576px) {
+    min-height: 180px;
+  }
+}
+
+.list-item {
+  line-height: normal;
+  height: 24px;
+}
+
+.custom-card-separator {
+  border-top: 1px solid $gray-20;
+  width: 100%;
+  height: 3px;
+  margin-bottom: 15px;
+}
+
+#custom-card-button-schedule {
+  background-color: $primary-dark;
+  border-color: $primary-dark;
+  width: 100%;
+  font-weight: 600;
+}
+
+#custom-card-button-voucher-details {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  color: $blue-80;
+  text-decoration: underline;
+  font-weight: 400;
+}
