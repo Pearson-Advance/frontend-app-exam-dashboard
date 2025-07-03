@@ -1,0 +1,91 @@
+@import 'react-paragon-topaz/src/variables.scss';
+@import 'assets/variables.scss';
+
+.dashboard-container {
+  background-color: $bg-dashboard-color;
+  min-height: 100vh;
+}
+
+.tabs-container {
+  background-color: $card-bg;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px $card-shadow;
+  margin: 0 2rem;
+  margin-top: 2rem;
+  border: 1px solid $gray-border;
+
+  @media screen and (max-width: 576px) {
+    margin: 0.5rem;
+    margin-top: 1rem;
+  }
+}
+
+.tabs-wrapper {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 1.5em 1.5em 1.2em 1.5em;
+  background-color: $gray-20;
+}
+
+nav[role='tablist'] {
+  padding-left: 1em;
+}
+
+a.nav-link:not(.active)[role='tab'][data-rb-event-key] {
+  border-color: $gray-border;
+}
+
+a.nav-link.active[role='tab'][data-rb-event-key],
+#pgn__tab-toggle,
+#tabs-tab-null {
+  border-color: $blue-80;
+  background-color: $blue-80;
+  color: $white;
+}
+
+#tabs-tab-past-exams,
+#tabs-tab-exams {
+  padding: 0.5rem 2rem;
+}
+
+.tab-content-wrapper {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  border-radius: 4px;
+}
+
+.no-content-placeholder-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  color: $placeholder-text;
+  margin: 1em 3em;
+  margin-top: 2.5em;
+  border: 1px solid $placeholder-border;
+  border-radius: 8px;
+
+  @media screen and (max-width: 576px) {
+    margin: 1em;
+    padding: 24px;
+  }
+}
+
+.no-content-placeholder-container h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: $placeholder-title;
+}
+
+.no-content-placeholder-container p {
+  font-size: 1rem;
+  line-height: 1.5;
+
+  @media screen and (max-width: 576px) {
+    text-align: center;
+  }
+}
