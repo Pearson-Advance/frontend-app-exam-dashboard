@@ -4,6 +4,7 @@ import { Header } from 'react-paragon-topaz';
 import { Container } from '@edx/paragon';
 
 import TermsConditions from 'components/TermsConditions';
+import IdentityForm from 'components/form';
 
 const SchedulePage = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -18,7 +19,7 @@ const SchedulePage = () => {
         src={getConfig().LOGO_URL}
         logoUrl={getConfig().LMS_BASE_URL}
       />
-      <div className="pageWrapper p-4">
+      <div className="pageWrapper p-3">
         <Container size="xl" className="bg-white rounded p-0">
           {!acceptedTerms && (
           <TermsConditions
@@ -26,7 +27,7 @@ const SchedulePage = () => {
             onCancel={handleCancelTerms}
           />
           )}
-          {acceptedTerms && <div>Form Component</div>}
+          {acceptedTerms && <IdentityForm onSubmit={alert} />}
         </Container>
       </div>
     </>
