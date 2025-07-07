@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Form } from '@edx/paragon';
+import { Form, Toast } from '@edx/paragon';
 import { Button } from 'react-paragon-topaz';
 import { logError } from '@edx/frontend-platform/logging';
 
@@ -103,6 +103,7 @@ const IdentityForm = ({
 }) => {
   const [isLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
+  const [toast, setToast] = useState({ show: false, message: '' });
 
   const handleInputChange = (name, value) => {
     setFormData(prev => ({
@@ -162,6 +163,10 @@ const IdentityForm = ({
       setFormData((prev) => updateFieldsFromUserData(prev, data));
     } catch (error) {
       logError(error);
+      setToast({
+        show: true,
+        message: 'Failed to load user data. Please try again later.',
+      });
     }
   };
 
@@ -172,145 +177,157 @@ const IdentityForm = ({
   const showStateAndPostalCodeField = countriesWithStates.includes(formData.country.value);
 
   return (
-    <Form onSubmit={handleSubmit} className="p-0 pt-3 form-wrapper" role="form">
-      <div className="p-4">
-        <FormHeader />
+    <>
+      {toast.show && (
+        <Toast
+          onClose={() => setToast(prev => ({ ...prev, show: false }))}
+          dismissible
+          hasCloseButton
+          className="mb-3"
+        >
+          {toast.message}
+        </Toast>
+      )}
+      <Form onSubmit={handleSubmit} className="p-0 pt-3 form-wrapper" role="form">
+        <div className="p-4">
+          <FormHeader />
 
-        <Form.Row className="d-flex flex-wrap">
-          <Input
-            id="firstName"
-            label="First Name *"
-            required
-            value={formData.firstName.value}
-            error={formData.firstName.error}
-            isDisabled={formData.firstName.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('firstName', value)}
-          />
-
-          <Input
-            id="lastName"
-            label="Last Name *"
-            required
-            value={formData.lastName.value}
-            error={formData.lastName.error}
-            isDisabled={formData.lastName.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('lastName', value)}
-          />
-        </Form.Row>
-
-        <Form.Row>
-          <Input
-            id="email"
-            label="Email *"
-            type="email"
-            required
-            value={formData.email.value}
-            error={formData.email.error}
-            isDisabled={formData.email.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('email', value)}
-          />
-
-          <PhoneInput
-            dialingCodeValue={formData.dialingCode.value}
-            dialingCodeError={formData.dialingCode.error}
-            dialingCodeDisabled={formData.dialingCode.isDisabled}
-            phoneValue={formData.phone.value}
-            phoneError={formData.phone.error}
-            phoneDisabled={formData.phone.isDisabled}
-            isLoading={isLoading}
-            onDialingCodeChange={(value) => handleInputChange('dialingCode', value)}
-            onPhoneChange={(value) => handleInputChange('phone', value)}
-          />
-        </Form.Row>
-
-        <Form.Row>
-          <Input
-            id="address"
-            label="Address *"
-            required
-            value={formData.address.value}
-            error={formData.address.error}
-            isDisabled={formData.address.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('address', value)}
-          />
-
-          <Input
-            id="apartment"
-            label="Apt #, Suite, Floor"
-            value={formData.apartment.value}
-            error={formData.apartment.error}
-            isDisabled={formData.apartment.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('apartment', value)}
-          />
-        </Form.Row>
-
-        <Form.Row>
-          <Input
-            id="city"
-            label="City *"
-            required
-            value={formData.city.value}
-            error={formData.city.error}
-            isDisabled={formData.city.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('city', value)}
-          />
-
-          {showStateAndPostalCodeField && (
-            <SelectInput
-              id="state"
-              label="State / Province"
-              placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
-              options={getStateOptions(formData.country.value)}
-              value={formData.state.value}
-              error={formData.state.error}
-              isDisabled={formData.state.isDisabled}
-              isLoading={isLoading}
-              onChange={(value) => handleInputChange('state', value)}
-            />
-          )}
-        </Form.Row>
-
-        <Form.Row>
-          {showStateAndPostalCodeField && (
+          <Form.Row className="d-flex flex-wrap">
             <Input
-              id="postalCode"
-              label="ZIP / Postal Code *"
+              id="firstName"
+              label="First Name *"
               required
-              value={formData.postalCode.value}
-              error={formData.postalCode.error}
-              isDisabled={formData.postalCode.isDisabled}
+              value={formData.firstName.value}
+              error={formData.firstName.error}
+              isDisabled={formData.firstName.isDisabled}
               isLoading={isLoading}
-              onChange={(value) => handleInputChange('postalCode', value)}
+              onChange={(value) => handleInputChange('firstName', value)}
             />
-          )}
 
-          <SelectInput
-            id="country"
-            label="Country / Region"
-            placeholder="Country / Region *"
-            className="form-input"
-            options={parsedCountries}
-            value={formData.country.value}
-            error={formData.country.error}
-            isDisabled={formData.country.isDisabled}
-            isLoading={isLoading}
-            onChange={(value) => handleInputChange('country', value)}
-          />
-        </Form.Row>
-      </div>
+            <Input
+              id="lastName"
+              label="Last Name *"
+              required
+              value={formData.lastName.value}
+              error={formData.lastName.error}
+              isDisabled={formData.lastName.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('lastName', value)}
+            />
+          </Form.Row>
 
-      <FormActions
-        onCancel={handleCancel}
-        onPrevious={onPrevious}
-        isLoading={isLoading}
-      />
-    </Form>
+          <Form.Row>
+            <Input
+              id="email"
+              label="Email *"
+              type="email"
+              required
+              value={formData.email.value}
+              error={formData.email.error}
+              isDisabled={formData.email.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('email', value)}
+            />
+
+            <PhoneInput
+              dialingCodeValue={formData.dialingCode.value}
+              dialingCodeError={formData.dialingCode.error}
+              dialingCodeDisabled={formData.dialingCode.isDisabled}
+              phoneValue={formData.phone.value}
+              phoneError={formData.phone.error}
+              phoneDisabled={formData.phone.isDisabled}
+              isLoading={isLoading}
+              onDialingCodeChange={(value) => handleInputChange('dialingCode', value)}
+              onPhoneChange={(value) => handleInputChange('phone', value)}
+            />
+          </Form.Row>
+
+          <Form.Row>
+            <Input
+              id="address"
+              label="Address *"
+              required
+              value={formData.address.value}
+              error={formData.address.error}
+              isDisabled={formData.address.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('address', value)}
+            />
+
+            <Input
+              id="apartment"
+              label="Apt #, Suite, Floor"
+              value={formData.apartment.value}
+              error={formData.apartment.error}
+              isDisabled={formData.apartment.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('apartment', value)}
+            />
+          </Form.Row>
+
+          <Form.Row>
+            <Input
+              id="city"
+              label="City *"
+              required
+              value={formData.city.value}
+              error={formData.city.error}
+              isDisabled={formData.city.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('city', value)}
+            />
+
+            {showStateAndPostalCodeField && (
+              <SelectInput
+                id="state"
+                label="State / Province"
+                placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
+                options={getStateOptions(formData.country.value)}
+                value={formData.state.value}
+                error={formData.state.error}
+                isDisabled={formData.state.isDisabled}
+                isLoading={isLoading}
+                onChange={(value) => handleInputChange('state', value)}
+              />
+            )}
+          </Form.Row>
+
+          <Form.Row>
+            {showStateAndPostalCodeField && (
+              <Input
+                id="postalCode"
+                label="ZIP / Postal Code *"
+                required
+                value={formData.postalCode.value}
+                error={formData.postalCode.error}
+                isDisabled={formData.postalCode.isDisabled}
+                isLoading={isLoading}
+                onChange={(value) => handleInputChange('postalCode', value)}
+              />
+            )}
+
+            <SelectInput
+              id="country"
+              label="Country / Region"
+              placeholder="Country / Region *"
+              className="form-input"
+              options={parsedCountries}
+              value={formData.country.value}
+              error={formData.country.error}
+              isDisabled={formData.country.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('country', value)}
+            />
+          </Form.Row>
+        </div>
+
+        <FormActions
+          onCancel={handleCancel}
+          onPrevious={onPrevious}
+          isLoading={isLoading}
+        />
+      </Form>
+    </>
   );
 };
 
