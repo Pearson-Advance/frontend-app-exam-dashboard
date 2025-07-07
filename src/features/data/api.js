@@ -13,3 +13,9 @@ export function updateUserData(userData) {
     userData,
   );
 }
+
+export function getExams() {
+  return getAuthenticatedHttpClient().get(
+    `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/exams/`,
+  );
+}

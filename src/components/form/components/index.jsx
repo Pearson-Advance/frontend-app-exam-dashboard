@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Col } from '@edx/paragon';
 import { Select } from 'react-paragon-topaz';
 
-import { countries } from 'constants';
+import { countries } from 'features/utils/constants';
 
 const baseSelectStyles = {
   minHeight: 50,

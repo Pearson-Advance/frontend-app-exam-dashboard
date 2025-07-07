@@ -25,3 +25,19 @@ export const countries = countriesData
     cca2,
   }))
   .filter(({ dialingCode }) => dialingCode);
+
+export const examStatus = {
+  SCHEDULED: 'scheduled',
+  UNSCHEDULED: 'unscheduled',
+  COMPLETE: 'complete',
+};
+
+/**
+ * Maps backend exam status to status defined for exam cards.
+ * Key: Backend status string from API
+ * Value: status label used for exam cards
+ */
+export const EXAM_STATUS_MAP = {
+  APPT_CREATED: examStatus.SCHEDULED,
+  EXAM_DELIVERED: examStatus.COMPLETE,
+};
