@@ -7,7 +7,6 @@ module.exports = createConfig('webpack-dev', {
       components: path.resolve(__dirname, 'src/components'),
       features: path.resolve(__dirname, 'src/features'),
       assets: path.resolve(__dirname, 'src/assets'),
-      constants: path.resolve(__dirname, 'src/constants'),
     },
   },
 });

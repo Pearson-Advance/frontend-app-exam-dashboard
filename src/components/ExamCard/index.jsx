@@ -13,6 +13,7 @@ import {
 import { MoreVert } from '@edx/paragon/icons';
 
 import './index.scss';
+import { examStatus } from 'features/utils/constants';
 
 const statusTextMap = {
   complete: 'Complete',
@@ -32,7 +33,7 @@ const statusStyleMap = {
   unscheduled: 'badge-unscheduled',
 };
 
-const allowedStatuses = ['complete', 'scheduled'];
+const allowedStatuses = [examStatus.COMPLETE, examStatus.SCHEDULED];
 
 const ExamCard = ({
   title,
@@ -42,6 +43,7 @@ const ExamCard = ({
   additionalExamDetails,
   onScheduleExam,
   dropdownItems,
+  hideFooter,
 }) => {
   const [isOpen, open, close] = useToggle(false);
   const statusClass = statusClassMap[status] || '';
@@ -91,18 +93,20 @@ const ExamCard = ({
             ))}
           </ul>
         </Card.Section>
-        <Card.Footer className="px-4 pb-4 d-flex flex-column">
-          <div className="custom-card-separator" />
-          {status === 'unscheduled' ? (
-            <Button onClick={onScheduleExam} className="m-0" id="custom-card-button-schedule">
-              Schedule Exam
-            </Button>
-          ) : (
-            <Button onClick={open} className="m-0" id="custom-card-button-voucher-details">
-              Voucher Details
-            </Button>
-          )}
-        </Card.Footer>
+        {!hideFooter && (
+          <Card.Footer className="px-4 pb-4 d-flex flex-column">
+            <div className="custom-card-separator" />
+            {status === examStatus.UNSCHEDULED ? (
+              <Button onClick={onScheduleExam} className="m-0" id="custom-card-button-schedule">
+                Schedule Exam
+              </Button>
+            ) : (
+              <Button onClick={open} className="m-0" id="custom-card-button-voucher-details">
+                Voucher Details
+              </Button>
+            )}
+          </Card.Footer>
+        )}
       </Card>
       <ModalDialog
         title="Voucher Details"
@@ -132,7 +136,7 @@ const ExamCard = ({
 
 ExamCard.propTypes = {
   title: PropTypes.string.isRequired,
-  status: PropTypes.oneOf(['complete', 'scheduled', 'unscheduled']).isRequired,
+  status: PropTypes.oneOf([examStatus.COMPLETE, examStatus.SCHEDULED, examStatus.UNSCHEDULED]).isRequired,
   image: PropTypes.string,
   examDetails: PropTypes.arrayOf(
     PropTypes.shape({
@@ -154,6 +158,7 @@ ExamCard.propTypes = {
       onClick: PropTypes.func.isRequired,
     }),
   ),
+  hideFooter: PropTypes.bool,
 };
 
 ExamCard.defaultProps = {
@@ -161,6 +166,7 @@ ExamCard.defaultProps = {
   dropdownItems: null,
   onScheduleExam: () => {},
   additionalExamDetails: [],
+  hideFooter: false,
 };
 
 export default ExamCard;

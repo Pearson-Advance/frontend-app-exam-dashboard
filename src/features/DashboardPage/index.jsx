@@ -1,142 +1,147 @@
-import React from 'react';
-import { Tabs, Tab, Row } from '@edx/paragon';
+import React, { useEffect, useState } from 'react';
+import {
+  Tabs, Tab, Row, Spinner, Toast,
+} from '@edx/paragon';
+import { format } from 'date-fns';
+import { logError } from '@edx/frontend-platform/logging';
 
 import Header from '@edx/frontend-component-header';
 
 import ExamCard from 'components/ExamCard';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
+import { getExams } from 'features/data/api';
+import { EXAM_STATUS_MAP, examStatus } from 'features/utils/constants';
+
 import './index.scss';
 
-const DashboardPage = () => (
-  <div className="dashboard-container mb-5">
-    <Header />
-    <div className="tabs-container">
-      <Tabs
-        defaultActiveKey="exams"
-        id="tabs"
-        variant="button-group"
-        className="tabs-wrapper"
-      >
-        <Tab eventKey="exams" title="Exams" className="tab-content-wrapper p-3 p-md-4 px-md-5">
-          <Row className="mb-4">
-            <ExamCard
-              title="AI Fundamentals Exam"
-              status="complete"
-              image="https://img.freepik.com/free-photo/closeup-scarlet-macaw-from-side-view-scarlet-macaw-closeup-head_488145-3540.jpg?semt=ais_hybrid&w=740"
-              examDetails={[
-                { title: 'Voucher number:', description: 'A123-XYZ' },
-                { title: 'Issued by:', description: 'OpenAI' },
-                { title: 'Issue date:', description: 'Jan 1, 2025' },
-              ]}
-              additionalExamDetails={[
-                { title: 'Expiry date:', description: 'Dec 31, 2025' },
-                { title: 'Exam duration:', description: '90 minutes' },
-              ]}
-              onScheduleExam={() => {}}
-              dropdownItems={[
-                {
-                  label: 'View Results',
-                  iconClass: 'fa-regular fa-chart-bar',
-                  onClick: () => console.log('Viewing results'),
-                },
-                {
-                  label: 'Download Certificate',
-                  iconClass: 'fa-solid fa-download',
-                  onClick: () => console.log('Downloading certificate'),
-                },
-                {
-                  label: 'Remove Exam',
-                  iconClass: 'fa-solid fa-trash',
-                  onClick: () => console.log('Removing exam'),
-                },
-              ]}
-            />
+const DashboardPage = () => {
+  const [exams, setExams] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [toast, setToast] = useState({ show: false, message: '' });
 
-            <ExamCard
-              title="Cloud Practitioner Test"
-              status="scheduled"
-              image=""
-              examDetails={[
-                { title: 'Voucher number:', description: 'B456-ABC' },
-                { title: 'Issued by:', description: 'AWS' },
-                { title: 'Issue date:', description: 'Feb 10, 2025' },
-              ]}
-              additionalExamDetails={[
-                { title: 'Scheduled date:', description: 'Mar 15, 2025' },
-              ]}
-              onScheduleExam={() => {}}
-              dropdownItems={[
-                {
-                  label: 'View Results',
-                  iconClass: 'fa-regular fa-chart-bar',
-                  onClick: () => console.log('Viewing results'),
-                },
-                {
-                  label: 'Download Certificate',
-                  iconClass: 'fa-solid fa-download',
-                  onClick: () => console.log('Downloading certificate'),
-                },
-                {
-                  label: 'Remove Exam',
-                  iconClass: 'fa-solid fa-trash',
-                  onClick: () => console.log('Removing exam'),
-                },
-              ]}
-            />
+  const fetchExams = async () => {
+    try {
+      const response = await getExams();
+      setExams(response?.data?.results || []);
+    } catch (error) {
+      logError(error);
+      setToast({
+        show: true,
+        message: 'Failed to load exams data. Please try again later.',
+      });
+      setExams([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchExams();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const getExamDetails = (exam, statusLabel) => {
+    const createdDate = format(new Date(exam.created), 'MMM d, yyyy');
+
+    if (statusLabel === examStatus.UNSCHEDULED) {
+      return {
+        examDetails: [
+          { title: 'Voucher: ', description: exam.vue_appointment_id },
+          { title: 'Issue date: ', description: createdDate },
+        ],
+        additionalExamDetails: [],
+      };
+    }
+
+    if ([examStatus.SCHEDULED, examStatus.COMPLETE].includes(statusLabel)) {
+      const startAt = new Date(exam.start_at);
+      return {
+        examDetails: [
+          { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
+          { title: 'Time', description: format(startAt, 'h:mm a') },
+        ],
+        additionalExamDetails: [
+          { title: 'Voucher: ', description: exam.vue_appointment_id },
+          { title: 'Issue date: ', description: createdDate },
+        ],
+      };
+    }
+
+    return { examDetails: [], additionalExamDetails: [] };
+  };
+
+  const renderExamsTab = () => {
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center mt-5">
+          <Spinner screenReaderText="Loading exams..." />
+        </div>
+      );
+    }
+
+    const validExams = Array.isArray(exams)
+      ? exams.filter((exam) => Object.keys(EXAM_STATUS_MAP).includes(exam.status))
+      : [];
+
+    if (validExams.length === 0) {
+      return (
+        <NoContentPlaceholder />
+      );
+    }
+
+    return (
+      <Row className="mb-4 p-3 p-md-4 px-md-5">
+        {validExams.map((exam) => {
+          const statusLabel = EXAM_STATUS_MAP[exam.status];
+          const { examDetails, additionalExamDetails } = getExamDetails(exam, statusLabel);
+
+          return (
             <ExamCard
-              title="Cybersecurity Basics"
-              status="unscheduled"
-              image={null}
-              examDetails={[
-                { title: 'Voucher number:', description: 'C789-DEF' },
-                { title: 'Issued by:', description: 'Google' },
-                { title: 'Issue date:', description: 'Mar 5, 2025' },
-              ]}
-              onScheduleExam={() => alert('Redirect to scheduling page')}
+              title={exam.name}
+              key={exam.id}
+              status={EXAM_STATUS_MAP[exam.status]}
+              examDetails={examDetails}
+              additionalExamDetails={additionalExamDetails}
+              hideFooter
             />
-            <ExamCard
-              title="AI Fundamentals Exam"
-              status="complete"
-              image="https://img.freepik.com/free-psd/e-learning-poster-design-template_23-2149113596.jpg?semt=ais_hybrid&w=740"
-              examDetails={[
-                { title: 'Voucher number:', description: 'A123-XYZZZZZZZZZZZZZZZZZZ' },
-                { title: 'Issued by:', description: 'OpenAI' },
-                { title: 'Issue date:', description: 'Jan 1, 2025' },
-                { title: 'Issue date:', description: 'Jan 1, 2025' },
-              ]}
-              additionalExamDetails={[
-                { title: 'Expiry date:', description: 'Dec 31, 2025' },
-                { title: 'Exam duration:', description: '90 minutes' },
-              ]}
-              onScheduleExam={() => {}}
-              dropdownItems={[
-                {
-                  label: 'View Results',
-                  iconClass: 'fa-regular fa-chart-bar',
-                  onClick: () => console.log('Viewing results'),
-                },
-                {
-                  label: 'Download Certificate',
-                  iconClass: 'fa-solid fa-download',
-                  onClick: () => console.log('Downloading certificate'),
-                },
-                {
-                  label: 'Remove Exam',
-                  iconClass: 'fa-solid fa-trash',
-                  onClick: () => console.log('Removing exam'),
-                },
-              ]}
-            />
-          </Row>
-        </Tab>
-        <Tab eventKey="past-exams" title="Past Exams" className="tab-content-wrapper">
-          <NoContentPlaceholder title="No past exams found" description="It looks like you do not have past exams." />
-        </Tab>
-      </Tabs>
-    </div>
-  </div>
-);
+          );
+        })}
+      </Row>
+    );
+  };
+
+  return (
+    <>
+      {toast.show && (
+        <Toast
+          onClose={() => setToast(prev => ({ ...prev, show: false }))}
+          dismissible
+          hasCloseButton
+          className="mb-3"
+        >
+          {toast.message}
+        </Toast>
+      )}
+      <div className="dashboard-container mb-5">
+        <Header />
+        <div className="tabs-container">
+          <Tabs
+            defaultActiveKey="exams"
+            id="tabs"
+            variant="button-group"
+            className="tabs-wrapper"
+          >
+            <Tab eventKey="exams" title="Exams" className="tab-content-wrapper">
+              {renderExamsTab()}
+            </Tab>
+            <Tab eventKey="past-exams" title="Past Exams" className="tab-content-wrapper">
+              <NoContentPlaceholder title="No past exams found" description="It looks like you do not have past exams." />
+            </Tab>
+          </Tabs>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default DashboardPage;

@@ -3,7 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
-import { countries } from 'constants';
+import { countries } from 'features/utils/constants';
 import { updateUserData } from 'features/data/api';
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';

@@ -5,7 +5,7 @@ import { Button } from 'react-paragon-topaz';
 import { logError } from '@edx/frontend-platform/logging';
 
 import { Input, PhoneInput, SelectInput } from 'components/form/components';
-import { countries, unitedStates, canadianProvincesAndTerritories } from 'constants';
+import { countries, unitedStates, canadianProvincesAndTerritories } from 'features/utils/constants';
 import { getUserData } from 'features/data/api';
 import './index.scss';
 
