@@ -139,6 +139,7 @@ export const PhoneInput = ({
             disabled={phoneDisabled || isLoading}
             className={`pr-1 form-phone-input ${phoneDisabled || isLoading ? 'form-input-disabled' : 'form-input'}`}
             onChange={(e) => onPhoneChange(e.target.value)}
+            required
           />
           {(phoneError || dialingCodeError) && (
             <Form.Control.Feedback type="invalid">
