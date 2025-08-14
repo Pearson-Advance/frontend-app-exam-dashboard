@@ -10,12 +10,21 @@ import * as api from 'features/data/api';
 jest.mock('@edx/frontend-component-header', () => function () {
   return <div data-testid="header" />;
 });
-jest.mock('components/ExamCard', () => function ({ title, status, examDetails }) {
+jest.mock('components/ExamCard', () => function ({
+  title, status, examDetails, dropdownItems,
+}) {
   return (
     <div data-testid="exam-card">
       <div>{title}</div>
       <div>{status}</div>
       <div>{examDetails?.[0]?.description}</div>
+      {dropdownItems?.length > 0 && (
+        <div data-testid="dropdown-items">
+          {dropdownItems.map(item => (
+            <button key={item.label} onClick={item.onClick} type="button">{item.label}</button>
+          ))}
+        </div>
+      )}
     </div>
   );
 });
@@ -118,6 +127,30 @@ describe('DashboardPage', () => {
 
       expect(screen.getByText('complete')).toBeInTheDocument();
       expect(screen.getByText('scheduled')).toBeInTheDocument();
+    });
+  });
+
+  test('displays dropdown item for scheduled exam', async () => {
+    const scheduledExam = [
+      {
+        id: 10,
+        name: 'Scheduled Exam',
+        status: 'APPT_CREATED',
+        vue_appointment_id: 'drop123',
+        created: '2025-07-05T10:00:00Z',
+        start_at: '2025-07-25T14:00:00Z',
+      },
+    ];
+
+    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
+      data: { results: scheduledExam },
+    });
+
+    render(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Scheduled Exam')).toBeInTheDocument();
+      expect(screen.getByText('Reschedule Exam')).toBeInTheDocument();
     });
   });
 });

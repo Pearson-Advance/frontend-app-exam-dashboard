@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Tabs, Tab, Row, Spinner, Toast,
 } from '@edx/paragon';
+import { getConfig } from '@edx/frontend-platform';
 import { format } from 'date-fns';
 import { logError } from '@edx/frontend-platform/logging';
 
@@ -42,6 +43,7 @@ const DashboardPage = () => {
 
   const getExamDetails = (exam, statusLabel) => {
     const createdDate = format(new Date(exam.created), 'MMM d, yyyy');
+    const urlReschedule = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/reschedule/?registration_id=${exam.vue_appointment_id}`;
 
     if (statusLabel === examStatus.UNSCHEDULED) {
       return {
@@ -50,12 +52,13 @@ const DashboardPage = () => {
           { title: 'Issue date: ', description: createdDate },
         ],
         additionalExamDetails: [],
+        dropdownItems: undefined,
       };
     }
 
     if ([examStatus.SCHEDULED, examStatus.COMPLETE].includes(statusLabel)) {
       const startAt = new Date(exam.start_at);
-      return {
+      const baseData = {
         examDetails: [
           { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
           { title: 'Time', description: format(startAt, 'h:mm a') },
@@ -65,9 +68,20 @@ const DashboardPage = () => {
           { title: 'Issue date: ', description: createdDate },
         ],
       };
+
+      const dropdownItems = statusLabel === examStatus.SCHEDULED
+        ? [
+          { label: 'Reschedule Exam', onClick: () => { window.location.href = urlReschedule; } },
+        ]
+        : [];
+
+      return {
+        ...baseData,
+        dropdownItems,
+      };
     }
 
-    return { examDetails: [], additionalExamDetails: [] };
+    return { examDetails: [], additionalExamDetails: [], dropdownItems: [] };
   };
 
   const renderExamsTab = () => {
@@ -93,7 +107,7 @@ const DashboardPage = () => {
       <Row className="mb-4 p-3 p-md-4 px-md-5">
         {validExams.map((exam) => {
           const statusLabel = EXAM_STATUS_MAP[exam.status];
-          const { examDetails, additionalExamDetails } = getExamDetails(exam, statusLabel);
+          const { examDetails, additionalExamDetails, dropdownItems } = getExamDetails(exam, statusLabel);
 
           return (
             <ExamCard
@@ -103,6 +117,7 @@ const DashboardPage = () => {
               examDetails={examDetails}
               additionalExamDetails={additionalExamDetails}
               hideFooter
+              dropdownItems={dropdownItems}
             />
           );
         })}
