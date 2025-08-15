@@ -34,3 +34,19 @@ export async function getRescheduleUrl(vueAppointmentId) {
     params: { registration_id: vueAppointmentId },
   });
 }
+
+/**
+ * Fetches the individual score report  URL for a exam appointment.
+ * @async
+ * @function getScoreReport
+ * @param {string} vueAppointmentId - The unique registration ID of the Vue exam appointment.
+ * @returns {Promise<AxiosResponse>} - A promise that resolves to the HTTP response from the backend.
+ */
+export async function getScoreReport(vueAppointmentId) {
+  return getAuthenticatedHttpClient().get(
+    `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/individual_score_report/`,
+    {
+      params: { registration_id: vueAppointmentId },
+    },
+  );
+}

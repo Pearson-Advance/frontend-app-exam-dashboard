@@ -10,7 +10,7 @@ import Header from '@edx/frontend-component-header';
 import ExamCard from 'components/ExamCard';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
-import { getExams, getRescheduleUrl } from 'features/data/api';
+import { getExams, getRescheduleUrl, getScoreReport } from 'features/data/api';
 import { EXAM_STATUS_MAP, examStatus } from 'features/utils/constants';
 
 import './index.scss';
@@ -76,6 +76,15 @@ const DashboardPage = () => {
     });
   };
 
+  const handleGetScoreReportUrl = async (vueAppointmentId) => {
+    await handleExamAction({
+      vueAppointmentId,
+      serviceFn: getScoreReport,
+      loadingKey: 'loadingScoreReport',
+      errorMessage: 'An error occurred while retrieving the exam score report.',
+    });
+  };
+
   useEffect(() => {
     fetchExams();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -121,6 +130,14 @@ const DashboardPage = () => {
           { title: 'Voucher: ', description: exam.vue_appointment_id },
           { title: 'Issue date: ', description: createdDate },
         ],
+        dropdownItems: [
+          {
+            label: 'View Score Report',
+            disabled: exams.find(e => (
+              e.vue_appointment_id === exam.vue_appointment_id))?.loadingScoreReport === true,
+            onClick: () => handleGetScoreReportUrl(exam.vue_appointment_id),
+          },
+        ],
       };
     }
 
@@ -159,8 +176,8 @@ const DashboardPage = () => {
               status={EXAM_STATUS_MAP[exam.status]}
               examDetails={examDetails}
               additionalExamDetails={additionalExamDetails}
-              hideFooter
               dropdownItems={dropdownItems}
+              hideFooter
             />
           );
         })}

@@ -10,8 +10,12 @@ import * as api from 'features/data/api';
 jest.mock('@edx/frontend-component-header', () => function () {
   return <div data-testid="header" />;
 });
+
 jest.mock('components/ExamCard', () => function ({
-  title, status, examDetails, dropdownItems,
+  title,
+  status,
+  examDetails,
+  dropdownItems,
 }) {
   return (
     <div data-testid="exam-card">
@@ -28,6 +32,7 @@ jest.mock('components/ExamCard', () => function ({
     </div>
   );
 });
+
 jest.mock('features/DashboardPage/components/NoContentPlaceholder', () => function ({ title, description }) {
   return <div data-testid="no-content">{title || description}</div>;
 });
@@ -151,6 +156,30 @@ describe('DashboardPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Scheduled Exam')).toBeInTheDocument();
       expect(screen.getByText('Reschedule Exam')).toBeInTheDocument();
+    });
+  });
+
+  test('Should show view score option for completed exam', async () => {
+    const scheduledExam = [
+      {
+        id: 11,
+        name: 'Completed Exam',
+        status: 'EXAM_DELIVERED',
+        vue_appointment_id: 'drop123',
+        created: '2025-08-10T10:14:50Z',
+        start_at: '2025-08-15T14:10:00Z',
+      },
+    ];
+
+    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
+      data: { results: scheduledExam },
+    });
+
+    render(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('complete')).toBeInTheDocument();
+      expect(screen.getByText('View Score Report')).toBeInTheDocument();
     });
   });
 });
