@@ -10,7 +10,12 @@ import Header from '@edx/frontend-component-header';
 import ExamCard from 'components/ExamCard';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
-import { getExams, getRescheduleUrl, getScoreReport } from 'features/data/api';
+import {
+  getExams,
+  getRescheduleUrl,
+  getScoreReport,
+  cancelExam,
+} from 'features/data/api';
 import { EXAM_STATUS_MAP, examStatus } from 'features/utils/constants';
 
 import './index.scss';
@@ -85,6 +90,15 @@ const DashboardPage = () => {
     });
   };
 
+  const handleCancelExam = async (vueAppointmentId) => {
+    await handleExamAction({
+      vueAppointmentId,
+      serviceFn: cancelExam,
+      loadingKey: 'loadingCancel',
+      errorMessage: 'An error occurred while canceling the exam.',
+    });
+  };
+
   useEffect(() => {
     fetchExams();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -114,6 +128,11 @@ const DashboardPage = () => {
             label: 'Reschedule Exam',
             disabled: exams.find(e => e.vue_appointment_id === exam.vue_appointment_id)?.loadingReschedule === true,
             onClick: () => handleRescheduleUrl(exam.vue_appointment_id),
+          },
+          {
+            label: 'Cancel Exam',
+            disabled: exams.find(e => e.vue_appointment_id === exam.vue_appointment_id)?.loadingCancel === true,
+            onClick: () => handleCancelExam(exam.vue_appointment_id),
           },
         ],
       };
@@ -187,16 +206,15 @@ const DashboardPage = () => {
 
   return (
     <>
-      {toast.show && (
-        <Toast
-          onClose={() => setToast(prev => ({ ...prev, show: false }))}
-          dismissible
-          hasCloseButton
-          className="mb-3"
-        >
-          {toast.message}
-        </Toast>
-      )}
+      <Toast
+        onClose={() => setToast(prev => ({ ...prev, show: false }))}
+        dismissible
+        hasCloseButton
+        className="mb-3"
+        show={toast.show}
+      >
+        {toast.message}
+      </Toast>
       <div className="dashboard-container mb-5">
         <Header />
         <div className="tabs-container">

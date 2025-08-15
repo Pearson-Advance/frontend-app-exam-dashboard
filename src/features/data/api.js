@@ -50,3 +50,19 @@ export async function getScoreReport(vueAppointmentId) {
     },
   );
 }
+
+/**
+ * Fetches the cancel URL for a specific exam appointment.
+ * @async
+ * @function cancelExam
+ * @param {string} vueAppointmentId - The unique registration ID of the Vue exam appointment.
+ * @returns {Promise<AxiosResponse>} - A promise that resolves to the HTTP response from the backend.
+ */
+export async function cancelExam(vueAppointmentId) {
+  return getAuthenticatedHttpClient().get(
+    `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/cancel/`,
+    {
+      params: { registration_id: vueAppointmentId },
+    },
+  );
+}
