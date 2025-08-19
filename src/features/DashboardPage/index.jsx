@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Tabs, Tab, Row, Spinner, Toast,
 } from '@edx/paragon';
-import { getConfig } from '@edx/frontend-platform';
 import { format } from 'date-fns';
 import { logError } from '@edx/frontend-platform/logging';
 
@@ -11,7 +10,7 @@ import Header from '@edx/frontend-component-header';
 import ExamCard from 'components/ExamCard';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
-import { getExams } from 'features/data/api';
+import { getExams, getRescheduleUrl } from 'features/data/api';
 import { EXAM_STATUS_MAP, examStatus } from 'features/utils/constants';
 
 import './index.scss';
@@ -37,13 +36,52 @@ const DashboardPage = () => {
     }
   };
 
+  const handleExamAction = async ({
+    vueAppointmentId,
+    serviceFn,
+    loadingKey,
+    errorMessage,
+  }) => {
+    setExams((prev) => prev.map(
+      (exam) => (exam.vue_appointment_id === vueAppointmentId
+        ? { ...exam, [loadingKey]: true }
+        : exam),
+    ));
+
+    try {
+      const response = await serviceFn(vueAppointmentId);
+
+      if (response?.data?.url) {
+        window.location.href = response.data.url;
+      } else {
+        setToast({ show: true, message: 'Unexpected response from the server.' });
+      }
+    } catch {
+      setToast({ show: true, message: errorMessage });
+    } finally {
+      setExams((prev) => prev.map(
+        (exam) => (exam.vue_appointment_id === vueAppointmentId
+          ? { ...exam, [loadingKey]: false }
+          : exam),
+      ));
+    }
+  };
+
+  const handleRescheduleUrl = async (vueAppointmentId) => {
+    await handleExamAction({
+      vueAppointmentId,
+      serviceFn: getRescheduleUrl,
+      loadingKey: 'loadingReschedule',
+      errorMessage: 'An error occurred while rescheduling the exam.',
+    });
+  };
+
   useEffect(() => {
     fetchExams();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getExamDetails = (exam, statusLabel) => {
     const createdDate = format(new Date(exam.created), 'MMM d, yyyy');
-    const urlReschedule = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/reschedule/?registration_id=${exam.vue_appointment_id}`;
 
     if (statusLabel === examStatus.UNSCHEDULED) {
       return {
@@ -52,13 +90,29 @@ const DashboardPage = () => {
           { title: 'Issue date: ', description: createdDate },
         ],
         additionalExamDetails: [],
-        dropdownItems: undefined,
       };
     }
 
-    if ([examStatus.SCHEDULED, examStatus.COMPLETE].includes(statusLabel)) {
+    if (statusLabel === examStatus.SCHEDULED) {
       const startAt = new Date(exam.start_at);
-      const baseData = {
+      return {
+        examDetails: [
+          { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
+          { title: 'Time', description: format(startAt, 'h:mm a') },
+        ],
+        dropdownItems: [
+          {
+            label: 'Reschedule Exam',
+            disabled: exams.find(e => e.vue_appointment_id === exam.vue_appointment_id)?.loadingReschedule === true,
+            onClick: () => handleRescheduleUrl(exam.vue_appointment_id),
+          },
+        ],
+      };
+    }
+
+    if (statusLabel === examStatus.COMPLETE) {
+      const startAt = new Date(exam.start_at);
+      return {
         examDetails: [
           { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
           { title: 'Time', description: format(startAt, 'h:mm a') },
@@ -67,17 +121,6 @@ const DashboardPage = () => {
           { title: 'Voucher: ', description: exam.vue_appointment_id },
           { title: 'Issue date: ', description: createdDate },
         ],
-      };
-
-      const dropdownItems = statusLabel === examStatus.SCHEDULED
-        ? [
-          { label: 'Reschedule Exam', onClick: () => { window.location.href = urlReschedule; } },
-        ]
-        : [];
-
-      return {
-        ...baseData,
-        dropdownItems,
       };
     }
 
