@@ -10,7 +10,7 @@ import Header from '@edx/frontend-component-header';
 import ExamCard from 'components/ExamCard';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
-import { getExams } from 'features/data/api';
+import { getExams, getRescheduleUrl } from 'features/data/api';
 import { EXAM_STATUS_MAP, examStatus } from 'features/utils/constants';
 
 import './index.scss';
@@ -36,6 +36,46 @@ const DashboardPage = () => {
     }
   };
 
+  const handleExamAction = async ({
+    vueAppointmentId,
+    serviceFn,
+    loadingKey,
+    errorMessage,
+  }) => {
+    setExams((prev) => prev.map(
+      (exam) => (exam.vue_appointment_id === vueAppointmentId
+        ? { ...exam, [loadingKey]: true }
+        : exam),
+    ));
+
+    try {
+      const response = await serviceFn(vueAppointmentId);
+
+      if (response?.data?.url) {
+        window.location.href = response.data.url;
+      } else {
+        setToast({ show: true, message: 'Unexpected response from the server.' });
+      }
+    } catch {
+      setToast({ show: true, message: errorMessage });
+    } finally {
+      setExams((prev) => prev.map(
+        (exam) => (exam.vue_appointment_id === vueAppointmentId
+          ? { ...exam, [loadingKey]: false }
+          : exam),
+      ));
+    }
+  };
+
+  const handleRescheduleUrl = async (vueAppointmentId) => {
+    await handleExamAction({
+      vueAppointmentId,
+      serviceFn: getRescheduleUrl,
+      loadingKey: 'loadingReschedule',
+      errorMessage: 'An error occurred while rescheduling the exam.',
+    });
+  };
+
   useEffect(() => {
     fetchExams();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -53,7 +93,24 @@ const DashboardPage = () => {
       };
     }
 
-    if ([examStatus.SCHEDULED, examStatus.COMPLETE].includes(statusLabel)) {
+    if (statusLabel === examStatus.SCHEDULED) {
+      const startAt = new Date(exam.start_at);
+      return {
+        examDetails: [
+          { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
+          { title: 'Time', description: format(startAt, 'h:mm a') },
+        ],
+        dropdownItems: [
+          {
+            label: 'Reschedule Exam',
+            disabled: exams.find(e => e.vue_appointment_id === exam.vue_appointment_id)?.loadingReschedule === true,
+            onClick: () => handleRescheduleUrl(exam.vue_appointment_id),
+          },
+        ],
+      };
+    }
+
+    if (statusLabel === examStatus.COMPLETE) {
       const startAt = new Date(exam.start_at);
       return {
         examDetails: [
@@ -67,7 +124,7 @@ const DashboardPage = () => {
       };
     }
 
-    return { examDetails: [], additionalExamDetails: [] };
+    return { examDetails: [], additionalExamDetails: [], dropdownItems: [] };
   };
 
   const renderExamsTab = () => {
@@ -93,7 +150,7 @@ const DashboardPage = () => {
       <Row className="mb-4 p-3 p-md-4 px-md-5">
         {validExams.map((exam) => {
           const statusLabel = EXAM_STATUS_MAP[exam.status];
-          const { examDetails, additionalExamDetails } = getExamDetails(exam, statusLabel);
+          const { examDetails, additionalExamDetails, dropdownItems } = getExamDetails(exam, statusLabel);
 
           return (
             <ExamCard
@@ -103,6 +160,7 @@ const DashboardPage = () => {
               examDetails={examDetails}
               additionalExamDetails={additionalExamDetails}
               hideFooter
+              dropdownItems={dropdownItems}
             />
           );
         })}

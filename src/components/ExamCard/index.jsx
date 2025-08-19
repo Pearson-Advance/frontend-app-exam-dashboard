@@ -71,10 +71,15 @@ const ExamCard = ({
                   alt="menu"
                 />
                 <Dropdown.Menu>
-                  {dropdownItems.map(({ label, iconClass, onClick }) => (
-                    <Dropdown.Item key={label} onClick={onClick} className="text-truncate">
+                  {dropdownItems.map(({
+                    label,
+                    iconClass,
+                    onClick,
+                    disabled,
+                  }) => (
+                    <Dropdown.Item key={label} onClick={onClick} className="text-truncate" disabled={disabled}>
                       {iconClass && <i className={`${iconClass} mr-2`} />}
-                      {label}
+                      { disabled ? 'Operation in process...' : label }
                     </Dropdown.Item>
                   ))}
                 </Dropdown.Menu>

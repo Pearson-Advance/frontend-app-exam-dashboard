@@ -19,3 +19,18 @@ export function getExams() {
     `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/exams/`,
   );
 }
+
+/**
+ * Fetches the reschedule URL for a specific exam appointment.
+ * @async
+ * @function getRescheduleUrl
+ * @param {string} vueAppointmentId - The unique registration ID of the Vue exam appointment.
+ * @returns {Promise<AxiosResponse>} - A promise that resolves to the HTTP response from the backend.
+ */
+export async function getRescheduleUrl(vueAppointmentId) {
+  const baseUrl = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/reschedule/`;
+
+  return getAuthenticatedHttpClient().get(baseUrl, {
+    params: { registration_id: vueAppointmentId },
+  });
+}
