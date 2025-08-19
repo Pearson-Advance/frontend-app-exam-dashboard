@@ -135,15 +135,15 @@ describe('DashboardPage', () => {
     });
   });
 
-  test('displays dropdown item for scheduled exam', async () => {
+  test('Should show cancel option for scheduled exam', async () => {
     const scheduledExam = [
       {
         id: 10,
         name: 'Scheduled Exam',
         status: 'APPT_CREATED',
         vue_appointment_id: 'drop123',
-        created: '2025-07-05T10:00:00Z',
-        start_at: '2025-07-25T14:00:00Z',
+        created: '2025-08-10T10:14:50Z',
+        start_at: '2025-08-15T14:10:00Z',
       },
     ];
 
@@ -154,8 +154,8 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Scheduled Exam')).toBeInTheDocument();
-      expect(screen.getByText('Reschedule Exam')).toBeInTheDocument();
+      expect(screen.getByText('scheduled')).toBeInTheDocument();
+      expect(screen.getByText('Cancel Exam')).toBeInTheDocument();
     });
   });
 
@@ -180,6 +180,30 @@ describe('DashboardPage', () => {
     await waitFor(() => {
       expect(screen.getByText('complete')).toBeInTheDocument();
       expect(screen.getByText('View Score Report')).toBeInTheDocument();
+    });
+  });
+
+  test('displays dropdown item for scheduled exam', async () => {
+    const scheduledExam = [
+      {
+        id: 10,
+        name: 'Scheduled Exam',
+        status: 'APPT_CREATED',
+        vue_appointment_id: 'drop123',
+        created: '2025-07-05T10:00:00Z',
+        start_at: '2025-07-25T14:00:00Z',
+      },
+    ];
+
+    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
+      data: { results: scheduledExam },
+    });
+
+    render(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Scheduled Exam')).toBeInTheDocument();
+      expect(screen.getByText('Reschedule Exam')).toBeInTheDocument();
     });
   });
 });
