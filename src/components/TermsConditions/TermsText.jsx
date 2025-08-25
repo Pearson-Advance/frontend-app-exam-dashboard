@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const TermsText = () => {
   const cookiesLink = 'https://www.pearsonvue.com/privacy';
   const termsLink = 'https://wsr.pearsonvue.com/terms';
