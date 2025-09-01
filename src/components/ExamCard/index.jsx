@@ -18,19 +18,28 @@ import { examStatus } from 'features/utils/constants';
 const statusTextMap = {
   complete: 'Complete',
   scheduled: 'Scheduled',
-  unscheduled: 'Unscheduled',
+  canceled: 'Canceled',
+  'no-show': 'No Show',
+  'nda-refused': 'NDA declined',
+  expired: 'Incomplete exam',
 };
 
 const statusClassMap = {
   complete: 'completed-background',
   scheduled: 'scheduled-background',
-  unscheduled: 'unscheduled-background',
+  canceled: 'canceled-background',
+  'no-show': 'no-show-background',
+  'nda-refused': 'nda-refused-background',
+  expired: 'expired-background',
 };
 
-const statusStyleMap = {
+const badgeStatusStyleClassMap = {
   complete: 'badge-complete',
   scheduled: 'badge-scheduled',
-  unscheduled: 'badge-unscheduled',
+  canceled: 'badge-canceled',
+  'no-show': 'badge-no-show',
+  'nda-refused': 'badge-nda-refused',
+  expired: 'badge-expired',
 };
 
 const allowedStatuses = [examStatus.COMPLETE, examStatus.SCHEDULED];
@@ -48,7 +57,7 @@ const ExamCard = ({
   const [isOpen, open, close] = useToggle(false);
   const statusClass = statusClassMap[status] || '';
   const statusText = statusTextMap[status] || '';
-  const statusStyle = statusStyleMap[status] || '';
+  const statusStyle = badgeStatusStyleClassMap[status] || '';
 
   return (
     <Col xs={12} md={6} className="mb-4">
@@ -141,7 +150,7 @@ const ExamCard = ({
 
 ExamCard.propTypes = {
   title: PropTypes.string.isRequired,
-  status: PropTypes.oneOf([examStatus.COMPLETE, examStatus.SCHEDULED, examStatus.UNSCHEDULED]).isRequired,
+  status: PropTypes.oneOf(Object.values(examStatus)).isRequired,
   image: PropTypes.string,
   examDetails: PropTypes.arrayOf(
     PropTypes.shape({
