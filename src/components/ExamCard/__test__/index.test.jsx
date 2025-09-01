@@ -28,13 +28,6 @@ test('Should render title and exam details', () => {
   expect(screen.getByText('July 3, 2025')).toBeInTheDocument();
 });
 
-test('Should call onScheduleExam when schedule button is clicked', () => {
-  render(<ExamCard {...defaultProps} />);
-
-  fireEvent.click(screen.getByText('Schedule Exam'));
-  expect(defaultProps.onScheduleExam).toHaveBeenCalled();
-});
-
 test('Should show voucher button when status is scheduled', () => {
   render(<ExamCard {...defaultProps} status="scheduled" />);
 

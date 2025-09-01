@@ -13,25 +13,7 @@ import {
 import { MoreVert } from '@edx/paragon/icons';
 
 import './index.scss';
-import { examStatus } from 'features/utils/constants';
-
-const statusTextMap = {
-  complete: 'Complete',
-  scheduled: 'Scheduled',
-  unscheduled: 'Unscheduled',
-};
-
-const statusClassMap = {
-  complete: 'completed-background',
-  scheduled: 'scheduled-background',
-  unscheduled: 'unscheduled-background',
-};
-
-const statusStyleMap = {
-  complete: 'badge-complete',
-  scheduled: 'badge-scheduled',
-  unscheduled: 'badge-unscheduled',
-};
+import { examStatus, EXAM_STATUS_UI_STYLES } from 'features/utils/constants';
 
 const allowedStatuses = [examStatus.COMPLETE, examStatus.SCHEDULED];
 
@@ -46,15 +28,17 @@ const ExamCard = ({
   hideFooter,
 }) => {
   const [isOpen, open, close] = useToggle(false);
-  const statusClass = statusClassMap[status] || '';
-  const statusText = statusTextMap[status] || '';
-  const statusStyle = statusStyleMap[status] || '';
+  const {
+    text = '',
+    class: customClass = '',
+    badge = '',
+  } = EXAM_STATUS_UI_STYLES[status] || {};
 
   return (
     <Col xs={12} md={6} className="mb-4">
       <Card className="card-wrapper w-100">
-        <div className={`card-header-background ${statusClass}`}>
-          <span className={`custom-badge ${statusStyle}`}>{statusText}</span>
+        <div className={`card-header-background ${customClass}`}>
+          <span className={`custom-badge ${badge}`}>{text}</span>
           {image && <div className="card-header-image" style={{ backgroundImage: `url(${image})` }} />}
         </div>
         <div className="card-header-container">
@@ -141,7 +125,7 @@ const ExamCard = ({
 
 ExamCard.propTypes = {
   title: PropTypes.string.isRequired,
-  status: PropTypes.oneOf([examStatus.COMPLETE, examStatus.SCHEDULED, examStatus.UNSCHEDULED]).isRequired,
+  status: PropTypes.oneOf(Object.values(examStatus)).isRequired,
   image: PropTypes.string,
   examDetails: PropTypes.arrayOf(
     PropTypes.shape({
