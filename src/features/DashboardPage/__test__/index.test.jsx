@@ -42,6 +42,19 @@ jest.mock('@edx/frontend-platform/logging', () => ({
 }));
 
 describe('DashboardPage', () => {
+  const examLocation = {
+    test_center: {
+      test_center_name: 'Alpha Center',
+      test_center_address: {
+        address1: '123 Main St',
+        city: 'Sarajevo',
+        state: '',
+        postal_code: null,
+        country: 'Bosnia',
+      },
+    },
+  };
+
   const validExams = [
     {
       id: 1,
@@ -50,6 +63,7 @@ describe('DashboardPage', () => {
       vue_appointment_id: 'abc123',
       created: '2025-07-01T10:00:00Z',
       start_at: '2025-07-30T18:00:00Z',
+      ...examLocation,
     },
     {
       id: 2,
@@ -58,6 +72,7 @@ describe('DashboardPage', () => {
       vue_appointment_id: 'def456',
       created: '2025-07-01T11:00:00Z',
       start_at: '2025-07-20T16:30:00Z',
+      ...examLocation,
     },
     {
       id: 3,
@@ -65,6 +80,7 @@ describe('DashboardPage', () => {
       status: 'APPT_CANCELED',
       vue_appointment_id: 'xyz789',
       created: '2025-07-01T12:00:00Z',
+      ...examLocation,
     },
   ];
 
@@ -144,6 +160,7 @@ describe('DashboardPage', () => {
         vue_appointment_id: 'drop123',
         created: '2025-08-10T10:14:50Z',
         start_at: '2025-08-15T14:10:00Z',
+        ...examLocation,
       },
     ];
 
@@ -168,6 +185,7 @@ describe('DashboardPage', () => {
         vue_appointment_id: 'drop123',
         created: '2025-08-10T10:14:50Z',
         start_at: '2025-08-15T14:10:00Z',
+        ...examLocation,
       },
     ];
 
@@ -192,6 +210,7 @@ describe('DashboardPage', () => {
         vue_appointment_id: 'drop123',
         created: '2025-07-05T10:00:00Z',
         start_at: '2025-07-25T14:00:00Z',
+        ...examLocation,
       },
     ];
 

@@ -89,11 +89,11 @@ const ExamCard = ({
         </div>
         <Card.Section className="px-4">
           <div className="custom-card-separator" />
-          <ul className="row d-flex flex-column px-1" id="exam-details-list">
+          <ul className="row d-flex flex-column px-1 mb-0" id="exam-details-list">
             {examDetails.map(({ title: itemTitle, description }) => (
-              <li key={itemTitle} className="mb-2 d-flex align-items-center list-item text-truncate">
-                <span className="col-sm-2 col-md-3 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
-                <span className="col-sm-10 col-md-9 mb-0 pl-0 text-truncate" title={description}>{description}</span>
+              <li key={itemTitle} className="mb-2 mb-md-0 d-flex align-items-center list-item text-truncate">
+                <span className="col-3 col-xxl-2 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
+                <span className="col-sm-10 col-md-9 mb-0 pl-0 custom-text-wrap" title={description}>{description}</span>
               </li>
             ))}
           </ul>

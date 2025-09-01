@@ -16,7 +16,7 @@ import {
   getScoreReport,
   cancelExam,
 } from 'features/data/api';
-import { EXAM_STATUS_MAP, examStatus } from 'features/utils/constants';
+import { EXAM_STATUS_MAP, examStatus, getExamLocation } from 'features/utils/constants';
 
 import './index.scss';
 
@@ -111,6 +111,7 @@ const DashboardPage = () => {
         examDetails: [
           { title: 'Voucher: ', description: exam.vue_appointment_id },
           { title: 'Issue date: ', description: createdDate },
+          getExamLocation(exam),
         ],
         additionalExamDetails: [],
       };
@@ -122,6 +123,7 @@ const DashboardPage = () => {
         examDetails: [
           { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
           { title: 'Time', description: format(startAt, 'h:mm a') },
+          getExamLocation(exam),
         ],
         dropdownItems: [
           {
@@ -144,6 +146,7 @@ const DashboardPage = () => {
         examDetails: [
           { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
           { title: 'Time', description: format(startAt, 'h:mm a') },
+          getExamLocation(exam),
         ],
         additionalExamDetails: [
           { title: 'Voucher: ', description: exam.vue_appointment_id },
