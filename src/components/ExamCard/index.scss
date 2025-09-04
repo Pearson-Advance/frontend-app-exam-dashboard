@@ -131,18 +131,29 @@ div .pgn__card {
   font-size: 14px;
 }
 
+$content-max-height: 250px;
+
 .pgn__card-section {
-  max-height: 180px;
+  max-height: $content-max-height;
+  min-height: $content-max-height;
   overflow: auto;
 
-  @media screen and (min-width: 576px) {
-    min-height: 180px;
+  @media screen and (min-width: 992px) {
+    min-height: $content-max-height;
   }
 }
 
 .list-item {
   line-height: normal;
-  height: 24px;
+  height: fit-content;
+
+  @media screen and (min-width: 1200px) {
+    height: 32px;
+  }
+}
+
+.custom-text-wrap {
+  text-wrap: auto;
 }
 
 .custom-card-separator {
