@@ -52,7 +52,7 @@ describe('API service', () => {
 
     const response = await getExams();
 
-    expect(mockHttpClient.get).toHaveBeenCalledWith('https://test.api/exams/');
+    expect(mockHttpClient.get).toHaveBeenCalledWith('https://test.api/exams/', { params: {} });
     expect(response).toEqual(mockData);
   });
 });
