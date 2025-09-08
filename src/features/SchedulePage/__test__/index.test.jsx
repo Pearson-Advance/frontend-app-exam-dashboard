@@ -1,11 +1,12 @@
 /* eslint-disable func-names, react/prop-types */
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import SchedulePage from 'features/SchedulePage';
 
 import { updateUserData } from 'features/data/api';
+import { render } from 'test-utils';
 
 jest.mock('constants', () => ({
   countries: [

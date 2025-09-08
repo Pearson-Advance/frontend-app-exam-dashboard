@@ -4,7 +4,7 @@ import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
 import { countries } from 'features/utils/constants';
-import { updateUserData } from 'features/data/api';
+import { updateUserData, getScheduleUrl } from 'features/data/api';
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
 
@@ -42,7 +42,15 @@ const SchedulePage = () => {
 
     try {
       await updateUserData(payload);
-      window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/schedule`;
+      const response = await getScheduleUrl();
+      if (response?.data?.url) {
+        window.location.href = response.data.url;
+      } else {
+        setToast({
+          show: true,
+          message: 'Unexpected response from the server.',
+        });
+      }
     } catch (error) {
       const { customAttributes } = error || {};
       const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
