@@ -1,7 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { render } from 'test-utils';
 
 import ExamCard from 'components/ExamCard';
 
@@ -21,7 +22,9 @@ const defaultProps = {
 };
 
 test('Should render title and exam details', () => {
-  render(<ExamCard {...defaultProps} />);
+  render(
+    <ExamCard {...defaultProps} />,
+  );
 
   expect(screen.getByText('Sample Exam')).toBeInTheDocument();
   expect(screen.getByText('Date')).toBeInTheDocument();
@@ -41,6 +44,15 @@ test('Should open modal when clicking voucher button', () => {
 
   expect(screen.getByRole('dialog')).toBeInTheDocument();
   expect(screen.getByText('Location')).toBeInTheDocument();
+});
+
+test('Should open modal when clicking schedule exam button', () => {
+  render(<ExamCard {...defaultProps} status="canceled" hideVoucherButton />);
+
+  fireEvent.click(screen.getByText('Schedule Exam'));
+
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(screen.getByText('Terms and Conditions')).toBeInTheDocument();
 });
 
 test('Should render dropdown items when allowed and items are present', () => {
