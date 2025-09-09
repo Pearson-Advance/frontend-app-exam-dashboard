@@ -46,17 +46,34 @@ div .pgn__card {
   background-image: url('../../assets/ExamCard/d_exam_schedule_card.png');
 }
 
-.unscheduled-background {
-  background-image: url('../../assets/ExamCard/d_schedule_exam_card.png');
+.expired-background,
+.nda-refused-background,
+.no-show-background,
+.canceled-background {
+  background-image: url('../../assets/ExamCard/d_circles_cards.png');
 }
 
 .scheduled-background,
 .completed-background,
-.unscheduled-background {
-  background-color: $bg-card-exam;
+.expired-background,
+.nda-refused-background,
+.no-show-background,
+.canceled-background {
   object-fit: cover;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.scheduled-background,
+.completed-background {
+  background-color: $bg-card-exam;
+}
+
+.expired-background,
+.nda-refused-background,
+.no-show-background,
+.canceled-background {
+  background-color: $bg-card-dark;
 }
 
 .custom-badge {
@@ -113,6 +130,14 @@ div .pgn__card {
 .badge-unscheduled {
   background-color: $bg-badge-unscheduled;
   color: #333;
+}
+
+.badge-canceled,
+.badge-no-show,
+.badge-nda-refused,
+.badge-expired {
+  background-color: $bg-badge-canceled;
+  color: white;
 }
 
 .custom-card-header {

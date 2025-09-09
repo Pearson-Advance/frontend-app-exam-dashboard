@@ -48,6 +48,14 @@ a.nav-link.active[role='tab'][data-rb-event-key],
   padding: 0.5rem 2rem;
 }
 
+div.pgn__bubble.pgn__bubble-error.pgn__tab-notification.expandable {
+  background-color: $bg-tab-notification;
+  border-color: $white;
+  color: $tab-notification-color;
+  right: 10px;
+  top: 5px;
+}
+
 .tab-content-wrapper {
   margin-top: 2rem;
   display: flex;

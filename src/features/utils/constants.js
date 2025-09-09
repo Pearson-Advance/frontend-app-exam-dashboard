@@ -67,8 +67,44 @@ export function getExamLocation(exam) {
 
 export const examStatus = {
   SCHEDULED: 'scheduled',
-  UNSCHEDULED: 'unscheduled',
+  CANCELED: 'canceled',
   COMPLETE: 'complete',
+  NO_SHOW: 'no-show',
+  NDA_REFUSED: 'nda-refused',
+  EXPIRED: 'expired',
+};
+
+export const EXAM_STATUS_UI_STYLES = {
+  [examStatus.COMPLETE]: {
+    text: 'Complete',
+    class: 'completed-background',
+    badge: 'badge-complete',
+  },
+  [examStatus.SCHEDULED]: {
+    text: 'Scheduled',
+    class: 'scheduled-background',
+    badge: 'badge-scheduled',
+  },
+  [examStatus.CANCELED]: {
+    text: 'Canceled',
+    class: 'canceled-background',
+    badge: 'badge-canceled',
+  },
+  [examStatus.NO_SHOW]: {
+    text: 'No Show',
+    class: 'no-show-background',
+    badge: 'badge-no-show',
+  },
+  [examStatus.NDA_REFUSED]: {
+    text: 'NDA declined',
+    class: 'nda-refused-background',
+    badge: 'badge-nda-refused',
+  },
+  [examStatus.EXPIRED]: {
+    text: 'Incomplete exam',
+    class: 'expired-background',
+    badge: 'badge-expired',
+  },
 };
 
 /**
@@ -78,5 +114,11 @@ export const examStatus = {
  */
 export const EXAM_STATUS_MAP = {
   APPT_CREATED: examStatus.SCHEDULED,
+  APPT_CANCELED: examStatus.CANCELED,
   EXAM_DELIVERED: examStatus.COMPLETE,
+  NO_SHOW: examStatus.NO_SHOW,
+  NDA_REFUSED: examStatus.NDA_REFUSED,
+  EXPIRED: examStatus.EXPIRED,
 };
+
+export const EXAMS_AVAILABLE = ['APPT_CREATED', 'EXAM_DELIVERED'];

@@ -80,16 +80,8 @@ describe('DashboardPage', () => {
       status: 'APPT_CANCELED',
       vue_appointment_id: 'xyz789',
       created: '2025-07-01T12:00:00Z',
+      start_at: '2025-07-20T16:30:00Z',
       ...examLocation,
-    },
-  ];
-
-  const invalidExams = [
-    {
-      id: 4,
-      name: 'Expired Exam',
-      status: 'EXPIRED',
-      created: '2025-07-01T12:00:00Z',
     },
   ];
 
@@ -103,7 +95,7 @@ describe('DashboardPage', () => {
     });
 
     render(<DashboardPage />);
-    expect(screen.getByText(/loading exams/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/loading exams/i)).toHaveLength(2);
 
     await waitFor(() => {
       expect(screen.queryByText(/loading exams/i)).not.toBeInTheDocument();
@@ -112,13 +104,13 @@ describe('DashboardPage', () => {
 
   test('renders NoContentPlaceholder when no valid exams', async () => {
     jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: invalidExams },
+      data: { results: [] },
     });
 
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('no-content')).toBeInTheDocument();
+      expect(screen.getByText('No exams found')).toBeInTheDocument();
     });
   });
 
@@ -128,7 +120,7 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('no-content')).toBeInTheDocument();
+      expect(screen.getByText('No exams found')).toBeInTheDocument();
     });
   });
 
@@ -140,14 +132,14 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      const exam1 = screen.getByText('Exam 1');
-      const exam2 = screen.getByText('Exam 2');
+      const exams = screen.getAllByText('Exam 1');
+      const pastExams = screen.getAllByText('Exam 2');
 
-      expect(exam1).toBeInTheDocument();
-      expect(exam2).toBeInTheDocument();
+      expect(exams).toHaveLength(2);
+      expect(pastExams).toHaveLength(2);
 
-      expect(screen.getByText('complete')).toBeInTheDocument();
-      expect(screen.getByText('scheduled')).toBeInTheDocument();
+      expect(screen.getAllByText('complete')).toHaveLength(2);
+      expect(screen.getAllByText('scheduled')).toHaveLength(2);
     });
   });
 
@@ -171,8 +163,8 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('scheduled')).toBeInTheDocument();
-      expect(screen.getByText('Cancel Exam')).toBeInTheDocument();
+      expect(screen.getAllByText('scheduled')).toHaveLength(2);
+      expect(screen.getAllByText('Cancel Exam')).toHaveLength(2);
     });
   });
 
@@ -196,8 +188,8 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('complete')).toBeInTheDocument();
-      expect(screen.getByText('View Score Report')).toBeInTheDocument();
+      expect(screen.getAllByText('complete')).toHaveLength(2);
+      expect(screen.getAllByText('View Score Report')).toHaveLength(2);
     });
   });
 
@@ -221,8 +213,8 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Scheduled Exam')).toBeInTheDocument();
-      expect(screen.getByText('Reschedule Exam')).toBeInTheDocument();
+      expect(screen.getAllByText('Scheduled Exam')).toHaveLength(2);
+      expect(screen.getAllByText('Reschedule Exam')).toHaveLength(2);
     });
   });
 });
