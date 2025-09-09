@@ -203,3 +203,7 @@ $content-max-height: 250px;
   text-decoration: underline;
   font-weight: 400;
 }
+
+div.hide-overflow-x {
+  overflow-x: hidden;
+}

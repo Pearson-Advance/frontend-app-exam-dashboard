@@ -69,7 +69,7 @@ const DashboardPage = () => {
               examDetails={examDetails}
               additionalExamDetails={additionalExamDetails}
               dropdownItems={dropdownItems}
-              hideFooter
+              hideVoucherButton
             />
           );
         })}

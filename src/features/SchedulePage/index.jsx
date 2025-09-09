@@ -3,31 +3,11 @@ import { getConfig } from '@edx/frontend-platform';
 import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
-import { countries } from 'features/utils/constants';
+import { formatUserPayload } from 'features/utils/constants';
 import { updateUserData, getScheduleUrl } from 'features/data/api';
+
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
-
-const formatUserPayload = (formData) => {
-  const phoneCountryCode = countries.find(
-    (c) => c.cca2 === formData.dialingCode.value,
-  )?.dialingCode?.replace('+', '') || '1';
-
-  return {
-    email: formData.email.value,
-    first_name: formData.firstName.value,
-    last_name: formData.lastName.value,
-    postal_code: formData.postalCode.value,
-    phone_country_code: phoneCountryCode,
-    state: formData.state.value,
-    profile: {
-      country: formData.country.value,
-      city: formData.city.value,
-      mailing_address: formData.address.value,
-      phone_number: formData.phone.value,
-    },
-  };
-};
 
 const SchedulePage = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);

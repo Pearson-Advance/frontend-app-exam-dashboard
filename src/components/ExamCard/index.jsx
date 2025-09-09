@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
@@ -15,6 +15,9 @@ import { MoreVert } from '@edx/paragon/icons';
 import './index.scss';
 import { examStatus, EXAM_STATUS_UI_STYLES } from 'features/utils/constants';
 
+import TermsConditions from 'components/TermsConditions';
+import IdentityForm from 'components/form';
+
 const allowedStatuses = [examStatus.COMPLETE, examStatus.SCHEDULED];
 
 const ExamCard = ({
@@ -23,16 +26,22 @@ const ExamCard = ({
   image,
   examDetails,
   additionalExamDetails,
-  onScheduleExam,
   dropdownItems,
-  hideFooter,
+  hideVoucherButton,
 }) => {
+  const [isTermsOpen, openTerms, closeTerms] = useToggle(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isOpen, open, close] = useToggle(false);
   const {
     text = '',
     class: customClass = '',
     badge = '',
   } = EXAM_STATUS_UI_STYLES[status] || {};
+
+  const handleOnCancel = () => {
+    closeTerms();
+    setAcceptedTerms(false);
+  };
 
   return (
     <Col xs={12} md={6} className="mb-4">
@@ -82,20 +91,23 @@ const ExamCard = ({
             ))}
           </ul>
         </Card.Section>
-        {!hideFooter && (
-          <Card.Footer className="px-4 pb-4 d-flex flex-column">
-            <div className="custom-card-separator" />
-            {status === examStatus.UNSCHEDULED ? (
-              <Button onClick={onScheduleExam} className="m-0" id="custom-card-button-schedule">
-                Schedule Exam
-              </Button>
-            ) : (
-              <Button onClick={open} className="m-0" id="custom-card-button-voucher-details">
-                Voucher Details
-              </Button>
-            )}
-          </Card.Footer>
-        )}
+        {
+          (status === examStatus.CANCELED || !hideVoucherButton) && (
+            <Card.Footer className="px-4 pb-4 d-flex flex-column">
+              <div className="custom-card-separator" />
+              {status === examStatus.CANCELED && (
+                <Button onClick={openTerms} className="m-0" id="custom-card-button-schedule">
+                  Schedule Exam
+                </Button>
+              )}
+              {!hideVoucherButton && (
+                <Button onClick={open} className="m-0" id="custom-card-button-voucher-details">
+                  Voucher Details
+                </Button>
+              )}
+            </Card.Footer>
+          )
+        }
       </Card>
       <ModalDialog
         title="Voucher Details"
@@ -119,6 +131,32 @@ const ExamCard = ({
           </ul>
         </ModalDialog.Body>
       </ModalDialog>
+      <ModalDialog
+        title="Voucher Details"
+        isOpen={isTermsOpen}
+        onClose={handleOnCancel}
+        hasCloseButton
+        size="xl"
+        isFullscreenOnMobile={false}
+        isOverflowVisible={false}
+      >
+        <ModalDialog.Body className="p-0 py-lg-5 hide-overflow-x">
+          {!acceptedTerms && (
+            <TermsConditions
+              onAccept={() => setAcceptedTerms(true)}
+              onCancel={handleOnCancel}
+            />
+          )}
+          {acceptedTerms
+            && (
+            <IdentityForm
+              onSubmit={() => {}}
+              onCancel={handleOnCancel}
+              onPrevious={() => setAcceptedTerms(false)}
+            />
+            )}
+        </ModalDialog.Body>
+      </ModalDialog>
     </Col>
   );
 };
@@ -139,7 +177,6 @@ ExamCard.propTypes = {
       description: PropTypes.string.isRequired,
     }),
   ),
-  onScheduleExam: PropTypes.func,
   dropdownItems: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
@@ -147,15 +184,14 @@ ExamCard.propTypes = {
       onClick: PropTypes.func.isRequired,
     }),
   ),
-  hideFooter: PropTypes.bool,
+  hideVoucherButton: PropTypes.bool,
 };
 
 ExamCard.defaultProps = {
   image: null,
   dropdownItems: null,
-  onScheduleExam: () => {},
   additionalExamDetails: [],
-  hideFooter: false,
+  hideVoucherButton: false,
 };
 
 export default ExamCard;
