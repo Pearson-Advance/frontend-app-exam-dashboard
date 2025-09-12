@@ -101,7 +101,7 @@ const IdentityForm = ({
   onCancel = () => {},
   onPrevious = () => {},
 }) => {
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
   const [toast, setToast] = useState({ show: false, message: '' });
 
@@ -116,9 +116,16 @@ const IdentityForm = ({
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
-    onSubmit(formData);
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      logError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
