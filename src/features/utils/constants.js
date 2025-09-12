@@ -121,4 +121,25 @@ export const EXAM_STATUS_MAP = {
   EXPIRED: examStatus.EXPIRED,
 };
 
-export const EXAMS_AVAILABLE = ['APPT_CREATED', 'EXAM_DELIVERED'];
+export const EXAMS_AVAILABLE = ['APPT_CREATED', 'EXAM_DELIVERED', 'APPT_CANCELED'];
+
+export const formatUserPayload = (formData) => {
+  const phoneCountryCode = countries.find(
+    (c) => c.cca2 === formData.dialingCode.value,
+  )?.dialingCode?.replace('+', '') || '1';
+
+  return {
+    email: formData.email.value,
+    first_name: formData.firstName.value,
+    last_name: formData.lastName.value,
+    postal_code: formData.postalCode.value,
+    phone_country_code: phoneCountryCode,
+    state: formData.state.value,
+    profile: {
+      country: formData.country.value,
+      city: formData.city.value,
+      mailing_address: formData.address.value,
+      phone_number: formData.phone.value,
+    },
+  };
+};

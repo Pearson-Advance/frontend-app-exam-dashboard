@@ -16,3 +16,9 @@
 .pageWrapper{
   background-color: $bg-main-color;
 }
+
+// Remove modal top and bottom shadows
+[dir="ltr"] .pgn__modal-body::after,
+.pgn__modal-body::before {
+  background-image: none;
+}
