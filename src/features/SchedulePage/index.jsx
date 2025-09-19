@@ -28,24 +28,22 @@ const SchedulePage = () => {
       } else {
         setToast({
           show: true,
-          message: 'Unexpected response from the server.',
+          message: 'An error occurred, please try again later.',
         });
       }
     } catch (error) {
-      const { customAttributes } = error || {};
-      const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
+      setToast({
+        show: true,
+        message: 'The process could not be completed, review the errors and retry.',
+      });
 
-      if (httpErrorStatus === 400) {
-        setToast({
-          show: true,
-          message: httpErrorResponseData,
-        });
-      } else {
-        setToast({
-          show: true,
-          message: 'Internal server error',
-        });
-      }
+      /*
+        Re-throw the error so it can propagate to the parent handler (handleSubmit),
+        which is responsible for mapping API validation errors into form state.
+        Without re-throwing, the error would be swallowed here and the form would
+        never receive the field-level validation messages.
+      */
+      throw error;
     }
   };
 
