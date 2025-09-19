@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Toast } from '@edx/paragon';
 import { Button } from 'react-paragon-topaz';
 import { logError } from '@edx/frontend-platform/logging';
+import { AppContext } from '@edx/frontend-platform/react';
 
 import { Input, PhoneInput, SelectInput } from 'components/form/components';
 import { countries, unitedStates, canadianProvincesAndTerritories } from 'features/utils/constants';
-import { getUserData } from 'features/data/api';
 import './index.scss';
 
 const UNITED_STATES = 'USA';
@@ -101,8 +101,15 @@ const IdentityForm = ({
   onCancel = () => {},
   onPrevious = () => {},
 }) => {
+  const { authenticatedUser } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState({
+    ...initialFormState,
+    email: {
+      value: authenticatedUser?.email,
+      isDisabled: !!authenticatedUser?.email,
+    },
+  });
   const [toast, setToast] = useState({ show: false, message: '' });
 
   const handleInputChange = (name, value) => {
@@ -116,6 +123,38 @@ const IdentityForm = ({
     }));
   };
 
+  const formatError = (val) => (Array.isArray(val) ? val.join(' ') : val || null);
+
+  const showFormErrors = (rawErrors) => {
+    let errors = rawErrors;
+
+    if (typeof errors !== 'string') {
+      logError('Unsupported error format', errors);
+      return;
+    }
+
+    try {
+      errors = JSON.parse(errors);
+    } catch (e) {
+      logError('Failed to parse form errors', errors);
+      return;
+    }
+
+    setFormData({
+      ...formData,
+      firstName: { ...formData.firstName, error: formatError(errors.first_name) },
+      lastName: { ...formData.lastName, error: formatError(errors.last_name) },
+      email: { ...formData.email, error: formatError(errors.email) },
+      dialingCode: { ...formData.dialingCode, error: formatError(errors.phone_country_code) },
+      phone: { ...formData.phone, error: formatError(errors.profile?.phone_number) },
+      address: { ...formData.address, error: formatError(errors.profile?.mailing_address) },
+      city: { ...formData.city, error: formatError(errors.profile?.city) },
+      state: { ...formData.state, error: formatError(errors.state) },
+      postalCode: { ...formData.postalCode, error: formatError(errors.postal_code) },
+      country: { ...formData.country, error: formatError(errors.country) },
+    });
+  };
+
   const handleSubmit = async (e) => {
     setIsLoading(true);
     e.preventDefault();
@@ -123,6 +162,30 @@ const IdentityForm = ({
       await onSubmit(formData);
     } catch (error) {
       logError(error);
+      const { customAttributes } = error || {};
+      const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
+
+      if (httpErrorStatus === 400) {
+        showFormErrors(httpErrorResponseData);
+        setToast({
+          show: true,
+          message: 'The process could not be completed, review the errors and retry.',
+        });
+        return;
+      }
+
+      if (httpErrorStatus === 500) {
+        setToast({
+          show: true,
+          message: 'Internal server error. Please try again later.',
+        });
+        return;
+      }
+
+      setToast({
+        show: true,
+        message: 'An unexpected error occurred. Please try again later.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -132,54 +195,6 @@ const IdentityForm = ({
     setFormData(initialFormState);
     onCancel();
   };
-
-  const updateFieldsFromUserData = (prev, data) => {
-    const matchedCountry = countries.find((c) => c.cca3 === data.profile.country || c.cca2 === data.profile.country);
-    const matchedDialingCode = countries.find((c) => c.dialingCode === `+${data.phone_country_code}`);
-
-    const fieldMap = {
-      firstName: { value: data.first_name, disableOnValue: true },
-      lastName: { value: data.last_name, disableOnValue: true },
-      email: { value: data.email, disableOnValue: true },
-      dialingCode: {
-        value: matchedDialingCode?.cca2 || '',
-      },
-      phone: { value: data.profile.phone_number },
-      address: { value: data.profile.mailing_address },
-      apartment: { value: '' },
-      city: { value: data.profile.city },
-      state: { value: data.state },
-      postalCode: { value: data.postal_code },
-      country: { value: matchedCountry?.cca3 || '' },
-    };
-
-    return Object.entries(fieldMap).reduce((acc, [key, { value, disableOnValue = false }]) => ({
-      ...acc,
-      [key]: {
-        ...prev[key],
-        value: value || '',
-        ...(disableOnValue ? { isDisabled: !!value } : {}),
-      },
-    }), {});
-  };
-
-  const handleUserData = async () => {
-    try {
-      const response = await getUserData();
-      const { data } = response;
-      setFormData((prev) => updateFieldsFromUserData(prev, data));
-    } catch (error) {
-      logError(error);
-      setToast({
-        show: true,
-        message: 'Failed to load user data. Please try again later.',
-      });
-    }
-  };
-
-  useEffect(() => {
-    handleUserData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const showStateAndPostalCodeField = countriesWithStates.includes(formData.country.value);
 
