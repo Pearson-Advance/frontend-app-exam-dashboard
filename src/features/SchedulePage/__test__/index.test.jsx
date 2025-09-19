@@ -27,9 +27,6 @@ jest.mock('features/data/api', () => ({
 }));
 
 jest.mock('react-paragon-topaz', () => ({
-  Header: ({ src, logoUrl }) => (
-    <div data-testid="header" data-src={src} data-url={logoUrl}>Mock Header</div>
-  ),
   Button: () => (
     <div data-testid="button">Button</div>
   ),
@@ -95,10 +92,9 @@ describe('SchedulePage', () => {
     window.location = originalLocation;
   });
 
-  test('renders the header and terms component initially', () => {
+  test('renders the terms component initially', () => {
     render(<SchedulePage />);
 
-    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('terms')).toBeInTheDocument();
   });
 
