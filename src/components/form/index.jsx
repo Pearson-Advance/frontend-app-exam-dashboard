@@ -116,6 +116,33 @@ const IdentityForm = ({
     }));
   };
 
+  const formatError = (val) => (Array.isArray(val) ? val.join(' ') : val || null);
+
+  const showFormErrors = (rawErrors) => {
+    let errors = rawErrors;
+
+    if (typeof errors === 'string') {
+      try {
+        errors = JSON.parse(errors);
+        setFormData({
+          ...formData,
+          firstName: { ...formData.firstName, error: formatError(errors.first_name) },
+          lastName: { ...formData.lastName, error: formatError(errors.last_name) },
+          email: { ...formData.email, error: formatError(errors.email) },
+          dialingCode: { ...formData.dialingCode, error: formatError(errors.phone_country_code) },
+          phone: { ...formData.phone, error: formatError(errors.profile?.phone_number) },
+          address: { ...formData.address, error: formatError(errors.profile?.mailing_address) },
+          city: { ...formData.city, error: formatError(errors.profile?.city) },
+          state: { ...formData.state, error: formatError(errors.state) },
+          postalCode: { ...formData.postalCode, error: formatError(errors.postal_code) },
+          country: { ...formData.country, error: formatError(errors.country) },
+        });
+      } catch (e) {
+        logError('Failed to parse form errors');
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     setIsLoading(true);
     e.preventDefault();
@@ -123,6 +150,8 @@ const IdentityForm = ({
       await onSubmit(formData);
     } catch (error) {
       logError(error);
+
+      showFormErrors(error?.customAttributes?.httpErrorResponseData);
     } finally {
       setIsLoading(false);
     }
@@ -138,8 +167,8 @@ const IdentityForm = ({
     const matchedDialingCode = countries.find((c) => c.dialingCode === `+${data.phone_country_code}`);
 
     const fieldMap = {
-      firstName: { value: data.first_name, disableOnValue: true },
-      lastName: { value: data.last_name, disableOnValue: true },
+      firstName: { value: '' },
+      lastName: { value: '' },
       email: { value: data.email, disableOnValue: true },
       dialingCode: {
         value: matchedDialingCode?.cca2 || '',
