@@ -6,7 +6,6 @@ import {
   Spinner,
   Toast,
 } from '@edx/paragon';
-import Header from '@edx/frontend-component-header';
 
 import ExamCard from 'components/ExamCard';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
@@ -96,7 +95,7 @@ const DashboardPage = () => {
         {toast.message}
       </Toast>
       <div className="dashboard-container mb-5">
-        <Header />
+
         <div className="tabs-container">
           <Tabs id="tabs" variant="button-group" className="tabs-wrapper" activeKey={tab} onSelect={setTab}>
             <Tab

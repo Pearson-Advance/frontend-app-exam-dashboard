@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { getConfig } from '@edx/frontend-platform';
-import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
 import { formatUserPayload } from 'features/utils/constants';
@@ -61,10 +59,6 @@ const SchedulePage = () => {
         {toast.message}
       </Toast>
       )}
-      <Header
-        src={getConfig().LOGO_URL}
-        logoUrl={getConfig().LMS_BASE_URL}
-      />
       <div className="pageWrapper p-3">
         <Container size="xl" className="bg-white rounded p-0">
           {!acceptedTerms && (
