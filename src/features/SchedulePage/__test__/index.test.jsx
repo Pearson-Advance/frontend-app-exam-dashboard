@@ -24,6 +24,7 @@ jest.mock('@edx/frontend-platform', () => ({
 
 jest.mock('features/data/api', () => ({
   updateUserData: jest.fn(),
+  getScheduleUrl: jest.fn(),
 }));
 
 jest.mock('react-paragon-topaz', () => ({
