@@ -15,7 +15,8 @@ import { MoreVert } from '@edx/paragon/icons';
 
 import './index.scss';
 import { examStatus, EXAM_STATUS_UI_STYLES, formatUserPayload } from 'features/utils/constants';
-import { updateUserData, getScheduleUrl } from 'features/data/api';
+import { redirectToScheduleSSO } from 'features/utils/globals';
+import { updateUserData } from 'features/data/api';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
@@ -52,15 +53,7 @@ const ExamCard = ({
 
     try {
       await updateUserData(payload);
-      const response = await getScheduleUrl();
-      if (response?.data?.url) {
-        window.location.href = response.data.url;
-      } else {
-        setToast({
-          show: true,
-          message: 'Unexpected response from the server.',
-        });
-      }
+      redirectToScheduleSSO();
     } catch (error) {
       const { customAttributes } = error || {};
       const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};

@@ -78,15 +78,3 @@ export async function cancelExam(vueAppointmentId) {
     },
   );
 }
-
-/**
- * Fetches the schedule URL
- * @async
- * @function getScheduleUrl
- * @returns {Promise<AxiosResponse>} - A promise that resolves to the HTTP response from the backend.
- */
-export async function getScheduleUrl() {
-  const baseUrl = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/appointment/schedule`;
-
-  return getAuthenticatedHttpClient().get(baseUrl);
-}

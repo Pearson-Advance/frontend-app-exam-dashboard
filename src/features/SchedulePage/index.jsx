@@ -4,7 +4,8 @@ import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
 import { formatUserPayload } from 'features/utils/constants';
-import { updateUserData, getScheduleUrl } from 'features/data/api';
+import { updateUserData } from 'features/data/api';
+import { redirectToScheduleSSO } from 'features/utils/globals';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
@@ -22,15 +23,7 @@ const SchedulePage = () => {
 
     try {
       await updateUserData(payload);
-      const response = await getScheduleUrl();
-      if (response?.data?.url) {
-        window.location.href = response.data.url;
-      } else {
-        setToast({
-          show: true,
-          message: 'Unexpected response from the server.',
-        });
-      }
+      redirectToScheduleSSO();
     } catch (error) {
       const { customAttributes } = error || {};
       const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};

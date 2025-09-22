@@ -2,6 +2,8 @@ import provinces from 'provinces-ca';
 import states from 'states-us';
 import countriesData from 'world-countries';
 
+export const SCHEDULE_SSO_ENDPOINT = '/appointment/schedule/';
+
 export const canadianProvincesAndTerritories = provinces.map(
   ({ name, abbreviation }) => ({
     label: name,
