@@ -27,16 +27,8 @@ const SchedulePage = () => {
     } catch (error) {
       setToast({
         show: true,
-        message: 'The process could not be completed, review the errors and retry.',
+        message: 'An error occurred, please try again later.',
       });
-
-      /*
-        Re-throw the error so it can propagate to the parent handler (handleSubmit),
-        which is responsible for mapping API validation errors into form state.
-        Without re-throwing, the error would be swallowed here and the form would
-        never receive the field-level validation messages.
-      */
-      throw error;
     }
   };
 

@@ -152,6 +152,10 @@ const IdentityForm = ({
       logError(error);
 
       showFormErrors(error?.customAttributes?.httpErrorResponseData);
+      setToast({
+        show: true,
+        message: 'The process could not be completed, review the errors and retry.',
+      });
     } finally {
       setIsLoading(false);
     }
