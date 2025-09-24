@@ -121,13 +121,16 @@ const IdentityForm = ({
   const showFormErrors = (rawErrors) => {
     let errors = rawErrors;
 
-    if (typeof errors === 'string') {
-      try {
-        errors = JSON.parse(errors);
-      } catch (e) {
-        logError('Failed to parse form errors', errors);
-        return;
-      }
+    if (typeof errors !== 'string') {
+      logError('Unsupported error format', errors);
+      return;
+    }
+
+    try {
+      errors = JSON.parse(errors);
+    } catch (e) {
+      logError('Failed to parse form errors', errors);
+      return;
     }
 
     if (typeof errors !== 'object' || errors === null || Array.isArray(errors)) {
