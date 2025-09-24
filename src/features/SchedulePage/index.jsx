@@ -3,9 +3,8 @@ import { getConfig } from '@edx/frontend-platform';
 import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
-import { formatUserPayload } from 'features/utils/constants';
+import { submitForm } from 'features/utils/constants';
 import { updateUserData } from 'features/data/api';
-import { redirectToScheduleSSO } from 'features/utils/globals';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
@@ -18,19 +17,14 @@ const SchedulePage = () => {
     window.location.href = 'https://www.pearsonvue.com/us/en/itspecialist.html';
   };
 
-  const handleFormSubmit = async (formData) => {
-    const payload = formatUserPayload(formData);
-
-    try {
-      await updateUserData(payload);
-      redirectToScheduleSSO();
-    } catch (error) {
-      setToast({
-        show: true,
-        message: 'An error occurred, please try again later.',
-      });
-    }
-  };
+  const handleFormSubmit = (formData) => submitForm({
+    formData,
+    updateFn: updateUserData,
+    onError: (msg) => setToast({
+      show: true,
+      message: msg,
+    }),
+  });
 
   return (
     <>

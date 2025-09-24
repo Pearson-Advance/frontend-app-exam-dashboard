@@ -145,3 +145,35 @@ export const formatUserPayload = (formData) => {
     },
   };
 };
+
+/**
+ * Submits a form by formatting the payload, updating user data,
+ * fetching a schedule URL, and handling navigation or errors.
+ *
+ * @async
+ * @function submitForm
+ * @param {Object} params - The parameters for form submission.
+ * @param {Object} params.formData - The raw form data to be formatted.
+ * @param {Function} params.formatPayload - Function to format the raw form data into the expected payload.
+ * @param {Function} params.updateFn - Async function to update user data (e.g., API call).
+ * @param {Function} params.fetchUrlFn - Async function that retrieves the schedule URL (e.g., API call).
+ * @param {Function} [params.onError] - Optional error handler, receives an error message string.
+ * @returns {Promise<void>} Resolves when the process completes.
+ */
+export const submitForm = async ({
+  formData,
+  updateFn,
+  fetchUrlFn,
+  onError,
+}) => {
+  const payload = formatUserPayload(formData);
+
+  await updateFn(payload);
+  const response = await fetchUrlFn();
+
+  if (response?.data?.url) {
+    window.location.href = response.data.url;
+  } else {
+    onError?.('An error occurred, please try again later.');
+  }
+};

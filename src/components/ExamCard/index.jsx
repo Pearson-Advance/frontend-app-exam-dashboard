@@ -14,8 +14,11 @@ import {
 import { MoreVert } from '@edx/paragon/icons';
 
 import './index.scss';
-import { examStatus, EXAM_STATUS_UI_STYLES, formatUserPayload } from 'features/utils/constants';
-import { redirectToScheduleSSO } from 'features/utils/globals';
+import {
+  examStatus,
+  EXAM_STATUS_UI_STYLES,
+  submitForm,
+} from 'features/utils/constants';
 import { updateUserData } from 'features/data/api';
 
 import TermsConditions from 'components/TermsConditions';
@@ -48,19 +51,14 @@ const ExamCard = ({
     setAcceptedTerms(false);
   };
 
-  const handleFormSubmit = async (formData) => {
-    const payload = formatUserPayload(formData);
-
-    try {
-      await updateUserData(payload);
-      redirectToScheduleSSO();
-    } catch (error) {
-      setToast({
-        show: true,
-        message: 'An error occurred, please try again later.',
-      });
-    }
-  };
+  const handleFormSubmit = (formData) => submitForm({
+    formData,
+    updateFn: updateUserData,
+    onError: (msg) => setToast({
+      show: true,
+      message: msg,
+    }),
+  });
 
   return (
     <>

@@ -124,23 +124,30 @@ const IdentityForm = ({
     if (typeof errors === 'string') {
       try {
         errors = JSON.parse(errors);
-        setFormData({
-          ...formData,
-          firstName: { ...formData.firstName, error: formatError(errors.first_name) },
-          lastName: { ...formData.lastName, error: formatError(errors.last_name) },
-          email: { ...formData.email, error: formatError(errors.email) },
-          dialingCode: { ...formData.dialingCode, error: formatError(errors.phone_country_code) },
-          phone: { ...formData.phone, error: formatError(errors.profile?.phone_number) },
-          address: { ...formData.address, error: formatError(errors.profile?.mailing_address) },
-          city: { ...formData.city, error: formatError(errors.profile?.city) },
-          state: { ...formData.state, error: formatError(errors.state) },
-          postalCode: { ...formData.postalCode, error: formatError(errors.postal_code) },
-          country: { ...formData.country, error: formatError(errors.country) },
-        });
       } catch (e) {
-        logError('Failed to parse form errors');
+        logError('Failed to parse form errors', errors);
+        return;
       }
     }
+
+    if (typeof errors !== 'object' || errors === null || Array.isArray(errors)) {
+      logError('Unsupported error format', errors);
+      return;
+    }
+
+    setFormData({
+      ...formData,
+      firstName: { ...formData.firstName, error: formatError(errors.first_name) },
+      lastName: { ...formData.lastName, error: formatError(errors.last_name) },
+      email: { ...formData.email, error: formatError(errors.email) },
+      dialingCode: { ...formData.dialingCode, error: formatError(errors.phone_country_code) },
+      phone: { ...formData.phone, error: formatError(errors.profile?.phone_number) },
+      address: { ...formData.address, error: formatError(errors.profile?.mailing_address) },
+      city: { ...formData.city, error: formatError(errors.profile?.city) },
+      state: { ...formData.state, error: formatError(errors.state) },
+      postalCode: { ...formData.postalCode, error: formatError(errors.postal_code) },
+      country: { ...formData.country, error: formatError(errors.country) },
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -150,11 +157,34 @@ const IdentityForm = ({
       await onSubmit(formData);
     } catch (error) {
       logError(error);
+      const { customAttributes } = error || {};
+      const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
 
-      showFormErrors(error?.customAttributes?.httpErrorResponseData);
+      if (httpErrorStatus === 400) {
+        if (httpErrorResponseData) {
+          showFormErrors(httpErrorResponseData);
+        }
+
+        setToast({
+          show: true,
+          message: 'The process could not be completed, review the errors and retry.',
+        });
+
+        return;
+      }
+
+      if (httpErrorStatus === 500) {
+        setToast({
+          show: true,
+          message: 'Internal server error. Please try again later.',
+        });
+
+        return;
+      }
+
       setToast({
         show: true,
-        message: 'The process could not be completed, review the errors and retry.',
+        message: 'An unexpected error occurred. Please try again later.',
       });
     } finally {
       setIsLoading(false);
