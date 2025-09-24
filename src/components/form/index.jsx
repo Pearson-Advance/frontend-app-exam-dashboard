@@ -159,9 +159,7 @@ const IdentityForm = ({
       const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
 
       if (httpErrorStatus === 400) {
-        if (httpErrorResponseData) {
-          showFormErrors(httpErrorResponseData);
-        }
+        showFormErrors(httpErrorResponseData);
 
         setToast({
           show: true,

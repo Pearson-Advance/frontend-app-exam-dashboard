@@ -154,22 +154,14 @@ export const formatUserPayload = (formData) => {
  * fetching a schedule URL, and handling navigation or errors.
  *
  * @async
- * @function submitForm
+ * @function scheduleExam
  * @param {Object} params - The parameters for form submission.
  * @param {Object} params.formData - The raw form data to be formatted.
- * @param {Function} [params.onError] - Optional error handler, receives an error message string.
  * @returns {Promise<void>} Resolves when the process completes.
  */
-export const submitForm = async ({
-  formData,
-  onError,
-}) => {
+export const scheduleExam = async ({ formData }) => {
   const payload = formatUserPayload(formData);
   await updateUserData(payload);
 
-  try {
-    redirectToScheduleSSO();
-  } catch (error) {
-    onError?.('An error occurred, please try again later.');
-  }
+  redirectToScheduleSSO();
 };
