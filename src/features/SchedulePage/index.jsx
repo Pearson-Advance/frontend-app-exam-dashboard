@@ -4,7 +4,6 @@ import { Header } from 'react-paragon-topaz';
 import { Container, Toast } from '@edx/paragon';
 
 import { submitForm } from 'features/utils/constants';
-import { updateUserData } from 'features/data/api';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
@@ -19,7 +18,6 @@ const SchedulePage = () => {
 
   const handleFormSubmit = (formData) => submitForm({
     formData,
-    updateFn: updateUserData,
     onError: (msg) => setToast({
       show: true,
       message: msg,

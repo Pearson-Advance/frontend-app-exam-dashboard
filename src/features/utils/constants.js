@@ -1,7 +1,9 @@
 import provinces from 'provinces-ca';
 import states from 'states-us';
 import countriesData from 'world-countries';
+
 import { updateUserData } from 'features/data/api';
+import { redirectToScheduleSSO } from 'features/utils/globals';
 
 export const SCHEDULE_SSO_ENDPOINT = '/appointment/schedule/';
 
@@ -163,13 +165,11 @@ export const submitForm = async ({
   onError,
 }) => {
   const payload = formatUserPayload(formData);
-
   await updateUserData(payload);
-  const response = await getScheduleUrl();
 
-  if (response?.data?.url) {
-    window.location.href = response.data.url;
-  } else {
+  try {
+    redirectToScheduleSSO();
+  } catch (error) {
     onError?.('An error occurred, please try again later.');
   }
 };

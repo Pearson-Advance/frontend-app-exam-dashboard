@@ -19,7 +19,6 @@ import {
   EXAM_STATUS_UI_STYLES,
   submitForm,
 } from 'features/utils/constants';
-import { updateUserData } from 'features/data/api';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
@@ -53,7 +52,6 @@ const ExamCard = ({
 
   const handleFormSubmit = (formData) => submitForm({
     formData,
-    updateFn: updateUserData,
     onError: (msg) => setToast({
       show: true,
       message: msg,
