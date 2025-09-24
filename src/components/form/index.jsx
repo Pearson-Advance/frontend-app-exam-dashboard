@@ -160,12 +160,10 @@ const IdentityForm = ({
 
       if (httpErrorStatus === 400) {
         showFormErrors(httpErrorResponseData);
-
         setToast({
           show: true,
           message: 'The process could not be completed, review the errors and retry.',
         });
-
         return;
       }
 
@@ -174,7 +172,6 @@ const IdentityForm = ({
           show: true,
           message: 'Internal server error. Please try again later.',
         });
-
         return;
       }
 

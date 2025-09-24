@@ -16,8 +16,9 @@ import './index.scss';
 import {
   examStatus,
   EXAM_STATUS_UI_STYLES,
-  scheduleExam,
 } from 'features/utils/constants';
+
+import { scheduleExam } from 'features/utils/globals';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';

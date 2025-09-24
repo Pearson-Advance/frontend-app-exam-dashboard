@@ -2,9 +2,6 @@ import provinces from 'provinces-ca';
 import states from 'states-us';
 import countriesData from 'world-countries';
 
-import { updateUserData } from 'features/data/api';
-import { redirectToScheduleSSO } from 'features/utils/globals';
-
 export const SCHEDULE_SSO_ENDPOINT = '/appointment/schedule/';
 
 export const canadianProvincesAndTerritories = provinces.map(
@@ -147,21 +144,4 @@ export const formatUserPayload = (formData) => {
       phone_number: formData.phone.value,
     },
   };
-};
-
-/**
- * Submits a form by formatting the payload, updating user data,
- * fetching a schedule URL, and handling navigation or errors.
- *
- * @async
- * @function scheduleExam
- * @param {Object} params - The parameters for form submission.
- * @param {Object} params.formData - The raw form data to be formatted.
- * @returns {Promise<void>} Resolves when the process completes.
- */
-export const scheduleExam = async ({ formData }) => {
-  const payload = formatUserPayload(formData);
-  await updateUserData(payload);
-
-  redirectToScheduleSSO();
 };

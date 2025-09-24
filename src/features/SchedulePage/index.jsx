@@ -3,7 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { Header } from 'react-paragon-topaz';
 import { Container } from '@edx/paragon';
 
-import { scheduleExam } from 'features/utils/constants';
+import { scheduleExam } from 'features/utils/globals';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
