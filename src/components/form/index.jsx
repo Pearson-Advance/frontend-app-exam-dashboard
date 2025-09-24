@@ -133,11 +133,6 @@ const IdentityForm = ({
       return;
     }
 
-    if (typeof errors !== 'object' || errors === null || Array.isArray(errors)) {
-      logError('Unsupported error format', errors);
-      return;
-    }
-
     setFormData({
       ...formData,
       firstName: { ...formData.firstName, error: formatError(errors.first_name) },
