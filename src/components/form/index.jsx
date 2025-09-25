@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Toast } from '@edx/paragon';
 import { Button } from 'react-paragon-topaz';
 import { logError } from '@edx/frontend-platform/logging';
+import { AppContext } from '@edx/frontend-platform/react';
 
 import { Input, PhoneInput, SelectInput } from 'components/form/components';
 import { countries, unitedStates, canadianProvincesAndTerritories } from 'features/utils/constants';
-import { getUserData } from 'features/data/api';
 import './index.scss';
 
 const UNITED_STATES = 'USA';
@@ -101,8 +101,15 @@ const IdentityForm = ({
   onCancel = () => {},
   onPrevious = () => {},
 }) => {
+  const { authenticatedUser } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState({
+    ...initialFormState,
+    email: {
+      value: authenticatedUser?.email,
+      isDisabled: !!authenticatedUser?.email,
+    },
+  });
   const [toast, setToast] = useState({ show: false, message: '' });
 
   const handleInputChange = (name, value) => {
@@ -188,54 +195,6 @@ const IdentityForm = ({
     setFormData(initialFormState);
     onCancel();
   };
-
-  const updateFieldsFromUserData = (prev, data) => {
-    const matchedCountry = countries.find((c) => c.cca3 === data.profile.country || c.cca2 === data.profile.country);
-    const matchedDialingCode = countries.find((c) => c.dialingCode === `+${data.phone_country_code}`);
-
-    const fieldMap = {
-      firstName: { value: '' },
-      lastName: { value: '' },
-      email: { value: data.email, disableOnValue: true },
-      dialingCode: {
-        value: matchedDialingCode?.cca2 || '',
-      },
-      phone: { value: data.profile.phone_number },
-      address: { value: data.profile.mailing_address },
-      apartment: { value: '' },
-      city: { value: data.profile.city },
-      state: { value: data.state },
-      postalCode: { value: data.postal_code },
-      country: { value: matchedCountry?.cca3 || '' },
-    };
-
-    return Object.entries(fieldMap).reduce((acc, [key, { value, disableOnValue = false }]) => ({
-      ...acc,
-      [key]: {
-        ...prev[key],
-        value: value || '',
-        ...(disableOnValue ? { isDisabled: !!value } : {}),
-      },
-    }), {});
-  };
-
-  const handleUserData = async () => {
-    try {
-      const response = await getUserData();
-      const { data } = response;
-      setFormData((prev) => updateFieldsFromUserData(prev, data));
-    } catch (error) {
-      logError(error);
-      setToast({
-        show: true,
-        message: 'Failed to load user data. Please try again later.',
-      });
-    }
-  };
-
-  useEffect(() => {
-    handleUserData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const showStateAndPostalCodeField = countriesWithStates.includes(formData.country.value);
 
