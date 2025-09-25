@@ -130,12 +130,10 @@ describe('SchedulePage', () => {
       postal_code: '12345',
       phone_country_code: '1',
       state: 'FL',
-      profile: {
-        country: 'United States of America',
-        city: 'Miami',
-        mailing_address: '123 Main St',
-        phone_number: '1111111111',
-      },
+      country: 'United States of America',
+      city: 'Miami',
+      mailing_address: '123 Main St',
+      phone_number: '1111111111',
     });
   });
 });
