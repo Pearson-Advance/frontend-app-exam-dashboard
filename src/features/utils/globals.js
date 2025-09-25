@@ -1,5 +1,7 @@
 import { getConfig } from '@edx/frontend-platform';
-import { SCHEDULE_SSO_ENDPOINT } from 'features/utils/constants';
+
+import { updateUserData } from 'features/data/api';
+import { SCHEDULE_SSO_ENDPOINT, formatUserPayload } from 'features/utils/constants';
 
 /**
  * Redirects the user to the schedule SSO endpoint.
@@ -13,3 +15,20 @@ import { SCHEDULE_SSO_ENDPOINT } from 'features/utils/constants';
 export function redirectToScheduleSSO() {
   window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCHEDULE_SSO_ENDPOINT}`;
 }
+
+/**
+ * Submits a form by formatting the payload, updating user data,
+ * fetching a schedule URL, and handling navigation or errors.
+ *
+ * @async
+ * @function scheduleExam
+ * @param {Object} params - The parameters for form submission.
+ * @param {Object} params.formData - The raw form data to be formatted.
+ * @returns {Promise<void>} Resolves when the process completes.
+ */
+export const scheduleExam = async ({ formData }) => {
+  const payload = formatUserPayload(formData);
+  await updateUserData(payload);
+
+  redirectToScheduleSSO();
+};

@@ -8,15 +8,17 @@ import {
   useToggle,
   IconButton,
   Icon,
-  Toast,
   Dropdown,
 } from '@edx/paragon';
 import { MoreVert } from '@edx/paragon/icons';
 
 import './index.scss';
-import { examStatus, EXAM_STATUS_UI_STYLES, formatUserPayload } from 'features/utils/constants';
-import { redirectToScheduleSSO } from 'features/utils/globals';
-import { updateUserData } from 'features/data/api';
+import {
+  examStatus,
+  EXAM_STATUS_UI_STYLES,
+} from 'features/utils/constants';
+
+import { scheduleExam } from 'features/utils/globals';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
@@ -35,7 +37,6 @@ const ExamCard = ({
   const [isTermsOpen, openTerms, closeTerms] = useToggle(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isOpen, open, close] = useToggle(false);
-  const [toast, setToast] = useState({ show: false, message: '' });
 
   const {
     text = '',
@@ -48,50 +49,18 @@ const ExamCard = ({
     setAcceptedTerms(false);
   };
 
-  const handleFormSubmit = async (formData) => {
-    const payload = formatUserPayload(formData);
-
-    try {
-      await updateUserData(payload);
-      redirectToScheduleSSO();
-    } catch (error) {
-      const { customAttributes } = error || {};
-      const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
-
-      if (httpErrorStatus === 400) {
-        setToast({
-          show: true,
-          message: httpErrorResponseData,
-        });
-      } else {
-        setToast({
-          show: true,
-          message: 'Internal server error',
-        });
-      }
-    }
-  };
+  const handleFormSubmit = (formData) => scheduleExam({ formData });
 
   return (
-    <>
-      <Toast
-        onClose={() => setToast(prev => ({ ...prev, show: false }))}
-        dismissible
-        hasCloseButton
-        className="mb-3"
-        show={toast.show}
-      >
-        {toast.message}
-      </Toast>
-      <Col xs={12} md={6} className="mb-4">
-        <Card className="card-wrapper w-100">
-          <div className={`card-header-background ${customClass}`}>
-            <span className={`custom-badge ${badge}`}>{text}</span>
-            {image && <div className="card-header-image" style={{ backgroundImage: `url(${image})` }} />}
-          </div>
-          <div className="card-header-container">
-            <h2 className="px-4 text-truncate custom-card-header">{title}</h2>
-            {
+    <Col xs={12} md={6} className="mb-4">
+      <Card className="card-wrapper w-100">
+        <div className={`card-header-background ${customClass}`}>
+          <span className={`custom-badge ${badge}`}>{text}</span>
+          {image && <div className="card-header-image" style={{ backgroundImage: `url(${image})` }} />}
+        </div>
+        <div className="card-header-container">
+          <h2 className="px-4 text-truncate custom-card-header">{title}</h2>
+          {
             (dropdownItems?.length > 0 && allowedStatuses.includes(status)) && (
               <Dropdown id="dropdown-overlay">
                 <Dropdown.Toggle
@@ -118,19 +87,19 @@ const ExamCard = ({
               </Dropdown>
             )
           }
-          </div>
-          <Card.Section className="px-4">
-            <div className="custom-card-separator" />
-            <ul className="row d-flex flex-column px-1 mb-0" id="exam-details-list">
-              {examDetails.map(({ title: itemTitle, description }) => (
-                <li key={itemTitle} className="mb-2 mb-md-0 d-flex align-items-center list-item text-truncate">
-                  <span className="col-3 col-xxl-2 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
-                  <span className="col-sm-10 col-md-9 mb-0 pl-0 custom-text-wrap" title={description}>{description}</span>
-                </li>
-              ))}
-            </ul>
-          </Card.Section>
-          {
+        </div>
+        <Card.Section className="px-4">
+          <div className="custom-card-separator" />
+          <ul className="row d-flex flex-column px-1 mb-0" id="exam-details-list">
+            {examDetails.map(({ title: itemTitle, description }) => (
+              <li key={itemTitle} className="mb-2 mb-md-0 d-flex align-items-center list-item text-truncate">
+                <span className="col-3 col-xxl-2 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
+                <span className="col-sm-10 col-md-9 mb-0 pl-0 custom-text-wrap" title={description}>{description}</span>
+              </li>
+            ))}
+          </ul>
+        </Card.Section>
+        {
           (status === examStatus.CANCELED || !hideVoucherButton) && (
             <Card.Footer className="px-4 pb-4 d-flex flex-column">
               <div className="custom-card-separator" />
@@ -147,46 +116,46 @@ const ExamCard = ({
             </Card.Footer>
           )
         }
-        </Card>
-        <ModalDialog
-          title="Voucher Details"
-          isOpen={isOpen}
-          onClose={close}
-          hasCloseButton
-          isFullscreenOnMobile={false}
-          isOverflowVisible={false}
-        >
-          <ModalDialog.Header>
-            <ModalDialog.Title>{title}</ModalDialog.Title>
-          </ModalDialog.Header>
-          <ModalDialog.Body>
-            <ul className="row d-flex flex-column px-1">
-              {additionalExamDetails.map(({ title: detailTitle, description }) => (
-                <li key={detailTitle} className="mb-2 d-flex align-items-center list-item text-truncate">
-                  <span className="col-sm-4 fw-semibold pr-0 text-truncate">{detailTitle}</span>
-                  <span className="col-sm-8 mb-0 pl-0 text-truncate">{description}</span>
-                </li>
-              ))}
-            </ul>
-          </ModalDialog.Body>
-        </ModalDialog>
-        <ModalDialog
-          title=""
-          isOpen={isTermsOpen}
-          onClose={handleOnCancel}
-          hasCloseButton
-          size="xl"
-          isFullscreenOnMobile={false}
-          isOverflowVisible={false}
-        >
-          <ModalDialog.Body className="p-0 py-lg-5 hide-overflow-xp-0 p-lg-5">
-            {!acceptedTerms && (
+      </Card>
+      <ModalDialog
+        title="Voucher Details"
+        isOpen={isOpen}
+        onClose={close}
+        hasCloseButton
+        isFullscreenOnMobile={false}
+        isOverflowVisible={false}
+      >
+        <ModalDialog.Header>
+          <ModalDialog.Title>{title}</ModalDialog.Title>
+        </ModalDialog.Header>
+        <ModalDialog.Body>
+          <ul className="row d-flex flex-column px-1">
+            {additionalExamDetails.map(({ title: detailTitle, description }) => (
+              <li key={detailTitle} className="mb-2 d-flex align-items-center list-item text-truncate">
+                <span className="col-sm-4 fw-semibold pr-0 text-truncate">{detailTitle}</span>
+                <span className="col-sm-8 mb-0 pl-0 text-truncate">{description}</span>
+              </li>
+            ))}
+          </ul>
+        </ModalDialog.Body>
+      </ModalDialog>
+      <ModalDialog
+        title=""
+        isOpen={isTermsOpen}
+        onClose={handleOnCancel}
+        hasCloseButton
+        size="xl"
+        isFullscreenOnMobile={false}
+        isOverflowVisible={false}
+      >
+        <ModalDialog.Body className="p-0 py-lg-5 hide-overflow-xp-0 p-lg-5">
+          {!acceptedTerms && (
             <TermsConditions
               onAccept={() => setAcceptedTerms(true)}
               onCancel={handleOnCancel}
             />
-            )}
-            {acceptedTerms
+          )}
+          {acceptedTerms
             && (
             <IdentityForm
               onSubmit={handleFormSubmit}
@@ -194,10 +163,9 @@ const ExamCard = ({
               onPrevious={() => setAcceptedTerms(false)}
             />
             )}
-          </ModalDialog.Body>
-        </ModalDialog>
-      </Col>
-    </>
+        </ModalDialog.Body>
+      </ModalDialog>
+    </Col>
   );
 };
 
