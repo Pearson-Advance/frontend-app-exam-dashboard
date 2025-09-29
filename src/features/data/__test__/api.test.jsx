@@ -1,7 +1,7 @@
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
-import { getUserData, updateUserData, getExams } from '../api';
+import { updateUserData, getExams } from '../api';
 
 jest.mock('@edx/frontend-platform', () => ({
   getConfig: jest.fn(),
@@ -25,15 +25,6 @@ describe('API service', () => {
     });
 
     getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
-  });
-
-  test('should call GET with correct URL in getUserData', async () => {
-    mockHttpClient.get.mockResolvedValue({ data: 'mocked data' });
-
-    const response = await getUserData();
-
-    expect(mockHttpClient.get).toHaveBeenCalledWith('https://test.api/cdd/');
-    expect(response).toEqual({ data: 'mocked data' });
   });
 
   test('should call POST with correct URL and payload in updateUserData', async () => {

@@ -1,66 +1,32 @@
 import React, { useState } from 'react';
-import { Container, Toast } from '@edx/paragon';
+import { Container } from '@edx/paragon';
 
-import { formatUserPayload } from 'features/utils/constants';
-import { updateUserData } from 'features/data/api';
-import { redirectToScheduleSSO } from 'features/utils/globals';
+import { scheduleExam } from 'features/utils/globals';
 
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
 
 const SchedulePage = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: '' });
 
   const handleCancelTerms = () => {
     window.location.href = 'https://www.pearsonvue.com/us/en/itspecialist.html';
   };
 
-  const handleFormSubmit = async (formData) => {
-    const payload = formatUserPayload(formData);
-
-    try {
-      await updateUserData(payload);
-      redirectToScheduleSSO();
-    } catch (error) {
-      const { customAttributes } = error || {};
-      const { httpErrorResponseData, httpErrorStatus } = customAttributes || {};
-
-      if (httpErrorStatus === 400) {
-        setToast({
-          show: true,
-          message: httpErrorResponseData,
-        });
-      } else {
-        setToast({
-          show: true,
-          message: 'Internal server error',
-        });
-      }
-    }
-  };
+  const handleFormSubmit = (formData) => scheduleExam({ formData });
 
   return (
-    <>
-      {toast.show && (
-      <Toast
-        onClose={() => setToast(prev => ({ ...prev, show: false }))}
-        dismissible
-        hasCloseButton
-        className="mb-3"
-      >
-        {toast.message}
-      </Toast>
-      )}
-      <div className="pageWrapper p-3">
-        <Container size="xl" className="bg-white rounded p-0">
-          {!acceptedTerms && (
-            <TermsConditions
-              onAccept={() => setAcceptedTerms(true)}
-              onCancel={handleCancelTerms}
-            />
-          )}
-          {acceptedTerms
+    <div className="pageWrapper p-3">
+      <Container size="xl" className="bg-white rounded p-0">
+        {
+          !acceptedTerms && (
+          <TermsConditions
+            onAccept={() => setAcceptedTerms(true)}
+            onCancel={handleCancelTerms}
+          />
+          )
+        }
+        {acceptedTerms
             && (
             <IdentityForm
               onSubmit={handleFormSubmit}
@@ -68,9 +34,8 @@ const SchedulePage = () => {
               onPrevious={() => setAcceptedTerms(false)}
             />
             )}
-        </Container>
-      </div>
-    </>
+      </Container>
+    </div>
   );
 };
 
