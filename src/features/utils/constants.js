@@ -131,17 +131,14 @@ export const formatUserPayload = (formData) => {
   )?.dialingCode?.replace('+', '') || '1';
 
   return {
-    email: formData.email.value,
     first_name: formData.firstName.value,
     last_name: formData.lastName.value,
     postal_code: formData.postalCode.value,
     phone_country_code: phoneCountryCode,
     state: formData.state.value,
-    profile: {
-      country: formData.country.value,
-      city: formData.city.value,
-      mailing_address: formData.address.value,
-      phone_number: formData.phone.value,
-    },
+    country: formData.country.value,
+    city: formData.city.value,
+    mailing_address: formData.address.value,
+    phone_number: formData.phone.value,
   };
 };
