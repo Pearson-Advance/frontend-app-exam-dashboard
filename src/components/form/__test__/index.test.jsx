@@ -174,7 +174,8 @@ describe('IdentityForm', () => {
       render(<IdentityForm {...mockProps} />);
 
       expect(screen.getByText('Verify your identity')).toBeInTheDocument();
-      expect(screen.getByText('For security reasons, we need the following information to verify your identity.')).toBeInTheDocument();
+      expect(screen.getByText('IMPORTANT: You must enter your first/given and last/surname/family name exactly as it appears on the identification (ID) you will present at the test center.')).toBeInTheDocument();
+      expect(screen.getByText('If there is not an exact match, you will not be able to take your test and you will not be reimbursed for any fees paid.')).toBeInTheDocument();
       expect(screen.getByLabelText('First Name *')).toBeInTheDocument();
       expect(screen.getByLabelText('Last Name *')).toBeInTheDocument();
       expect(screen.getByLabelText('Email *')).toBeInTheDocument();

@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Toast } from '@edx/paragon';
+import { Form, Toast, Icon } from '@edx/paragon';
 import { Button } from 'react-paragon-topaz';
 import { logError } from '@edx/frontend-platform/logging';
 import { AppContext } from '@edx/frontend-platform/react';
+import { WarningFilled } from '@edx/paragon/icons';
 
 import { Input, PhoneInput, SelectInput } from 'components/form/components';
 import { countries, unitedStates, canadianProvincesAndTerritories } from 'features/utils/constants';
@@ -33,8 +34,17 @@ const countriesWithStates = [UNITED_STATES, CANADA];
 
 const FormHeader = () => (
   <Form.Row className="flex-column mb-4 pl-1">
-    <h3 className="form-title">Verify your identity</h3>
-    <p className="form-subtitle">For security reasons, we need the following information to verify your identity.</p>
+    <h3 className="form-title mb-4">Verify your identity</h3>
+    <p className="form-subtitle">
+      <Icon src={WarningFilled} className="align-middle mr-1 text-danger icon-header" />
+      <strong className="pl-4">
+        IMPORTANT: You must enter your first/given and last/surname/family name exactly as it appears
+        on the identification (ID) you will present at the test center.
+      </strong>
+      <br />
+      If there is not an exact match, you will not be able to take your test and
+      you will not be reimbursed for any fees paid.
+    </p>
   </Form.Row>
 );
 
