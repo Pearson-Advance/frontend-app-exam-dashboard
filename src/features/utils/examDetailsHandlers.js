@@ -95,11 +95,13 @@ const handlers = {
         { title: 'Issue date: ', description: createdDate },
       ],
       dropdownItems: [
-        {
-          label: 'View Score Report',
-          disabled: exams.find((e) => e.vue_appointment_id === exam.vue_appointment_id)?.loadingScoreReport,
-          onClick: () => actions.handleGetScoreReportUrl?.(exam.vue_appointment_id),
-        },
+        ...(exam?.result_id
+          ? [{
+            label: 'View Score Report',
+            disabled: exams.find((e) => e.vue_appointment_id === exam.vue_appointment_id)?.loadingScoreReport,
+            onClick: () => actions.handleGetScoreReportUrl?.(exam.vue_appointment_id),
+          }]
+          : []),
       ],
     };
   },
