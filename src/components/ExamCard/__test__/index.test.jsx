@@ -1,85 +1,123 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import React from 'react';
-import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import {
+  screen,
+  fireEvent,
+  cleanup,
+  act,
+} from '@testing-library/react';
+
 import { render } from 'test-utils';
-
 import ExamCard from 'components/ExamCard';
+import { examStatus } from 'features/utils/constants';
 
-const defaultProps = {
+const mockScheduleClick = jest.fn();
+const mockVoucherClick = jest.fn();
+
+const baseProps = {
   title: 'Sample Exam',
-  status: 'unscheduled',
+  status: examStatus.SCHEDULED,
   image: 'https://example.com/image.jpg',
   examDetails: [
     { title: 'Date', description: 'July 3, 2025' },
     { title: 'Time', description: '10:00 AM' },
   ],
-  additionalExamDetails: [
-    { title: 'Location', description: 'Room A' },
-    { title: 'Proctor', description: 'John Doe' },
-  ],
-  onScheduleExam: jest.fn(),
+  dropdownItems: [],
+  onScheduleClick: mockScheduleClick,
+  onVoucherDetailsClick: mockVoucherClick,
 };
 
-test('Should render title and exam details', () => {
-  render(
-    <ExamCard {...defaultProps} />,
-  );
+describe('ExamCard', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-  expect(screen.getByText('Sample Exam')).toBeInTheDocument();
-  expect(screen.getByText('Date')).toBeInTheDocument();
-  expect(screen.getByText('July 3, 2025')).toBeInTheDocument();
-});
+  test('renders title and exam details', () => {
+    render(<ExamCard {...baseProps} />);
+    expect(screen.getByText('Sample Exam')).toBeInTheDocument();
+    expect(screen.getByText('Date')).toBeInTheDocument();
+    expect(screen.getByText('July 3, 2025')).toBeInTheDocument();
+  });
 
-test('Should show voucher button when status is scheduled', () => {
-  render(<ExamCard {...defaultProps} status="scheduled" />);
+  test('renders background image when provided', () => {
+    render(<ExamCard {...baseProps} />);
+    const bgDiv = document.querySelector('.card-header-image');
+    expect(bgDiv).toBeInTheDocument();
+    expect(bgDiv).toHaveStyle(`background-image: url(${baseProps.image})`);
+  });
 
-  expect(screen.getByText('Voucher Details')).toBeInTheDocument();
-});
+  test('renders correct number of exam details', () => {
+    render(<ExamCard {...baseProps} />);
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+  });
 
-test('Should open modal when clicking voucher button', () => {
-  render(<ExamCard {...defaultProps} status="scheduled" />);
+  describe('Buttons behavior', () => {
+    test('calls onVoucherDetailsClick when clicking "Voucher Details"', () => {
+      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} />);
+      fireEvent.click(screen.getByText('Voucher Details'));
+      expect(mockVoucherClick).toHaveBeenCalledTimes(1);
+    });
 
-  fireEvent.click(screen.getByText('Voucher Details'));
+    test('calls onScheduleClick when clicking "Schedule Exam"', () => {
+      render(<ExamCard {...baseProps} status={examStatus.CANCELED} />);
+      fireEvent.click(screen.getByText('Schedule Exam'));
+      expect(mockScheduleClick).toHaveBeenCalledTimes(1);
+    });
 
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
-  expect(screen.getByText('Location')).toBeInTheDocument();
-});
+    test('renders correct button based on each status', () => {
+      const statuses = Object.values(examStatus);
 
-test('Should open modal when clicking schedule exam button', () => {
-  render(<ExamCard {...defaultProps} status="canceled" hideVoucherButton />);
+      statuses.forEach((status) => {
+        cleanup();
+        render(<ExamCard {...baseProps} status={status} />);
 
-  fireEvent.click(screen.getByText('Schedule Exam'));
+        if (status === examStatus.CANCELED) {
+          expect(screen.getByText('Schedule Exam')).toBeInTheDocument();
+          expect(screen.queryByText('Voucher Details')).not.toBeInTheDocument();
+        } else {
+          expect(screen.getByText('Voucher Details')).toBeInTheDocument();
+          expect(screen.queryByText('Schedule Exam')).not.toBeInTheDocument();
+        }
+      });
+    });
+  });
 
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
-  expect(screen.getByText('Terms and Conditions')).toBeInTheDocument();
-});
+  describe('Dropdown behavior', () => {
+    test('renders dropdown when status is allowed (scheduled)', async () => {
+      const mockItemClick = jest.fn();
+      const dropdownItems = [{ label: 'Edit', iconClass: 'fa-edit', onClick: mockItemClick }];
+      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={dropdownItems} />);
 
-test('Should render dropdown items when allowed and items are present', () => {
-  const onClickMock = jest.fn();
+      const toggle = screen.getByRole('button', { name: /menu/i });
 
-  render(
-    <ExamCard
-      {...defaultProps}
-      status="scheduled"
-      dropdownItems={[{ label: 'Edit', iconClass: 'fa-edit', onClick: onClickMock }]}
-    />,
-  );
+      await act(async () => {
+        fireEvent.click(toggle);
+      });
 
-  fireEvent.click(screen.getByRole('button', { name: /menu/i }));
-  fireEvent.click(screen.getByText('Edit'));
+      await act(async () => {
+        fireEvent.click(screen.getByText('Edit'));
+      });
 
-  expect(onClickMock).toHaveBeenCalled();
-});
+      expect(mockItemClick).toHaveBeenCalled();
+    });
 
-test('Should not render dropdown when status is not allowed', () => {
-  render(
-    <ExamCard
-      {...defaultProps}
-      status="unscheduled"
-      dropdownItems={[{ label: 'Edit', iconClass: 'fa-edit', onClick: jest.fn() }]}
-    />,
-  );
+    test('does not render dropdown when status is not allowed', () => {
+      const dropdownItems = [{ label: 'Edit', iconClass: 'fa-edit', onClick: jest.fn() }];
+      render(<ExamCard {...baseProps} status={examStatus.NO_SHOW} dropdownItems={dropdownItems} />);
+      expect(screen.queryByRole('button', { name: /menu/i })).not.toBeInTheDocument();
+    });
 
-  expect(screen.queryByRole('button', { name: /menu/i })).not.toBeInTheDocument();
+    test('renders disabled dropdown item text correctly', async () => {
+      const dropdownItems = [{ label: 'Delete', onClick: jest.fn(), disabled: true }];
+      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={dropdownItems} />);
+
+      const toggle = screen.getByRole('button', { name: /menu/i });
+      await act(async () => {
+        fireEvent.click(toggle);
+      });
+
+      expect(await screen.findByText('Operation in process...')).toBeInTheDocument();
+    });
+  });
 });
