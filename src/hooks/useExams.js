@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
 
+import { getExams } from 'features/data/api';
 import {
-  getExams,
-  getRescheduleUrl,
-  getScoreReport,
-  cancelExam,
-} from 'features/data/api';
+  redirectToReschedule,
+  redirectToScoreReport,
+  redirectToCancelExam,
+} from 'features/utils/globals';
 
 /**
  * Returns exam details, additional details, and available dropdown actions
@@ -72,21 +72,21 @@ export const useExams = () => {
 
   const handleRescheduleUrl = async (vueAppointmentId) => handleExamAction({
     vueAppointmentId,
-    serviceFn: getRescheduleUrl,
+    serviceFn: redirectToReschedule,
     loadingKey: 'loadingReschedule',
     errorMessage: 'An error occurred while rescheduling the exam.',
   });
 
   const handleGetScoreReportUrl = async (vueAppointmentId) => handleExamAction({
     vueAppointmentId,
-    serviceFn: getScoreReport,
+    serviceFn: redirectToScoreReport,
     loadingKey: 'loadingScoreReport',
     errorMessage: 'An error occurred while retrieving the exam score report.',
   });
 
   const handleCancelExam = async (vueAppointmentId) => handleExamAction({
     vueAppointmentId,
-    serviceFn: cancelExam,
+    serviceFn: redirectToCancelExam,
     loadingKey: 'loadingCancel',
     errorMessage: 'An error occurred while canceling the exam.',
   });

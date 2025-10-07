@@ -3,6 +3,9 @@ import states from 'states-us';
 import countriesData from 'world-countries';
 
 export const SCHEDULE_SSO_ENDPOINT = '/appointment/schedule/';
+export const RESCHEDULE_ENDPOINT = '/appointment/reschedule/';
+export const SCORE_REPORT_ENDPOINT = '/appointment/individual_score_report/';
+export const CANCEL_ENDPOINT = '/appointment/cancel/';
 
 export const canadianProvincesAndTerritories = provinces.map(
   ({ name, abbreviation }) => ({
