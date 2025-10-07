@@ -25,7 +25,9 @@ jest.mock('components/ExamCard', () => function ({
       {dropdownItems?.length > 0 && (
         <div data-testid="dropdown-items">
           {dropdownItems.map(item => (
-            <button key={item.label} onClick={item.onClick} type="button">{item.label}</button>
+            <button key={item.label} onClick={item.onClick} type="button">
+              {item.label}
+            </button>
           ))}
         </div>
       )}
@@ -40,6 +42,8 @@ jest.mock('features/DashboardPage/components/NoContentPlaceholder', () => functi
 jest.mock('@edx/frontend-platform/logging', () => ({
   logError: jest.fn(),
 }));
+
+const VIEW_SCORE_REPORT_LABEL = 'View Score Report';
 
 const examLocation = {
   test_center: {
@@ -167,7 +171,7 @@ describe('Exam actions', () => {
 
     await waitFor(() => {
       expect(screen.getAllByText('complete')).toHaveLength(2);
-      expect(screen.getAllByText('View Score Report')).toHaveLength(2);
+      expect(screen.getAllByText(VIEW_SCORE_REPORT_LABEL)).toHaveLength(2);
     });
   });
 
@@ -192,7 +196,9 @@ describe('Exam actions', () => {
 
     await waitFor(() => {
       expect(screen.getAllByText('complete')).toHaveLength(2);
-      expect(screen.queryByText('View Score Report')).not.toBeInTheDocument();
+      expect(
+        screen.queryAllByRole('button', { name: VIEW_SCORE_REPORT_LABEL }),
+      ).toHaveLength(0);
     });
   });
 
