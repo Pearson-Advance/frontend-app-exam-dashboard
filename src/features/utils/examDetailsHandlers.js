@@ -54,7 +54,6 @@ const handlers = {
         { title: 'Issue date: ', description: createdDate },
         getExamLocation(exam),
       ],
-      additionalExamDetails: [],
       dropdownItems: [],
     };
   },
@@ -66,7 +65,6 @@ const handlers = {
       examDetails: [
         ...buildExamDetails(exam, startAt),
       ],
-      additionalExamDetails: [],
       dropdownItems: [
         {
           label: 'Reschedule Exam',
@@ -84,15 +82,10 @@ const handlers = {
 
   [examStatus.COMPLETE]: (exam, { exams = [], actions = {} }) => {
     const startAt = new Date(exam.start_at);
-    const createdDate = format(new Date(exam.created), 'MMM d, yyyy');
 
     return {
       examDetails: [
         ...buildExamDetails(exam, startAt),
-      ],
-      additionalExamDetails: [
-        { title: 'Voucher: ', description: exam.vue_appointment_id },
-        { title: 'Issue date: ', description: createdDate },
       ],
       dropdownItems: [
         {
@@ -111,7 +104,6 @@ const handlers = {
       examDetails: [
         ...buildExamDetails(exam, startAt),
       ],
-      additionalExamDetails: [],
       dropdownItems: [],
     };
   },
@@ -123,7 +115,6 @@ const handlers = {
       examDetails: [
         ...buildExamDetails(exam, startAt),
       ],
-      additionalExamDetails: [],
       dropdownItems: [],
     };
   },
@@ -135,7 +126,6 @@ const handlers = {
       examDetails: [
         ...buildExamDetails(exam, startAt),
       ],
-      additionalExamDetails: [],
       dropdownItems: [],
     };
   },
@@ -147,7 +137,6 @@ const handlers = {
       examDetails: [
         ...buildExamDetails(exam, startAt),
       ],
-      additionalExamDetails: [],
       dropdownItems: [],
     };
   },
@@ -157,5 +146,5 @@ export const getExamDetails = (exam, statusLabel, services = {}) => {
   const handler = handlers[statusLabel];
   return handler
     ? handler(exam, services)
-    : { examDetails: [], additionalExamDetails: [], dropdownItems: [] };
+    : { examDetails: [], dropdownItems: [] };
 };

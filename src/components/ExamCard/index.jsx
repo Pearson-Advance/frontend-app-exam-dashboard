@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
   Button,
   Col,
-  ModalDialog,
-  useToggle,
   IconButton,
   Icon,
   Dropdown,
@@ -18,11 +16,6 @@ import {
   EXAM_STATUS_UI_STYLES,
 } from 'features/utils/constants';
 
-import { scheduleExam } from 'features/utils/globals';
-
-import TermsConditions from 'components/TermsConditions';
-import IdentityForm from 'components/form';
-
 const allowedStatuses = [examStatus.COMPLETE, examStatus.SCHEDULED];
 
 const ExamCard = ({
@@ -30,26 +23,15 @@ const ExamCard = ({
   status,
   image,
   examDetails,
-  additionalExamDetails,
   dropdownItems,
-  hideVoucherButton,
+  onScheduleClick,
+  onVoucherDetailsClick,
 }) => {
-  const [isTermsOpen, openTerms, closeTerms] = useToggle(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [isOpen, open, close] = useToggle(false);
-
   const {
     text = '',
     class: customClass = '',
     badge = '',
   } = EXAM_STATUS_UI_STYLES[status] || {};
-
-  const handleOnCancel = () => {
-    closeTerms();
-    setAcceptedTerms(false);
-  };
-
-  const handleFormSubmit = (formData) => scheduleExam({ formData });
 
   return (
     <Col xs={12} md={6} className="mb-4">
@@ -99,72 +81,19 @@ const ExamCard = ({
             ))}
           </ul>
         </Card.Section>
-        {
-          (status === examStatus.CANCELED || !hideVoucherButton) && (
-            <Card.Footer className="px-4 pb-4 d-flex flex-column">
-              <div className="custom-card-separator" />
-              {status === examStatus.CANCELED && (
-                <Button onClick={openTerms} className="m-0" id="custom-card-button-schedule">
-                  Schedule Exam
-                </Button>
-              )}
-              {!hideVoucherButton && (
-                <Button onClick={open} className="m-0" id="custom-card-button-voucher-details">
-                  Voucher Details
-                </Button>
-              )}
-            </Card.Footer>
-          )
-        }
-      </Card>
-      <ModalDialog
-        title="Voucher Details"
-        isOpen={isOpen}
-        onClose={close}
-        hasCloseButton
-        isFullscreenOnMobile={false}
-        isOverflowVisible={false}
-      >
-        <ModalDialog.Header>
-          <ModalDialog.Title>{title}</ModalDialog.Title>
-        </ModalDialog.Header>
-        <ModalDialog.Body>
-          <ul className="row d-flex flex-column px-1">
-            {additionalExamDetails.map(({ title: detailTitle, description }) => (
-              <li key={detailTitle} className="mb-2 d-flex align-items-center list-item text-truncate">
-                <span className="col-sm-4 fw-semibold pr-0 text-truncate">{detailTitle}</span>
-                <span className="col-sm-8 mb-0 pl-0 text-truncate">{description}</span>
-              </li>
-            ))}
-          </ul>
-        </ModalDialog.Body>
-      </ModalDialog>
-      <ModalDialog
-        title=""
-        isOpen={isTermsOpen}
-        onClose={handleOnCancel}
-        hasCloseButton
-        size="xl"
-        isFullscreenOnMobile={false}
-        isOverflowVisible={false}
-      >
-        <ModalDialog.Body className="p-0 py-lg-5 hide-overflow-xp-0 p-lg-5">
-          {!acceptedTerms && (
-            <TermsConditions
-              onAccept={() => setAcceptedTerms(true)}
-              onCancel={handleOnCancel}
-            />
+        <Card.Footer className="px-4 pb-4 d-flex flex-column">
+          <div className="custom-card-separator" />
+          {status === examStatus.CANCELED ? (
+            <Button onClick={onScheduleClick} className="m-0" id="custom-card-button-schedule">
+              Schedule Exam
+            </Button>
+          ) : (
+            <Button onClick={onVoucherDetailsClick} className="m-0" id="custom-card-button-voucher-details">
+              Voucher Details
+            </Button>
           )}
-          {acceptedTerms
-            && (
-            <IdentityForm
-              onSubmit={handleFormSubmit}
-              onCancel={handleOnCancel}
-              onPrevious={() => setAcceptedTerms(false)}
-            />
-            )}
-        </ModalDialog.Body>
-      </ModalDialog>
+        </Card.Footer>
+      </Card>
     </Col>
   );
 };
@@ -179,12 +108,6 @@ ExamCard.propTypes = {
       description: PropTypes.string.isRequired,
     }),
   ).isRequired,
-  additionalExamDetails: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
-    }),
-  ),
   dropdownItems: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
@@ -192,14 +115,13 @@ ExamCard.propTypes = {
       onClick: PropTypes.func.isRequired,
     }),
   ),
-  hideVoucherButton: PropTypes.bool,
+  onScheduleClick: PropTypes.func.isRequired,
+  onVoucherDetailsClick: PropTypes.func.isRequired,
 };
 
 ExamCard.defaultProps = {
   image: null,
   dropdownItems: null,
-  additionalExamDetails: [],
-  hideVoucherButton: false,
 };
 
 export default ExamCard;

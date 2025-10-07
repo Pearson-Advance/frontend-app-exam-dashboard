@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer, useCallback } from 'react';
 import {
   Tabs,
   Tab,
@@ -8,6 +8,7 @@ import {
 } from '@edx/paragon';
 
 import ExamCard from 'components/ExamCard';
+import Modal, { MODAL_TYPES } from 'components/Modal';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
 import { useExams } from 'hooks/useExams';
@@ -16,14 +17,63 @@ import {
   EXAM_STATUS_MAP,
   EXAMS_AVAILABLE,
 } from 'features/utils/constants';
+import { scheduleExam, handleGetVoucherDetails } from 'features/utils/globals';
 
 import './index.scss';
 
 const EXAM_TAB = 'exams';
 const PAST_EXAM_TAB = 'past-exams';
 
+const modalInitialState = {
+  isOpen: false,
+  type: null,
+  examId: null,
+  examTitle: '',
+  termsAccepted: false,
+  voucherDetails: [],
+  isLoadingVoucher: false,
+};
+
+const modalReducer = (state, action) => {
+  switch (action.type) {
+    case 'OPEN_MODAL':
+      return {
+        ...state,
+        isOpen: true,
+        type: action.payload.modalType,
+        examId: action.payload.examId,
+        examTitle: action.payload.examTitle || '',
+      };
+    case 'CLOSE_MODAL':
+      return {
+        ...modalInitialState,
+      };
+    case 'SET_TERMS_ACCEPTED':
+      return {
+        ...state,
+        termsAccepted: action.payload,
+      };
+    case 'SET_VOUCHER_LOADING':
+      return {
+        ...state,
+        isLoadingVoucher: action.payload,
+      };
+    case 'SET_VOUCHER_DETAILS':
+      return {
+        ...state,
+        voucherDetails: action.payload,
+        isLoadingVoucher: false,
+      };
+    default:
+      return state;
+  }
+};
+
 const DashboardPage = () => {
   const [tab, setTab] = useState(EXAM_TAB);
+  const [modalState, dispatchModal] = useReducer(modalReducer, modalInitialState);
+  const [voucherCache, setVoucherCache] = useState({});
+
   const {
     exams,
     isLoadingExams,
@@ -31,6 +81,68 @@ const DashboardPage = () => {
     setToast,
     actions,
   } = useExams();
+
+  const handleOpenScheduleModal = useCallback((examId, examTitle) => {
+    dispatchModal({
+      type: 'OPEN_MODAL',
+      payload: {
+        modalType: MODAL_TYPES.TERMS_AND_SCHEDULE,
+        examId,
+        examTitle,
+      },
+    });
+  }, []);
+
+  const handleOpenVoucherModal = useCallback(async (examId, examTitle) => {
+    dispatchModal({
+      type: 'OPEN_MODAL',
+      payload: {
+        modalType: MODAL_TYPES.VOUCHER_DETAILS,
+        examId,
+        examTitle,
+      },
+    });
+
+    if (voucherCache[examId]) {
+      dispatchModal({
+        type: 'SET_VOUCHER_DETAILS',
+        payload: voucherCache[examId],
+      });
+      return;
+    }
+
+    dispatchModal({ type: 'SET_VOUCHER_LOADING', payload: true });
+
+    try {
+      const details = await handleGetVoucherDetails(examId);
+      setVoucherCache((prev) => ({
+        ...prev,
+        [examId]: details,
+      }));
+      dispatchModal({
+        type: 'SET_VOUCHER_DETAILS',
+        payload: details,
+      });
+    } catch (error) {
+      dispatchModal({
+        type: 'SET_VOUCHER_DETAILS',
+        payload: [{ title: 'Error', description: 'Failed to load voucher details' }],
+      });
+    }
+  }, [voucherCache]);
+
+  const handleCloseModal = useCallback(() => {
+    dispatchModal({ type: 'CLOSE_MODAL' });
+  }, []);
+
+  const handleAcceptTerms = useCallback((accepted) => {
+    dispatchModal({ type: 'SET_TERMS_ACCEPTED', payload: accepted });
+  }, []);
+
+  const handleFormSubmit = useCallback(async (formData) => {
+    await scheduleExam({ formData });
+    handleCloseModal();
+  }, [handleCloseModal]);
 
   const renderExamsTab = (placeholderTitle, placeholderDescription, filterStatuses = []) => {
     if (isLoadingExams) {
@@ -55,7 +167,7 @@ const DashboardPage = () => {
       <Row className="mb-4 p-3 p-md-4 px-md-5">
         {availableExams.map((exam) => {
           const statusLabel = EXAM_STATUS_MAP[exam.status];
-          const { examDetails, additionalExamDetails, dropdownItems } = getExamDetails(exam, statusLabel, {
+          const { examDetails, dropdownItems } = getExamDetails(exam, statusLabel, {
             exams,
             actions,
           });
@@ -66,9 +178,9 @@ const DashboardPage = () => {
               title={exam.name}
               status={statusLabel}
               examDetails={examDetails}
-              additionalExamDetails={additionalExamDetails}
               dropdownItems={dropdownItems}
-              hideVoucherButton
+              onScheduleClick={() => handleOpenScheduleModal(exam.id, exam.name)}
+              onVoucherDetailsClick={() => handleOpenVoucherModal(exam.id, exam.name)}
             />
           );
         })}
@@ -95,7 +207,6 @@ const DashboardPage = () => {
         {toast.message}
       </Toast>
       <div className="dashboard-container mb-5">
-
         <div className="tabs-container">
           <Tabs id="tabs" variant="button-group" className="tabs-wrapper" activeKey={tab} onSelect={setTab}>
             <Tab
@@ -117,6 +228,18 @@ const DashboardPage = () => {
           </Tabs>
         </div>
       </div>
+
+      <Modal
+        isOpen={modalState.isOpen}
+        onClose={handleCloseModal}
+        modalType={modalState.type}
+        examTitle={modalState.examTitle}
+        voucherDetails={modalState.voucherDetails}
+        isLoadingVoucher={modalState.isLoadingVoucher}
+        termsAccepted={modalState.termsAccepted}
+        onAcceptTerms={handleAcceptTerms}
+        onFormSubmit={handleFormSubmit}
+      />
     </>
   );
 };
