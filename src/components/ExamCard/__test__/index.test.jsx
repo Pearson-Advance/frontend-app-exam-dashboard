@@ -59,12 +59,6 @@ describe('ExamCard', () => {
       expect(mockVoucherClick).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onScheduleClick when clicking "Schedule Exam"', () => {
-      render(<ExamCard {...baseProps} status={examStatus.CANCELED} />);
-      fireEvent.click(screen.getByText('Schedule Exam'));
-      expect(mockScheduleClick).toHaveBeenCalledTimes(1);
-    });
-
     test('renders correct button based on each status', () => {
       const statuses = Object.values(examStatus);
 
@@ -72,13 +66,8 @@ describe('ExamCard', () => {
         cleanup();
         render(<ExamCard {...baseProps} status={status} />);
 
-        if (status === examStatus.CANCELED) {
-          expect(screen.getByText('Schedule Exam')).toBeInTheDocument();
-          expect(screen.queryByText('Voucher Details')).not.toBeInTheDocument();
-        } else {
-          expect(screen.getByText('Voucher Details')).toBeInTheDocument();
-          expect(screen.queryByText('Schedule Exam')).not.toBeInTheDocument();
-        }
+        expect(screen.getByText('Voucher Details')).toBeInTheDocument();
+        expect(screen.queryByText('Schedule Exam')).not.toBeInTheDocument();
       });
     });
   });

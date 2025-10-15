@@ -24,7 +24,6 @@ const ExamCard = ({
   image,
   examDetails,
   dropdownItems,
-  onScheduleClick,
   onVoucherDetailsClick,
 }) => {
   const {
@@ -83,15 +82,9 @@ const ExamCard = ({
         </Card.Section>
         <Card.Footer className="px-4 pb-4 d-flex flex-column">
           <div className="custom-card-separator" />
-          {status === examStatus.CANCELED ? (
-            <Button onClick={onScheduleClick} className="m-0" id="custom-card-button-schedule">
-              Schedule Exam
-            </Button>
-          ) : (
-            <Button onClick={onVoucherDetailsClick} className="m-0" id="custom-card-button-voucher-details">
-              Voucher Details
-            </Button>
-          )}
+          <Button onClick={onVoucherDetailsClick} className="m-0" id="custom-card-button-voucher-details">
+            Voucher Details
+          </Button>
         </Card.Footer>
       </Card>
     </Col>
@@ -115,7 +108,6 @@ ExamCard.propTypes = {
       onClick: PropTypes.func.isRequired,
     }),
   ),
-  onScheduleClick: PropTypes.func.isRequired,
   onVoucherDetailsClick: PropTypes.func.isRequired,
 };
 
