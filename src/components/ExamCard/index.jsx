@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
   Button,
   Col,
-  ModalDialog,
-  useToggle,
   IconButton,
   Icon,
   Dropdown,
@@ -17,155 +15,127 @@ import {
   examStatus,
   EXAM_STATUS_UI_STYLES,
 } from 'features/utils/constants';
-
-import { scheduleExam } from 'features/utils/globals';
-
-import TermsConditions from 'components/TermsConditions';
-import IdentityForm from 'components/form';
+import { handleGetVoucherDetails } from 'features/utils/globals';
+import ExamInfoModal from 'components/ExamInfoModal';
 
 const allowedStatuses = [examStatus.COMPLETE, examStatus.SCHEDULED];
 
 const ExamCard = ({
+  examId,
   title,
   status,
   image,
   examDetails,
-  additionalExamDetails,
   dropdownItems,
-  hideVoucherButton,
 }) => {
-  const [isTermsOpen, openTerms, closeTerms] = useToggle(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [isOpen, open, close] = useToggle(false);
-
   const {
     text = '',
     class: customClass = '',
     badge = '',
   } = EXAM_STATUS_UI_STYLES[status] || {};
 
-  const handleOnCancel = () => {
-    closeTerms();
-    setAcceptedTerms(false);
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [infoData, setInfoData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = (formData) => scheduleExam({ formData });
+  const cacheRef = useRef(null);
+
+  const handleOpenDetails = useCallback(async () => {
+    setIsModalOpen(true);
+
+    if (cacheRef.current) {
+      setInfoData(cacheRef.current);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const voucherDetails = await handleGetVoucherDetails(examId);
+
+      cacheRef.current = voucherDetails;
+      setInfoData(voucherDetails);
+    } catch (error) {
+      const errorData = [{
+        title: 'Error',
+        description: 'Failed to load details',
+      }];
+      setInfoData(errorData);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [examId]);
+
+  const handleCloseDetails = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   return (
-    <Col xs={12} md={6} className="mb-4">
-      <Card className="card-wrapper w-100">
-        <div className={`card-header-background ${customClass}`}>
-          <span className={`custom-badge ${badge}`}>{text}</span>
-          {image && <div className="card-header-image" style={{ backgroundImage: `url(${image})` }} />}
-        </div>
-        <div className="card-header-container">
-          <h2 className="px-4 text-truncate custom-card-header">{title}</h2>
-          {
-            (dropdownItems?.length > 0 && allowedStatuses.includes(status)) && (
-              <Dropdown id="dropdown-overlay">
-                <Dropdown.Toggle
-                  id="dropdown-toggle"
-                  as={IconButton}
-                  src={MoreVert}
-                  iconAs={Icon}
-                  variant="primary"
-                  alt="menu"
-                />
-                <Dropdown.Menu>
-                  {dropdownItems.map(({
-                    label,
-                    iconClass,
-                    onClick,
-                    disabled,
-                  }) => (
-                    <Dropdown.Item key={label} onClick={onClick} className="text-truncate" disabled={disabled}>
-                      {iconClass && <i className={`${iconClass} mr-2`} />}
-                      { disabled ? 'Operation in process...' : label }
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            )
-          }
-        </div>
-        <Card.Section className="px-4">
-          <div className="custom-card-separator" />
-          <ul className="row d-flex flex-column px-1 mb-0" id="exam-details-list">
-            {examDetails.map(({ title: itemTitle, description }) => (
-              <li key={itemTitle} className="mb-2 mb-md-0 d-flex align-items-center list-item text-truncate">
-                <span className="col-3 col-xxl-2 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
-                <span className="col-sm-10 col-md-9 mb-0 pl-0 custom-text-wrap" title={description}>{description}</span>
-              </li>
-            ))}
-          </ul>
-        </Card.Section>
-        {
-          (status === examStatus.CANCELED || !hideVoucherButton) && (
-            <Card.Footer className="px-4 pb-4 d-flex flex-column">
-              <div className="custom-card-separator" />
-              {status === examStatus.CANCELED && (
-                <Button onClick={openTerms} className="m-0" id="custom-card-button-schedule">
-                  Schedule Exam
-                </Button>
-              )}
-              {!hideVoucherButton && (
-                <Button onClick={open} className="m-0" id="custom-card-button-voucher-details">
-                  Voucher Details
-                </Button>
-              )}
-            </Card.Footer>
-          )
-        }
-      </Card>
-      <ModalDialog
-        title="Voucher Details"
-        isOpen={isOpen}
-        onClose={close}
-        hasCloseButton
-        isFullscreenOnMobile={false}
-        isOverflowVisible={false}
-      >
-        <ModalDialog.Header>
-          <ModalDialog.Title>{title}</ModalDialog.Title>
-        </ModalDialog.Header>
-        <ModalDialog.Body>
-          <ul className="row d-flex flex-column px-1">
-            {additionalExamDetails.map(({ title: detailTitle, description }) => (
-              <li key={detailTitle} className="mb-2 d-flex align-items-center list-item text-truncate">
-                <span className="col-sm-4 fw-semibold pr-0 text-truncate">{detailTitle}</span>
-                <span className="col-sm-8 mb-0 pl-0 text-truncate">{description}</span>
-              </li>
-            ))}
-          </ul>
-        </ModalDialog.Body>
-      </ModalDialog>
-      <ModalDialog
-        title=""
-        isOpen={isTermsOpen}
-        onClose={handleOnCancel}
-        hasCloseButton
-        size="xl"
-        isFullscreenOnMobile={false}
-        isOverflowVisible={false}
-      >
-        <ModalDialog.Body className="p-0 py-lg-5 hide-overflow-xp-0 p-lg-5">
-          {!acceptedTerms && (
-            <TermsConditions
-              onAccept={() => setAcceptedTerms(true)}
-              onCancel={handleOnCancel}
-            />
-          )}
-          {acceptedTerms
-            && (
-            <IdentityForm
-              onSubmit={handleFormSubmit}
-              onCancel={handleOnCancel}
-              onPrevious={() => setAcceptedTerms(false)}
-            />
-            )}
-        </ModalDialog.Body>
-      </ModalDialog>
-    </Col>
+    <>
+      <Col xs={12} md={6} className="mb-4">
+        <Card className="card-wrapper w-100">
+          <div className={`card-header-background ${customClass}`}>
+            <span className={`custom-badge ${badge}`}>{text}</span>
+            {image && <div className="card-header-image" style={{ backgroundImage: `url(${image})` }} />}
+          </div>
+          <div className="card-header-container">
+            <h2 className="px-4 text-truncate custom-card-header">{title}</h2>
+            {
+              (dropdownItems?.length > 0 && allowedStatuses.includes(status)) && (
+                <Dropdown id="dropdown-overlay">
+                  <Dropdown.Toggle
+                    id="dropdown-toggle"
+                    as={IconButton}
+                    src={MoreVert}
+                    iconAs={Icon}
+                    variant="primary"
+                    alt="menu"
+                  />
+                  <Dropdown.Menu>
+                    {dropdownItems.map(({
+                      label,
+                      iconClass,
+                      onClick,
+                      disabled,
+                    }) => (
+                      <Dropdown.Item key={label} onClick={onClick} className="text-truncate" disabled={disabled}>
+                        {iconClass && <i className={`${iconClass} mr-2`} />}
+                        { disabled ? 'Operation in process...' : label }
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              )
+            }
+          </div>
+          <Card.Section className="px-4">
+            <div className="custom-card-separator" />
+            <ul className="row d-flex flex-column px-1 mb-0" id="exam-details-list">
+              {examDetails.map(({ title: itemTitle, description }) => (
+                <li key={itemTitle} className="mb-2 mb-md-0 d-flex align-items-center list-item text-truncate">
+                  <span className="col-3 col-xxl-2 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
+                  <span className="col-sm-10 col-md-9 mb-0 pl-0 custom-text-wrap" title={description}>{description}</span>
+                </li>
+              ))}
+            </ul>
+          </Card.Section>
+          <Card.Footer className="px-4 pb-4 d-flex flex-column">
+            <div className="custom-card-separator" />
+            <Button onClick={handleOpenDetails} className="m-0" id="custom-card-button-voucher-details">
+              Voucher Details
+            </Button>
+          </Card.Footer>
+        </Card>
+      </Col>
+
+      <ExamInfoModal
+        isOpen={isModalOpen}
+        onClose={handleCloseDetails}
+        title={title}
+        data={infoData}
+        isLoading={isLoading}
+      />
+    </>
   );
 };
 
@@ -179,27 +149,20 @@ ExamCard.propTypes = {
       description: PropTypes.string.isRequired,
     }),
   ).isRequired,
-  additionalExamDetails: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
-    }),
-  ),
   dropdownItems: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       iconClass: PropTypes.string,
       onClick: PropTypes.func.isRequired,
+      disabled: PropTypes.bool,
     }),
   ),
-  hideVoucherButton: PropTypes.bool,
+  examId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
 
 ExamCard.defaultProps = {
   image: null,
   dropdownItems: null,
-  additionalExamDetails: [],
-  hideVoucherButton: false,
 };
 
 export default ExamCard;
