@@ -2,23 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ModalDialog, Spinner } from '@edx/paragon';
 
-const VoucherDetailsModal = ({
-  isOpen,
-  onClose,
-  examTitle,
-  voucherDetails,
-  isLoading,
+import './index.scss';
+
+const ExamInfoModal = ({
+  isOpen, onClose, title, data, isLoading,
 }) => (
   <ModalDialog
-    title="Voucher Details"
     isOpen={isOpen}
     onClose={onClose}
+    title={title}
     hasCloseButton
     size="md"
     isFullscreenOnMobile={false}
   >
     <ModalDialog.Header>
-      <ModalDialog.Title>{examTitle}</ModalDialog.Title>
+      <ModalDialog.Title>{title}</ModalDialog.Title>
     </ModalDialog.Header>
     <ModalDialog.Body>
       {isLoading ? (
@@ -26,10 +24,10 @@ const VoucherDetailsModal = ({
           <Spinner animation="border" screenReaderText="loading" />
         </div>
       ) : (
-        <ul className="row d-flex flex-column px-1">
-          {voucherDetails.map(({ title, description }) => (
-            <li key={title} className="mb-2 d-flex align-items-center list-item text-truncate">
-              <span className="col-sm-4 fw-semibold pr-0 text-truncate">{title}</span>
+        <ul className="row d-flex flex-column px-1 modal-body-content">
+          {data.map(({ title: itemTitle, description }) => (
+            <li key={itemTitle} className="mb-2 d-flex align-items-center list-item text-truncate">
+              <span className="col-sm-4 fw-semibold pr-0 text-truncate">{itemTitle}</span>
               <span className="col-sm-8 mb-0 pl-0 text-truncate">{description}</span>
             </li>
           ))}
@@ -39,17 +37,21 @@ const VoucherDetailsModal = ({
   </ModalDialog>
 );
 
-VoucherDetailsModal.propTypes = {
+ExamInfoModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  examTitle: PropTypes.string.isRequired,
-  voucherDetails: PropTypes.arrayOf(
+  title: PropTypes.string.isRequired,
+  data: PropTypes.arrayOf(
     PropTypes.shape({
       title: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
     }),
   ).isRequired,
-  isLoading: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool,
 };
 
-export default VoucherDetailsModal;
+ExamInfoModal.defaultProps = {
+  isLoading: false,
+};
+
+export default ExamInfoModal;
