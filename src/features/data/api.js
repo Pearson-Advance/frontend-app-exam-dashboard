@@ -25,3 +25,10 @@ export function getExams(status = '') {
     { params },
   );
 }
+
+export function getVoucherDetails(examId) {
+  return getAuthenticatedHttpClient().get(
+    `${getConfig().WEBNG_PLUGIN_API_BASE_URL}/vouchers/`,
+    { params: { exam: examId } },
+  );
+}
