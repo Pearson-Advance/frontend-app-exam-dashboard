@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
-import { examStatus, getExamLocation } from 'features/utils/constants';
+import { format, isValid } from 'date-fns';
+import { examStatus, voucherStatus, getExamLocation } from 'features/utils/constants';
 
 /**
  * Builds the exam details array with date, time and location.
@@ -10,9 +10,12 @@ import { examStatus, getExamLocation } from 'features/utils/constants';
  * An array of exam detail objects formatted for display.
  */
 function buildExamDetails(exam, startAt) {
+  const date = new Date(startAt);
+  const hasValidDate = isValid(date);
+
   return [
-    { title: 'Date', description: format(startAt, 'MMM d, yyyy') },
-    { title: 'Time', description: format(startAt, 'h:mm a') },
+    { title: 'Date:', description: hasValidDate ? format(date, 'MMM d, yyyy') : 'N/A' },
+    { title: 'Time:', description: hasValidDate ? format(date, 'h:mm a') : 'N/A' },
     getExamLocation(exam),
   ];
 }
@@ -44,20 +47,7 @@ function buildExamDetails(exam, startAt) {
  *   @param {Object<string, Function>} actions - Map of available action functions.
  *   @returns {Object} Exam details configuration.
  */
-const handlers = {
-  [examStatus.UNSCHEDULED]: (exam) => {
-    const createdDate = format(new Date(exam.created), 'MMM d, yyyy');
-
-    return {
-      examDetails: [
-        { title: 'Voucher: ', description: exam.vue_appointment_id },
-        { title: 'Issue date: ', description: createdDate },
-        getExamLocation(exam),
-      ],
-      dropdownItems: [],
-    };
-  },
-
+const examHandlers = {
   [examStatus.SCHEDULED]: (exam, { exams = [], actions = {} }) => {
     const startAt = new Date(exam.start_at);
 
@@ -144,8 +134,19 @@ const handlers = {
   },
 };
 
+const voucherHandler = {
+  [voucherStatus.UNSCHEDULED]: (voucher) => ({
+    examDetails: [
+      { title: 'Voucher number: ', description: voucher.voucher_number },
+    ],
+    dropdownItems: [],
+  }),
+};
+
+const availableHandlers = { ...examHandlers, ...voucherHandler };
+
 export const getExamDetails = (exam, statusLabel, services = {}) => {
-  const handler = handlers[statusLabel];
+  const handler = availableHandlers[statusLabel];
   return handler
     ? handler(exam, services)
     : { examDetails: [], dropdownItems: [] };

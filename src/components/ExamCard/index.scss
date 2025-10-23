@@ -46,6 +46,10 @@ div .pgn__card {
   background-image: url('../../assets/ExamCard/d_exam_schedule_card.png');
 }
 
+.unschedule-voucher-background {
+  background-image: url('../../assets/ExamCard/d_schedule_exam_card.png');
+}
+
 .expired-background,
 .nda-refused-background,
 .no-show-background,
@@ -58,7 +62,8 @@ div .pgn__card {
 .expired-background,
 .nda-refused-background,
 .no-show-background,
-.canceled-background {
+.canceled-background,
+.unschedule-voucher-background {
   object-fit: cover;
   background-repeat: no-repeat;
   background-size: cover;
@@ -156,7 +161,7 @@ div .pgn__card {
   font-size: 14px;
 }
 
-$content-max-height: 250px;
+$content-max-height: 170px;
 
 .pgn__card-section {
   max-height: $content-max-height;
@@ -166,17 +171,29 @@ $content-max-height: 250px;
   @media screen and (min-width: 992px) {
     min-height: $content-max-height;
   }
-}
 
-.list-item {
-  line-height: normal;
-  height: fit-content;
-
-  @media screen and (min-width: 1200px) {
-    height: 32px;
+  @media screen and (max-width: 768px) {
+    $content-max-height: 230px;
+    min-height: $content-max-height;
   }
 }
 
+#exam-details-list {
+  li {
+    display: flex;
+    height: fit-content !important;
+
+    .detail-label {
+      min-width: 120px;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .detail-value {
+      flex: 1;
+    }
+  }
+}
 .custom-text-wrap {
   text-wrap: auto;
 }

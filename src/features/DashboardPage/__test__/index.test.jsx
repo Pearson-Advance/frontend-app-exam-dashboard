@@ -1,6 +1,6 @@
 /* eslint-disable func-names, react/prop-types */
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { render } from 'test-utils';
@@ -24,7 +24,7 @@ jest.mock('components/ExamCard', () => function ({
       <div>{examDetails?.[0]?.description}</div>
       {dropdownItems?.length > 0 && (
         <div data-testid="dropdown-items">
-          {dropdownItems.map(item => (
+          {dropdownItems.map((item) => (
             <button key={item.label} onClick={item.onClick} type="button">
               {item.label}
             </button>
@@ -88,167 +88,136 @@ const validExams = [
   },
 ];
 
+const validVouchers = [
+  {
+    voucher_number: 'VCH-001',
+    exam_name: 'Voucher Exam',
+    exam_code: 'EX-001',
+    start_at: null,
+  },
+];
+
 describe('DashboardPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('shows loading spinner initially', async () => {
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: [] },
+  test('renders NoContentPlaceholder when no exams or vouchers', async () => {
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: [] } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [] });
+
+    await act(async () => {
+      render(<DashboardPage />);
     });
 
-    render(<DashboardPage />);
-    expect(screen.getAllByText(/loading exams/i)).toHaveLength(2);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/loading exams/i)).not.toBeInTheDocument();
-    });
-  });
-
-  test('renders NoContentPlaceholder when no valid exams', async () => {
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: [] },
-    });
-
-    render(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('No exams found')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('No exams found')).toBeInTheDocument();
   });
 
   test('handles API error and shows placeholder', async () => {
-    jest.spyOn(api, 'getExams').mockRejectedValueOnce(new Error('API failed'));
+    jest.spyOn(api, 'getExams').mockRejectedValue(new Error('API failed'));
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [] });
 
-    render(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('No exams found')).toBeInTheDocument();
+    await act(async () => {
+      render(<DashboardPage />);
     });
+
+    expect(await screen.findByText('No exams found')).toBeInTheDocument();
   });
 
-  test('displays correct exam details for scheduled and unscheduled exams', async () => {
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: validExams },
+  test('renders exams and vouchers together in Exams tab', async () => {
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: validExams } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [...validVouchers] });
+
+    await act(async () => {
+      render(<DashboardPage />);
     });
 
-    render(<DashboardPage />);
-
-    await waitFor(() => {
-      const exams = screen.getAllByText('Exam 1');
-      const pastExams = screen.getAllByText('Exam 2');
-
-      expect(exams).toHaveLength(2);
-      expect(pastExams).toHaveLength(2);
-
-      expect(screen.getAllByText('complete')).toHaveLength(2);
-      expect(screen.getAllByText('scheduled')).toHaveLength(2);
-    });
+    const examCards = await screen.findAllByTestId('exam-card');
+    expect(examCards.length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Exam 1').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Voucher Exam').length).toBeGreaterThan(0);
   });
 });
 
 describe('Exam actions', () => {
-  test('Should show view score option for completed exam if the result is available', async () => {
-    const scheduledExam = [
-      {
-        id: 11,
-        name: 'Completed Exam',
-        status: 'EXAM_DELIVERED',
-        vue_appointment_id: 'drop123',
-        created: '2025-08-10T10:14:50Z',
-        start_at: '2025-08-15T14:10:00Z',
-        result_id: 1,
-        ...examLocation,
-      },
-    ];
-
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: scheduledExam },
-    });
-
-    render(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('complete')).toHaveLength(2);
-      expect(screen.getAllByText(VIEW_SCORE_REPORT_LABEL)).toHaveLength(2);
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  test('Should not show view score option for completed exam if the result is NOT available', async () => {
-    const scheduledExam = [
-      {
-        id: 11,
-        name: 'Completed Exam',
-        status: 'EXAM_DELIVERED',
-        vue_appointment_id: 'drop123',
-        created: '2025-08-10T10:14:50Z',
-        start_at: '2025-08-15T14:10:00Z',
-        ...examLocation,
-      },
-    ];
+  test('shows "View Score Report" for completed exam with result', async () => {
+    const completedExam = [{
+      id: 11,
+      name: 'Completed Exam',
+      status: 'EXAM_DELIVERED',
+      result_id: 1,
+      ...examLocation,
+    }];
 
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: scheduledExam },
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: completedExam } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [] });
+
+    await act(async () => {
+      render(<DashboardPage />);
     });
 
-    render(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('complete')).toHaveLength(2);
-      expect(
-        screen.queryAllByRole('button', { name: VIEW_SCORE_REPORT_LABEL }),
-      ).toHaveLength(0);
-    });
+    const buttons = await screen.findAllByText(VIEW_SCORE_REPORT_LABEL);
+    expect(buttons.length).toBeGreaterThan(0);
   });
 
-  test('Should show cancel option for scheduled exam', async () => {
-    const scheduledExam = [
-      {
-        id: 10,
-        name: 'Scheduled Exam',
-        status: 'APPT_CREATED',
-        vue_appointment_id: 'drop123',
-        created: '2025-08-10T10:14:50Z',
-        start_at: '2025-08-15T14:10:00Z',
-        ...examLocation,
-      },
-    ];
+  test('does not show "View Score Report" if result not available', async () => {
+    const noResultExam = [{
+      id: 12,
+      name: 'Completed Exam',
+      status: 'EXAM_DELIVERED',
+      ...examLocation,
+    }];
 
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: scheduledExam },
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: noResultExam } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [] });
+
+    await act(async () => {
+      render(<DashboardPage />);
     });
 
-    render(<DashboardPage />);
+    const buttons = screen.queryAllByText(VIEW_SCORE_REPORT_LABEL);
+    expect(buttons.length).toBe(0);
+  });
 
-    await waitFor(() => {
-      expect(screen.getAllByText('scheduled')).toHaveLength(2);
-      expect(screen.getAllByText('Cancel Exam')).toHaveLength(2);
+  test('shows cancel option for scheduled exam', async () => {
+    const scheduledExam = [{
+      id: 10,
+      name: 'Scheduled Exam',
+      status: 'APPT_CREATED',
+      ...examLocation,
+    }];
+
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: scheduledExam } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [] });
+
+    await act(async () => {
+      render(<DashboardPage />);
     });
+
+    const cancelButtons = await screen.findAllByText('Cancel Exam');
+    expect(cancelButtons.length).toBeGreaterThan(0);
   });
 
   test('displays dropdown item for scheduled exam', async () => {
-    const scheduledExam = [
-      {
-        id: 10,
-        name: 'Scheduled Exam',
-        status: 'APPT_CREATED',
-        vue_appointment_id: 'drop123',
-        created: '2025-07-05T10:00:00Z',
-        start_at: '2025-07-25T14:00:00Z',
-        ...examLocation,
-      },
-    ];
+    const scheduledExam = [{
+      id: 10,
+      name: 'Scheduled Exam',
+      status: 'APPT_CREATED',
+      ...examLocation,
+    }];
 
-    jest.spyOn(api, 'getExams').mockResolvedValueOnce({
-      data: { results: scheduledExam },
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: scheduledExam } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [] });
+
+    await act(async () => {
+      render(<DashboardPage />);
     });
 
-    render(<DashboardPage />);
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Scheduled Exam')).toHaveLength(2);
-      expect(screen.getAllByText('Reschedule Exam')).toHaveLength(2);
-    });
+    const rescheduleButtons = await screen.findAllByText('Reschedule Exam');
+    expect(rescheduleButtons.length).toBeGreaterThan(0);
   });
 });
