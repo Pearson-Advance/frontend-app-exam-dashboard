@@ -67,7 +67,7 @@ export function getExamLocation(exam) {
   const parts = [name, address1, city, state, postalCode, country].filter(Boolean);
   const description = parts.join(', ');
 
-  return { title: 'Location', description };
+  return { title: 'Location:', description };
 }
 
 export const examStatus = {
@@ -77,6 +77,18 @@ export const examStatus = {
   NO_SHOW: 'no-show',
   NDA_REFUSED: 'nda-refused',
   EXPIRED: 'expired',
+};
+
+export const voucherStatus = {
+  UNSCHEDULED: 'unscheduled',
+};
+
+export const VOUCHER_STATUS_UI_STYLES = {
+  [voucherStatus.UNSCHEDULED]: {
+    text: 'Unscheduled',
+    class: 'unschedule-voucher-background',
+    badge: 'badge-unscheduled',
+  },
 };
 
 export const EXAM_STATUS_UI_STYLES = {
@@ -124,6 +136,15 @@ export const EXAM_STATUS_MAP = {
   NO_SHOW: examStatus.NO_SHOW,
   NDA_REFUSED: examStatus.NDA_REFUSED,
   EXPIRED: examStatus.EXPIRED,
+};
+
+export const VOUCHER_STATUS_MAP = {
+  UNSCHEDULED: voucherStatus.UNSCHEDULED,
+};
+
+export const AVAILABLE_EXAM_CARD_STATUSES = {
+  ...EXAM_STATUS_MAP,
+  ...VOUCHER_STATUS_MAP,
 };
 
 export const EXAMS_AVAILABLE = ['APPT_CREATED', 'EXAM_DELIVERED', 'APPT_CANCELED'];
