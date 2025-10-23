@@ -137,7 +137,7 @@ const examHandlers = {
 const voucherHandler = {
   [voucherStatus.UNSCHEDULED]: (voucher) => ({
     examDetails: [
-      { title: 'Voucher number: ', description: voucher.voucher_number },
+      { title: 'Voucher number: ', description: voucher.discount_code },
     ],
     dropdownItems: [],
   }),

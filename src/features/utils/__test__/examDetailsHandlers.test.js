@@ -81,7 +81,7 @@ describe('getExamDetails', () => {
   });
 
   test('should return voucher details for UNSCHEDULED voucher', () => {
-    const voucher = { voucher_number: 'ABC123' };
+    const voucher = { discount_code: 'ABC123' };
     const result = getExamDetails(voucher, voucherStatus.UNSCHEDULED);
     expect(result.examDetails).toEqual([{ title: 'Voucher number: ', description: 'ABC123' }]);
     expect(result.dropdownItems).toEqual([]);
