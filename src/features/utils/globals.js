@@ -19,8 +19,17 @@ import { updateUserData, getVoucherDetails } from 'features/data/api';
  * @function redirectToScheduleSSO
  * @returns {void} - This function does not return a value, it triggers a page navigation.
  */
-export function redirectToScheduleSSO() {
-  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCHEDULE_SSO_ENDPOINT}`;
+export function redirectToScheduleSSO(redirectParams = {}) {
+  const { exam_series_code: examSeriesCode, discount_code: discountCode } = redirectParams;
+
+  const query = new URLSearchParams({
+    ...(examSeriesCode && { exam_series_code: examSeriesCode }),
+    ...(discountCode && { discount_code: discountCode }),
+  }).toString();
+
+  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCHEDULE_SSO_ENDPOINT}${
+    query ? `?${query}` : ''
+  }`;
 }
 
 /**
@@ -31,13 +40,14 @@ export function redirectToScheduleSSO() {
  * @function scheduleExam
  * @param {Object} params - The parameters for form submission.
  * @param {Object} params.formData - The raw form data to be formatted.
+ * @param {Object} params.redirectParams - Additional information to include in the redirect request.
  * @returns {Promise<void>} Resolves when the process completes.
  */
-export const scheduleExam = async ({ formData }) => {
+export const scheduleExam = async ({ formData, redirectParams = {} }) => {
   const payload = formatUserPayload(formData);
   await updateUserData(payload);
 
-  redirectToScheduleSSO();
+  redirectToScheduleSSO(redirectParams);
 };
 
 /**
