@@ -10,7 +10,11 @@ import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPla
 import { useExams } from 'hooks/useExams';
 import { useVouchers } from 'hooks/useVouchers';
 import { getExamDetails } from 'features/utils/examDetailsHandlers';
-import { AVAILABLE_EXAM_CARD_STATUSES, EXAMS_AVAILABLE } from 'features/utils/constants';
+import {
+  AVAILABLE_EXAM_CARD_STATUSES,
+  EXAMS_AVAILABLE,
+  PAST_EXAMS_AVAILABLE,
+} from 'features/utils/constants';
 import { scheduleExam } from 'features/utils/globals';
 
 import './index.scss';
@@ -132,7 +136,10 @@ const DashboardPage = () => {
   const upcomingExamsCount = hasExams
     ? exams.filter((exam) => EXAMS_AVAILABLE.includes(exam.status)).length + vouchersAsExams.length
     : vouchersAsExams.length || null;
-  const pastExamsCount = hasExams ? exams.length : null;
+
+  const pastExamsCount = hasExams
+    ? exams.filter((exam) => PAST_EXAMS_AVAILABLE.includes(exam.status)).length
+    : null;
 
   return (
     <>
@@ -169,7 +176,7 @@ const DashboardPage = () => {
               className="tab-content-wrapper"
               {...(tab === PAST_EXAM_TAB ? { notification: pastExamsCount } : {})}
             >
-              {renderExamsTab('No past exams found', 'It looks like you do not have past exams.', [])}
+              {renderExamsTab('No past exams found', 'It looks like you do not have past exams.', PAST_EXAMS_AVAILABLE)}
             </Tab>
           </Tabs>
         </div>

@@ -147,7 +147,8 @@ export const AVAILABLE_EXAM_CARD_STATUSES = {
   ...VOUCHER_STATUS_MAP,
 };
 
-export const EXAMS_AVAILABLE = ['APPT_CREATED', 'EXAM_DELIVERED', 'APPT_CANCELED'];
+export const EXAMS_AVAILABLE = ['APPT_CREATED'];
+export const PAST_EXAMS_AVAILABLE = ['APPT_CANCELED', 'EXAM_DELIVERED', 'NO_SHOW', 'NDA_REFUSED', 'EXPIRED'];
 
 export const formatUserPayload = (formData) => {
   const phoneCountryCode = countries.find(
