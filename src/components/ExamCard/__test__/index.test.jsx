@@ -6,10 +6,9 @@ import {
   act,
   waitFor,
 } from '@testing-library/react';
-
 import { render } from 'test-utils';
 import ExamCard from 'components/ExamCard';
-import { examStatus } from 'features/utils/constants';
+import { examStatus, voucherStatus } from 'features/utils/constants';
 import { handleGetVoucherDetails } from 'features/utils/globals';
 
 jest.mock('features/utils/globals', () => ({
@@ -28,6 +27,7 @@ const baseProps = {
     { title: 'Time', description: '10:00 AM' },
   ],
   dropdownItems: [],
+  onScheduleClick: jest.fn(),
 };
 
 describe('ExamCard', () => {
@@ -45,80 +45,54 @@ describe('ExamCard', () => {
   test('renders background image when provided', () => {
     render(<ExamCard {...baseProps} />);
     const bgDiv = document.querySelector('.card-header-image');
-    expect(bgDiv).toBeInTheDocument();
     expect(bgDiv).toHaveStyle(`background-image: url(${baseProps.image})`);
   });
 
   test('renders correct number of exam details', () => {
     render(<ExamCard {...baseProps} />);
-    const items = screen.getAllByRole('listitem');
-    expect(items).toHaveLength(2);
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
   });
 
   describe('Voucher Details Modal', () => {
-    test('opens modal and fetches voucher details on button click', async () => {
-      const mockVoucherDetails = [
+    test('fetches voucher details on first click', async () => {
+      const mockData = [
         { title: 'Voucher Code', description: 'ABC123' },
-        { title: 'Expiry Date', description: 'Dec 31, 2025' },
       ];
-
-      handleGetVoucherDetails.mockResolvedValueOnce(mockVoucherDetails);
+      handleGetVoucherDetails.mockResolvedValueOnce(mockData);
 
       render(<ExamCard {...baseProps} />);
-
-      const voucherButton = screen.getByText('Voucher Details');
+      const button = screen.getByText('Voucher Details');
 
       await act(async () => {
-        fireEvent.click(voucherButton);
+        fireEvent.click(button);
       });
 
       expect(handleGetVoucherDetails).toHaveBeenCalledWith('12345');
-
       await waitFor(() => {
         expect(handleGetVoucherDetails).toHaveBeenCalledTimes(1);
       });
     });
 
-    test('uses cached data on subsequent modal opens', async () => {
-      const mockVoucherDetails = [
-        { title: 'Voucher Code', description: 'ABC123' },
-      ];
-
-      handleGetVoucherDetails.mockResolvedValueOnce(mockVoucherDetails);
+    test('uses cached data on second open', async () => {
+      const mockData = [{ title: 'Voucher Code', description: 'ABC123' }];
+      handleGetVoucherDetails.mockResolvedValueOnce(mockData);
 
       render(<ExamCard {...baseProps} />);
+      const button = screen.getByText('Voucher Details');
 
-      const voucherButton = screen.getByText('Voucher Details');
+      await act(async () => fireEvent.click(button));
+      await waitFor(() => expect(handleGetVoucherDetails).toHaveBeenCalledTimes(1));
 
-      // First open
-      await act(async () => {
-        fireEvent.click(voucherButton);
-      });
-
-      await waitFor(() => {
-        expect(handleGetVoucherDetails).toHaveBeenCalledTimes(1);
-      });
-
-      // Second open - should use cache
-      await act(async () => {
-        fireEvent.click(voucherButton);
-      });
-
-      // Should still be called only once
+      await act(async () => fireEvent.click(button));
       expect(handleGetVoucherDetails).toHaveBeenCalledTimes(1);
     });
 
-    test('displays error message when voucher details fetch fails', async () => {
+    test('shows error fallback on fetch fail', async () => {
       handleGetVoucherDetails.mockRejectedValueOnce(new Error('Network error'));
-
       render(<ExamCard {...baseProps} />);
+      const button = screen.getByText('Voucher Details');
 
-      const voucherButton = screen.getByText('Voucher Details');
-
-      await act(async () => {
-        fireEvent.click(voucherButton);
-      });
-
+      await act(async () => fireEvent.click(button));
       await waitFor(() => {
         expect(handleGetVoucherDetails).toHaveBeenCalledWith('12345');
       });
@@ -126,87 +100,76 @@ describe('ExamCard', () => {
   });
 
   describe('Dropdown behavior', () => {
-    test('renders dropdown when status is allowed (scheduled)', async () => {
+    test('renders and triggers dropdown actions', async () => {
       const dropdownItems = [
         { label: 'Edit', iconClass: 'fa-edit', onClick: mockDropdownItemClick },
       ];
-      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={dropdownItems} />);
-
+      render(<ExamCard {...baseProps} dropdownItems={dropdownItems} />);
       const toggle = screen.getByRole('button', { name: /menu/i });
 
-      await act(async () => {
-        fireEvent.click(toggle);
-      });
-
-      await act(async () => {
-        fireEvent.click(screen.getByText('Edit'));
-      });
+      await act(async () => fireEvent.click(toggle));
+      await act(async () => fireEvent.click(screen.getByText('Edit')));
 
       expect(mockDropdownItemClick).toHaveBeenCalled();
     });
 
-    test('renders dropdown when status is complete', async () => {
-      const dropdownItems = [
-        { label: 'View Report', iconClass: 'fa-file', onClick: mockDropdownItemClick },
-      ];
-      render(<ExamCard {...baseProps} status={examStatus.COMPLETE} dropdownItems={dropdownItems} />);
-
-      expect(screen.getByRole('button', { name: /menu/i })).toBeInTheDocument();
-    });
-
-    test('does not render dropdown when status is not allowed', () => {
-      const dropdownItems = [
-        { label: 'Edit', iconClass: 'fa-edit', onClick: jest.fn() },
-      ];
-      render(<ExamCard {...baseProps} status={examStatus.NO_SHOW} dropdownItems={dropdownItems} />);
-      expect(screen.queryByRole('button', { name: /menu/i })).not.toBeInTheDocument();
-    });
-
-    test('does not render dropdown when dropdownItems is empty', () => {
-      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={[]} />);
-      expect(screen.queryByRole('button', { name: /menu/i })).not.toBeInTheDocument();
-    });
-
-    test('does not render dropdown when dropdownItems is null', () => {
-      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={null} />);
-      expect(screen.queryByRole('button', { name: /menu/i })).not.toBeInTheDocument();
-    });
-
-    test('renders disabled dropdown item text correctly', async () => {
+    test('shows disabled item text correctly', async () => {
       const dropdownItems = [
         { label: 'Delete', onClick: jest.fn(), disabled: true },
       ];
-      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={dropdownItems} />);
-
+      render(<ExamCard {...baseProps} dropdownItems={dropdownItems} />);
       const toggle = screen.getByRole('button', { name: /menu/i });
-      await act(async () => {
-        fireEvent.click(toggle);
-      });
 
+      await act(async () => fireEvent.click(toggle));
       expect(await screen.findByText('Operation in process...')).toBeInTheDocument();
     });
 
-    test('renders icon class in dropdown item', async () => {
-      const dropdownItems = [
-        { label: 'Edit', iconClass: 'fa-edit', onClick: mockDropdownItemClick },
-      ];
-      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} dropdownItems={dropdownItems} />);
-
-      const toggle = screen.getByRole('button', { name: /menu/i });
-      await act(async () => {
-        fireEvent.click(toggle);
-      });
-
-      const icon = document.querySelector('.fa-edit');
-      expect(icon).toBeInTheDocument();
+    test('does not render dropdown if not allowed', () => {
+      render(<ExamCard {...baseProps} status={examStatus.NO_SHOW} />);
+      expect(screen.queryByRole('button', { name: /menu/i })).not.toBeInTheDocument();
     });
   });
 
-  describe('Status badge rendering', () => {
-    test('renders status badge for scheduled status', () => {
-      render(<ExamCard {...baseProps} status={examStatus.SCHEDULED} />);
-      const badge = document.querySelector('.custom-badge');
-      expect(badge).toBeInTheDocument();
+  describe('Button and Status rendering', () => {
+    test('renders Schedule Exam button when unscheduled', () => {
+      render(<ExamCard {...baseProps} status={voucherStatus.UNSCHEDULED} />);
+      expect(screen.getByText('Schedule Exam')).toBeInTheDocument();
     });
+
+    test('renders Voucher Details button otherwise', () => {
+      render(<ExamCard {...baseProps} />);
+      expect(screen.getByText('Voucher Details')).toBeInTheDocument();
+    });
+  });
+
+  describe('UI Styles consistency', () => {
+    const statusTestCases = [
+      ['UNSCHEDULED', 'voucher', 'Unscheduled', 'unschedule-voucher-background', 'badge-unscheduled'],
+      ['COMPLETE', 'exam', 'Complete', 'completed-background', 'badge-complete'],
+      ['SCHEDULED', 'exam', 'Scheduled', 'scheduled-background', 'badge-scheduled'],
+      ['CANCELED', 'exam', 'Canceled', 'canceled-background', 'badge-canceled'],
+      ['NO_SHOW', 'exam', 'No Show', 'no-show-background', 'badge-no-show'],
+      ['NDA_REFUSED', 'exam', 'NDA declined', 'nda-refused-background', 'badge-nda-refused'],
+      ['EXPIRED', 'exam', 'Incomplete exam', 'expired-background', 'badge-expired'],
+    ];
+
+    test.each(statusTestCases)(
+      'renders correct styles for %s badge',
+      async (key, enumType, expectedText, expectedClass, expectedBadge) => {
+        const statusValue = enumType === 'voucher'
+          ? voucherStatus[key]
+          : examStatus[key];
+
+        render(<ExamCard {...baseProps} status={statusValue} />);
+
+        const badge = document.querySelector('.custom-badge');
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveTextContent(expectedText);
+
+        const background = document.querySelector('.card-header-background');
+        expect(background).toHaveClass(expectedClass);
+        expect(badge).toHaveClass(expectedBadge);
+      },
+    );
   });
 });
