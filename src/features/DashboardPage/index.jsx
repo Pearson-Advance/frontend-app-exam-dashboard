@@ -57,8 +57,8 @@ const DashboardPage = () => {
     setVouchersToast((prev) => ({ ...prev, show: false }));
   }, [setExamsToast, setVouchersToast]);
 
-  const handleOpenTerms = useCallback((examId, examTitle) => {
-    setSelectedExam({ examId, examTitle });
+  const handleOpenTerms = useCallback((exam) => {
+    setSelectedExam({ ...exam });
     setIsTermsOpen(true);
   }, []);
 
@@ -72,17 +72,23 @@ const DashboardPage = () => {
   }, []);
 
   const handleFormSubmit = useCallback(async (formData) => {
-    await scheduleExam({ formData });
+    await scheduleExam({
+      formData,
+      redirectParams: {
+        exam_series_code: selectedExam?.exam_series_code,
+        discount_code: selectedExam?.discount_code,
+      },
+    });
     handleCloseTerms();
-  }, [handleCloseTerms]);
+  }, [handleCloseTerms, selectedExam?.discount_code, selectedExam?.exam_series_code]);
 
   const vouchersAsExams = useMemo(
     () => vouchers.map((voucher, index) => ({
       id: `voucher-${index}`,
       name: voucher.exam_name,
       status: voucherStatus.UNSCHEDULED,
-      voucher_number: voucher.voucher_number,
-      exam_code: voucher.exam_code,
+      discount_code: voucher.voucher_number,
+      exam_series_code: voucher.exam_code,
       start_at: null,
     })),
     [vouchers],
@@ -125,7 +131,7 @@ const DashboardPage = () => {
               status={statusLabel}
               examDetails={examDetails}
               dropdownItems={dropdownItems}
-              onScheduleClick={() => handleOpenTerms(exam.id, exam.name)}
+              onScheduleClick={() => handleOpenTerms(exam)}
             />
           );
         })}
