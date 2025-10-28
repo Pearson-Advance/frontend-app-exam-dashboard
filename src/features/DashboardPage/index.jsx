@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Tabs, Tab, Row, Spinner, Toast,
 } from '@edx/paragon';
@@ -8,8 +8,14 @@ import TermsAndScheduleModal from 'components/TermsAndScheduleModal';
 import NoContentPlaceholder from 'features/DashboardPage/components/NoContentPlaceholder';
 
 import { useExams } from 'hooks/useExams';
+import { useVouchers } from 'hooks/useVouchers';
 import { getExamDetails } from 'features/utils/examDetailsHandlers';
-import { EXAM_STATUS_MAP, EXAMS_AVAILABLE } from 'features/utils/constants';
+import {
+  AVAILABLE_EXAM_CARD_STATUSES,
+  EXAMS_AVAILABLE,
+  PAST_EXAMS_AVAILABLE,
+  voucherStatus,
+} from 'features/utils/constants';
 import { scheduleExam } from 'features/utils/globals';
 
 import './index.scss';
@@ -26,10 +32,30 @@ const DashboardPage = () => {
   const {
     exams,
     isLoadingExams,
-    toast,
-    setToast,
+    toast: examsToast,
+    setToast: setExamsToast,
     actions,
   } = useExams();
+
+  const {
+    vouchers,
+    isLoading: isLoadingVouchers,
+    toast: vouchersToast,
+    setToast: setVouchersToast,
+  } = useVouchers();
+
+  const isLoading = isLoadingExams || isLoadingVouchers;
+
+  const toast = useMemo(() => {
+    if (examsToast.show) { return examsToast; }
+    if (vouchersToast.show) { return vouchersToast; }
+    return { show: false, message: '' };
+  }, [examsToast, vouchersToast]);
+
+  const handleCloseToast = useCallback(() => {
+    setExamsToast((prev) => ({ ...prev, show: false }));
+    setVouchersToast((prev) => ({ ...prev, show: false }));
+  }, [setExamsToast, setVouchersToast]);
 
   const handleOpenTerms = useCallback((examId, examTitle) => {
     setSelectedExam({ examId, examTitle });
@@ -50,11 +76,23 @@ const DashboardPage = () => {
     handleCloseTerms();
   }, [handleCloseTerms]);
 
-  const renderExamsTab = (placeholderTitle, placeholderDescription, filterStatuses = []) => {
-    if (isLoadingExams) {
+  const vouchersAsExams = useMemo(
+    () => vouchers.map((voucher, index) => ({
+      id: `voucher-${index}`,
+      name: voucher.exam_name,
+      status: voucherStatus.UNSCHEDULED,
+      voucher_number: voucher.voucher_number,
+      exam_code: voucher.exam_code,
+      start_at: null,
+    })),
+    [vouchers],
+  );
+
+  const renderExamsTab = useCallback((placeholderTitle, placeholderDescription, filterStatuses = []) => {
+    if (isLoading) {
       return (
         <div className="d-flex justify-content-center mt-5">
-          <Spinner screenReaderText="Loading exams..." />
+          <Spinner animation="border" screenReaderText="Loading..." />
         </div>
       );
     }
@@ -65,14 +103,18 @@ const DashboardPage = () => {
       availableExams = availableExams.filter((exam) => filterStatuses.includes(exam.status));
     }
 
-    if (availableExams.length === 0) {
+    const combinedItems = tab === EXAM_TAB
+      ? [...vouchersAsExams, ...availableExams]
+      : availableExams;
+
+    if (combinedItems.length === 0) {
       return <NoContentPlaceholder title={placeholderTitle} description={placeholderDescription} />;
     }
 
     return (
       <Row className="mb-4 p-3 p-md-4 px-md-5">
-        {availableExams.map((exam) => {
-          const statusLabel = EXAM_STATUS_MAP[exam.status];
+        {combinedItems.map((exam) => {
+          const statusLabel = AVAILABLE_EXAM_CARD_STATUSES[exam.status];
           const { examDetails, dropdownItems } = getExamDetails(exam, statusLabel, { exams, actions });
 
           return (
@@ -89,17 +131,21 @@ const DashboardPage = () => {
         })}
       </Row>
     );
-  };
+  }, [isLoading, exams, vouchersAsExams, tab, actions, handleOpenTerms]);
 
   const hasExams = exams.length > 0;
-  const upcomingExamsCount = hasExams ? exams.filter((exam) => EXAMS_AVAILABLE.includes(exam.status)).length : null;
-  const pastExamsCount = hasExams ? exams.length : null;
+  const upcomingExamsCount = hasExams
+    ? exams.filter((exam) => EXAMS_AVAILABLE.includes(exam.status)).length + vouchersAsExams.length
+    : vouchersAsExams.length || null;
+
+  const pastExamsCount = hasExams
+    ? exams.filter((exam) => PAST_EXAMS_AVAILABLE.includes(exam.status)).length
+    : null;
 
   return (
     <>
       <Toast
-        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
-        dismissible
+        onClose={handleCloseToast}
         hasCloseButton
         className="mb-3"
         show={toast.show}
@@ -107,7 +153,7 @@ const DashboardPage = () => {
         {toast.message}
       </Toast>
 
-      <div className="dashboard-container mb-5">
+      <div className="dashboard-container pb-5 p-1">
         <div className="tabs-container">
           <Tabs
             id="tabs"
@@ -131,7 +177,7 @@ const DashboardPage = () => {
               className="tab-content-wrapper"
               {...(tab === PAST_EXAM_TAB ? { notification: pastExamsCount } : {})}
             >
-              {renderExamsTab('No past exams found', 'It looks like you do not have past exams.', [])}
+              {renderExamsTab('No past exams found', 'It looks like you do not have past exams.', PAST_EXAMS_AVAILABLE)}
             </Tab>
           </Tabs>
         </div>

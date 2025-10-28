@@ -12,8 +12,11 @@ import { MoreVert } from '@edx/paragon/icons';
 
 import './index.scss';
 import {
+  AVAILABLE_EXAM_CARD_STATUSES,
   examStatus,
+  voucherStatus,
   EXAM_STATUS_UI_STYLES,
+  VOUCHER_STATUS_UI_STYLES,
 } from 'features/utils/constants';
 import { handleGetVoucherDetails } from 'features/utils/globals';
 import ExamInfoModal from 'components/ExamInfoModal';
@@ -27,12 +30,18 @@ const ExamCard = ({
   image,
   examDetails,
   dropdownItems,
+  onScheduleClick,
 }) => {
+  const cardUIStyles = {
+    ...EXAM_STATUS_UI_STYLES,
+    ...VOUCHER_STATUS_UI_STYLES,
+  };
+
   const {
     text = '',
     class: customClass = '',
     badge = '',
-  } = EXAM_STATUS_UI_STYLES[status] || {};
+  } = cardUIStyles[status] || {};
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [infoData, setInfoData] = useState([]);
@@ -110,20 +119,33 @@ const ExamCard = ({
           </div>
           <Card.Section className="px-4">
             <div className="custom-card-separator" />
-            <ul className="row d-flex flex-column px-1 mb-0" id="exam-details-list">
+            <ul className="list-unstyled mb-0" id="exam-details-list">
               {examDetails.map(({ title: itemTitle, description }) => (
-                <li key={itemTitle} className="mb-2 mb-md-0 d-flex align-items-center list-item text-truncate">
-                  <span className="col-3 col-xxl-2 fw-semibold pr-0 text-truncate" title={itemTitle}>{itemTitle}</span>
-                  <span className="col-sm-10 col-md-9 mb-0 pl-0 custom-text-wrap" title={description}>{description}</span>
+                <li key={itemTitle}>
+                  <span className="detail-label" title={itemTitle}>
+                    {itemTitle}
+                  </span>
+                  <span className="detail-value" title={description}>
+                    {description}
+                  </span>
                 </li>
               ))}
             </ul>
           </Card.Section>
           <Card.Footer className="px-4 pb-4 d-flex flex-column">
             <div className="custom-card-separator" />
-            <Button onClick={handleOpenDetails} className="m-0" id="custom-card-button-voucher-details">
-              Voucher Details
-            </Button>
+            {
+              status === voucherStatus.UNSCHEDULED ? (
+                <Button onClick={onScheduleClick} className="m-0" id="custom-card-button-schedule">
+                  Schedule Exam
+                </Button>
+              )
+                : (
+                  <Button onClick={handleOpenDetails} className="m-0" id="custom-card-button-voucher-details">
+                    Voucher Details
+                  </Button>
+                )
+            }
           </Card.Footer>
         </Card>
       </Col>
@@ -141,7 +163,7 @@ const ExamCard = ({
 
 ExamCard.propTypes = {
   title: PropTypes.string.isRequired,
-  status: PropTypes.oneOf(Object.values(examStatus)).isRequired,
+  status: PropTypes.oneOf(Object.values(AVAILABLE_EXAM_CARD_STATUSES)).isRequired,
   image: PropTypes.string,
   examDetails: PropTypes.arrayOf(
     PropTypes.shape({
@@ -158,6 +180,7 @@ ExamCard.propTypes = {
     }),
   ),
   examId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onScheduleClick: PropTypes.func.isRequired,
 };
 
 ExamCard.defaultProps = {

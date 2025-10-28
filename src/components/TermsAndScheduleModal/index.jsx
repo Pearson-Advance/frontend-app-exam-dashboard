@@ -19,6 +19,7 @@ const TermsAndScheduleModal = ({
       isOpen={isOpen}
       onClose={onClose}
       size="xl"
+      title=""
       hasCloseButton
       isFullscreenOnMobile={false}
       isOverflowVisible={false}
