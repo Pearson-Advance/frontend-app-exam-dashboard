@@ -24,7 +24,8 @@ export const useVouchers = () => {
     setIsLoading(true);
     try {
       const response = await getVouchers();
-      setVouchers(response.data || []);
+      const data = Array.isArray(response?.data) ? response.data : [];
+      setVouchers(data);
     } catch (error) {
       setToast({
         show: true,
