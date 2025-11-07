@@ -16,15 +16,17 @@ describe('getExamDetails', () => {
   const baseExam = {
     start_at: '2025-01-01T10:00:00Z',
     vue_appointment_id: '123',
+    grade: '50',
   };
 
-  test('should return formatted date and time for valid date', () => {
+  test('should return formatted date and time for valid values', () => {
     const result = getExamDetails(baseExam, examStatus.SCHEDULED, {});
     const formattedDate = format(new Date(baseExam.start_at), 'MMM d, yyyy');
     const formattedTime = format(new Date(baseExam.start_at), 'h:mm a');
     expect(result.examDetails).toEqual([
       { title: 'Date:', description: formattedDate },
       { title: 'Time:', description: formattedTime },
+      { title: 'Grade:', description: baseExam.grade },
       { title: 'Location:', description: 'Online' },
     ]);
   });
@@ -33,6 +35,14 @@ describe('getExamDetails', () => {
     const result = getExamDetails({ ...baseExam, start_at: 'invalid-date' }, examStatus.SCHEDULED, {});
     expect(result.examDetails[0].description).toBe('N/A');
     expect(result.examDetails[1].description).toBe('N/A');
+  });
+
+  test('should handle invalid grades gracefully', () => {
+    const gradeNullResult = getExamDetails({ ...baseExam, grade: null }, examStatus.SCHEDULED, {});
+    expect(gradeNullResult.examDetails[2].description).toBe('N/A');
+
+    const gradeUndefinedResult = getExamDetails({ ...baseExam, grade: undefined }, examStatus.SCHEDULED, {});
+    expect(gradeUndefinedResult.examDetails[2].description).toBe('N/A');
   });
 
   test('should call handleRescheduleUrl and handleCancelExam when defined', () => {

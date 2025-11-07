@@ -12,10 +12,12 @@ import { examStatus, voucherStatus, getExamLocation } from 'features/utils/const
 function buildExamDetails(exam, startAt) {
   const date = new Date(startAt);
   const hasValidDate = isValid(date);
+  const hasValidGrade = exam?.grade != null && exam.grade !== ''; // Allow valid falsy values like 0
 
   return [
     { title: 'Date:', description: hasValidDate ? format(date, 'MMM d, yyyy') : 'N/A' },
     { title: 'Time:', description: hasValidDate ? format(date, 'h:mm a') : 'N/A' },
+    { title: 'Grade:', description: hasValidGrade ? exam.grade : 'N/A' },
     getExamLocation(exam),
   ];
 }
