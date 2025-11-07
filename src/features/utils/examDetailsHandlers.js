@@ -1,5 +1,7 @@
 import { format, isValid } from 'date-fns';
-import { examStatus, voucherStatus, getExamLocation } from 'features/utils/constants';
+import {
+  examStatus, voucherStatus, getExamLocation, EXAM_STATUS_MAP,
+} from 'features/utils/constants';
 
 /**
  * Builds the exam details array with date, time and location.
@@ -12,12 +14,32 @@ import { examStatus, voucherStatus, getExamLocation } from 'features/utils/const
 function buildExamDetails(exam, startAt) {
   const date = new Date(startAt);
   const hasValidDate = isValid(date);
+  const hasValidGrade = typeof exam?.grade === 'string' && exam.grade.trim().length > 0;
 
-  return [
-    { title: 'Date:', description: hasValidDate ? format(date, 'MMM d, yyyy') : 'N/A' },
-    { title: 'Time:', description: hasValidDate ? format(date, 'h:mm a') : 'N/A' },
+  const showGrade = EXAM_STATUS_MAP[exam.status] !== examStatus.SCHEDULED;
+
+  const formatGradeLabel = (grade) => grade.trim().charAt(0).toUpperCase() + grade.trim().slice(1).toLowerCase();
+
+  const details = [
+    {
+      title: 'Date:',
+      description: hasValidDate ? format(date, 'MMM d, yyyy') : 'N/A',
+      isBold: true,
+    },
+    {
+      title: 'Time:',
+      description: hasValidDate ? format(date, 'h:mm a') : 'N/A',
+      isBold: true,
+    },
     getExamLocation(exam),
   ];
+
+  if (showGrade) {
+    const description = hasValidGrade ? formatGradeLabel(exam.grade) : 'N/A';
+    details.push({ title: 'Grade:', description, isBold: true });
+  }
+
+  return details;
 }
 
 /**

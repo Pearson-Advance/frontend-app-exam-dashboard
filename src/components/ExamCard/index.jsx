@@ -120,12 +120,12 @@ const ExamCard = ({
           <Card.Section className="px-4">
             <div className="custom-card-separator" />
             <ul className="list-unstyled mb-0" id="exam-details-list">
-              {examDetails.map(({ title: itemTitle, description }) => (
+              {examDetails.map(({ title: itemTitle, description, isBold = false }) => (
                 <li key={itemTitle}>
                   <span className="detail-label" title={itemTitle}>
                     {itemTitle}
                   </span>
-                  <span className="detail-value" title={description}>
+                  <span className={`detail-value ${isBold ? 'text-bold-600' : ''}`} title={description}>
                     {description}
                   </span>
                 </li>
