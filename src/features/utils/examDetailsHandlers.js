@@ -1,5 +1,7 @@
 import { format, isValid } from 'date-fns';
-import { examStatus, voucherStatus, getExamLocation } from 'features/utils/constants';
+import {
+  examStatus, voucherStatus, getExamLocation, EXAM_STATUS_MAP,
+} from 'features/utils/constants';
 
 /**
  * Builds the exam details array with date, time and location.
@@ -12,12 +14,20 @@ import { examStatus, voucherStatus, getExamLocation } from 'features/utils/const
 function buildExamDetails(exam, startAt) {
   const date = new Date(startAt);
   const hasValidDate = isValid(date);
+  const hasValidGrade = exam?.grade != null && exam.grade !== ''; // Allow valid falsy values like 0
+  const showGrade = EXAM_STATUS_MAP[exam.status] === examStatus.COMPLETE;
 
-  return [
+  const details = [
     { title: 'Date:', description: hasValidDate ? format(date, 'MMM d, yyyy') : 'N/A' },
     { title: 'Time:', description: hasValidDate ? format(date, 'h:mm a') : 'N/A' },
     getExamLocation(exam),
   ];
+
+  if (showGrade) {
+    details.push({ title: 'Grade:', description: hasValidGrade ? exam.grade : 'N/A' });
+  }
+
+  return details;
 }
 
 /**
