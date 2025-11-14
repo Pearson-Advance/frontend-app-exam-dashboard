@@ -19,14 +19,13 @@ describe('getExamDetails', () => {
     grade: '50',
   };
 
-  test('should return formatted date and time for valid values', () => {
+  test('should return formatted date and time for valid date', () => {
     const result = getExamDetails(baseExam, examStatus.SCHEDULED, {});
     const formattedDate = format(new Date(baseExam.start_at), 'MMM d, yyyy');
     const formattedTime = format(new Date(baseExam.start_at), 'h:mm a');
     expect(result.examDetails).toEqual([
       { title: 'Date:', description: formattedDate },
       { title: 'Time:', description: formattedTime },
-      { title: 'Grade:', description: baseExam.grade },
       { title: 'Location:', description: 'Online' },
     ]);
   });
@@ -37,12 +36,47 @@ describe('getExamDetails', () => {
     expect(result.examDetails[1].description).toBe('N/A');
   });
 
-  test('should handle invalid grades gracefully', () => {
-    const gradeNullResult = getExamDetails({ ...baseExam, grade: null }, examStatus.SCHEDULED, {});
-    expect(gradeNullResult.examDetails[2].description).toBe('N/A');
+  test('should show grade only for COMPLETE status exams', () => {
+    const completeExam = { ...baseExam, status: 'EXAM_DELIVERED' };
+    const result = getExamDetails(completeExam, examStatus.COMPLETE, {});
 
-    const gradeUndefinedResult = getExamDetails({ ...baseExam, grade: undefined }, examStatus.SCHEDULED, {});
-    expect(gradeUndefinedResult.examDetails[2].description).toBe('N/A');
+    expect(result.examDetails).toHaveLength(4); // Date, Time, Location, Grade
+    expect(result.examDetails[3]).toEqual({ title: 'Grade:', description: '50' });
+  });
+
+  test('should not show grade for non-COMPLETE status exams', () => {
+    const statusMappings = [
+      { backendStatus: 'APPT_CREATED', frontendStatus: examStatus.SCHEDULED },
+      { backendStatus: 'APPT_CANCELED', frontendStatus: examStatus.CANCELED },
+      { backendStatus: 'NO_SHOW', frontendStatus: examStatus.NO_SHOW },
+      { backendStatus: 'NDA_REFUSED', frontendStatus: examStatus.NDA_REFUSED },
+      { backendStatus: 'EXPIRED', frontendStatus: examStatus.EXPIRED },
+    ];
+
+    statusMappings.forEach(({ backendStatus, frontendStatus }) => {
+      const result = getExamDetails({ ...baseExam, status: backendStatus }, frontendStatus, {});
+      expect(result.examDetails).toHaveLength(3); // Date, Time, Location only
+      expect(result.examDetails.find(detail => detail.title === 'Grade:')).toBeUndefined();
+    });
+  });
+
+  test('should handle invalid grades gracefully for COMPLETE exams', () => {
+    const completeExam = { ...baseExam, status: 'EXAM_DELIVERED' };
+
+    const gradeNullResult = getExamDetails({ ...completeExam, grade: null }, examStatus.COMPLETE, {});
+    expect(gradeNullResult.examDetails[3].description).toBe('N/A');
+
+    const gradeUndefinedResult = getExamDetails({ ...completeExam, grade: undefined }, examStatus.COMPLETE, {});
+    expect(gradeUndefinedResult.examDetails[3].description).toBe('N/A');
+
+    const gradeEmptyResult = getExamDetails({ ...completeExam, grade: '' }, examStatus.COMPLETE, {});
+    expect(gradeEmptyResult.examDetails[3].description).toBe('N/A');
+  });
+
+  test('should allow valid falsy values like 0 for grades in COMPLETE exams', () => {
+    const completeExam = { ...baseExam, status: 'EXAM_DELIVERED', grade: 0 };
+    const result = getExamDetails(completeExam, examStatus.COMPLETE, {});
+    expect(result.examDetails[3].description).toBe(0);
   });
 
   test('should call handleRescheduleUrl and handleCancelExam when defined', () => {
