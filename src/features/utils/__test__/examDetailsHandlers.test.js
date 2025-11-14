@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 
 import * as constants from 'features/utils/constants';
-import { examStatus, voucherStatus } from 'features/utils/constants';
+import { examStatus, voucherStatus, EXAM_STATUS_MAP } from 'features/utils/constants';
 import { getExamDetails } from 'features/utils/examDetailsHandlers';
 
 describe('getExamDetails', () => {
@@ -45,13 +45,13 @@ describe('getExamDetails', () => {
   });
 
   test('should not show grade for non-COMPLETE status exams', () => {
-    const statusMappings = [
-      { backendStatus: 'APPT_CREATED', frontendStatus: examStatus.SCHEDULED },
-      { backendStatus: 'APPT_CANCELED', frontendStatus: examStatus.CANCELED },
-      { backendStatus: 'NO_SHOW', frontendStatus: examStatus.NO_SHOW },
-      { backendStatus: 'NDA_REFUSED', frontendStatus: examStatus.NDA_REFUSED },
-      { backendStatus: 'EXPIRED', frontendStatus: examStatus.EXPIRED },
-    ];
+    const backendStatuses = Object.keys(EXAM_STATUS_MAP);
+    const statusMappings = backendStatuses
+      .filter(status => EXAM_STATUS_MAP[status] !== examStatus.COMPLETE)
+      .map(backendStatus => ({
+        backendStatus,
+        frontendStatus: EXAM_STATUS_MAP[backendStatus],
+      }));
 
     statusMappings.forEach(({ backendStatus, frontendStatus }) => {
       const result = getExamDetails({ ...baseExam, status: backendStatus }, frontendStatus, {});
