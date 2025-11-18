@@ -35,19 +35,19 @@ describe('getExamDetails', () => {
     expect(result.examDetails[1].description).toBe('N/A');
   });
 
-  test('should call handleRescheduleUrl and handleCancelExam when defined', () => {
-    const handleRescheduleUrl = jest.fn();
+  test('should call handleRescheduleExam and handleCancelExam when defined', () => {
+    const handleRescheduleExam = jest.fn();
     const handleCancelExam = jest.fn();
 
     const result = getExamDetails(baseExam, examStatus.SCHEDULED, {
       exams: [{ vue_appointment_id: '123' }],
-      actions: { handleRescheduleUrl, handleCancelExam },
+      actions: { handleRescheduleExam, handleCancelExam },
     });
 
     result.dropdownItems[0].onClick();
     result.dropdownItems[1].onClick();
 
-    expect(handleRescheduleUrl).toHaveBeenCalledWith('123');
+    expect(handleRescheduleExam).toHaveBeenCalledWith(baseExam);
     expect(handleCancelExam).toHaveBeenCalledWith('123');
   });
 

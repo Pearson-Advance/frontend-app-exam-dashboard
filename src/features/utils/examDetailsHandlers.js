@@ -59,7 +59,7 @@ const examHandlers = {
         {
           label: 'Reschedule Exam',
           disabled: exams.find((e) => e.vue_appointment_id === exam.vue_appointment_id)?.loadingReschedule,
-          onClick: () => actions.handleRescheduleUrl?.(exam.vue_appointment_id),
+          onClick: () => actions.handleRescheduleExam?.(exam),
         },
         {
           label: 'Cancel Exam',
