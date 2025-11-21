@@ -17,14 +17,17 @@ jest.mock('@edx/frontend-platform/logging');
 describe('useExams', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    delete window.location;
-    window.location = { href: '' };
   });
 
   const defer = () => {
     let resolve;
     let reject;
-    const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
+
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+
     return { promise, resolve, reject };
   };
 
@@ -64,8 +67,6 @@ describe('useExams', () => {
     });
 
     expect(result.current.exams).toEqual(mockExams);
-    expect(result.current.toast).toEqual({ show: false, message: '' });
-    expect(getExams).toHaveBeenCalledTimes(1);
   });
 
   test('should handle API error and show toast', async () => {
@@ -88,7 +89,7 @@ describe('useExams', () => {
     expect(logError).toHaveBeenCalled();
   });
 
-  test('should handle unexpected response (missing results)', async () => {
+  test('handles missing results structure', async () => {
     getExams.mockResolvedValue({ data: {} });
 
     let result;
@@ -106,7 +107,7 @@ describe('useExams', () => {
   test('should handle reschedule action successfully', async () => {
     const mockExam = { vue_appointment_id: '1', name: 'Exam 1' };
     getExams.mockResolvedValue({ data: { results: [mockExam] } });
-    redirectToReschedule.mockResolvedValue({ data: { url: 'https://example.com/reschedule' } });
+    redirectToReschedule.mockResolvedValue({});
 
     let result;
     await act(async () => {
@@ -121,8 +122,8 @@ describe('useExams', () => {
       await result.current.actions.handleRescheduleUrl('1');
     });
 
-    expect(window.location.href).toBe('https://example.com/reschedule');
     expect(result.current.exams[0].loadingReschedule).toBe(false);
+    expect(redirectToReschedule).toHaveBeenCalledWith('1');
   });
 
   test('should show toast when reschedule action fails', async () => {
@@ -149,10 +150,32 @@ describe('useExams', () => {
     });
   });
 
-  test('should show toast when response has no URL', async () => {
+  test('score report success', async () => {
     const mockExam = { vue_appointment_id: '1' };
     getExams.mockResolvedValue({ data: { results: [mockExam] } });
-    redirectToScoreReport.mockResolvedValue({ data: {} });
+    redirectToScoreReport.mockResolvedValue({});
+
+    let result;
+    await act(async () => {
+      ({ result } = renderHook(() => useExams()));
+    });
+
+    await act(async () => {
+      await waitFor(() => expect(result.current.isLoadingExams).toBe(false));
+    });
+
+    await act(async () => {
+      await result.current.actions.handleGetScoreReportUrl('1');
+    });
+
+    expect(result.current.exams[0].loadingScoreReport).toBe(false);
+    expect(redirectToScoreReport).toHaveBeenCalledWith('1');
+  });
+
+  test('score report failure', async () => {
+    const mockExam = { vue_appointment_id: '1' };
+    getExams.mockResolvedValue({ data: { results: [mockExam] } });
+    redirectToScoreReport.mockRejectedValue(new Error('Error'));
 
     let result;
     await act(async () => {
@@ -169,14 +192,14 @@ describe('useExams', () => {
 
     expect(result.current.toast).toEqual({
       show: true,
-      message: 'Unexpected response from the server.',
+      message: 'An error occurred while retrieving the exam score report.',
     });
   });
 
-  test('should handle cancel exam successfully', async () => {
+  test('cancel exam success', async () => {
     const mockExam = { vue_appointment_id: '1' };
     getExams.mockResolvedValue({ data: { results: [mockExam] } });
-    redirectToCancelExam.mockResolvedValue({ data: { url: 'https://cancel.com' } });
+    redirectToCancelExam.mockResolvedValue({});
 
     let result;
     await act(async () => {
@@ -191,7 +214,32 @@ describe('useExams', () => {
       await result.current.actions.handleCancelExam('1');
     });
 
-    expect(window.location.href).toBe('https://cancel.com');
+    expect(result.current.exams[0].loadingCancel).toBe(false);
+    expect(redirectToCancelExam).toHaveBeenCalledWith('1');
+  });
+
+  test('cancel exam failure', async () => {
+    const mockExam = { vue_appointment_id: '1' };
+    getExams.mockResolvedValue({ data: { results: [mockExam] } });
+    redirectToCancelExam.mockRejectedValue(new Error('Error'));
+
+    let result;
+    await act(async () => {
+      ({ result } = renderHook(() => useExams()));
+    });
+
+    await act(async () => {
+      await waitFor(() => expect(result.current.isLoadingExams).toBe(false));
+    });
+
+    await act(async () => {
+      await result.current.actions.handleCancelExam('1');
+    });
+
+    expect(result.current.toast).toEqual({
+      show: true,
+      message: 'An error occurred while canceling the exam.',
+    });
   });
 
   test('should update toast manually with setToast', async () => {

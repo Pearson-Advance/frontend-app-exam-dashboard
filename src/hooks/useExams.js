@@ -55,12 +55,7 @@ export const useExams = () => {
     ));
 
     try {
-      const response = await serviceFn(vueAppointmentId);
-      if (response?.data?.url) {
-        window.location.href = response.data.url;
-      } else {
-        setToast({ show: true, message: 'Unexpected response from the server.' });
-      }
+      await serviceFn(vueAppointmentId);
     } catch {
       setToast({ show: true, message: errorMessage });
     } finally {
