@@ -14,6 +14,8 @@ const TermsAndScheduleModal = ({
   const handleCancel = () => onClose();
   const handlePrevious = () => onAcceptTerms(false);
 
+  React.useEffect(() => () => { onAcceptTerms(false); }, [onAcceptTerms]);
+
   return (
     <ModalDialog
       isOpen={isOpen}

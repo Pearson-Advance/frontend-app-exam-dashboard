@@ -41,13 +41,16 @@ export function redirectToScheduleSSO(redirectParams = {}) {
  * @param {Object} params - The parameters for form submission.
  * @param {Object} params.formData - The raw form data to be formatted.
  * @param {Object} params.redirectParams - Additional information to include in the redirect request.
+ * @param {Bool} params.shouldRedirectToSchedule - Determines if we should use the redirect to schedule endpoint.
  * @returns {Promise<void>} Resolves when the process completes.
  */
-export const scheduleExam = async ({ formData, redirectParams = {} }) => {
+export const scheduleExam = async ({ formData, redirectParams = {}, shouldRedirectToSchedule = true }) => {
   const payload = formatUserPayload(formData);
   await updateUserData(payload);
 
-  redirectToScheduleSSO(redirectParams);
+  if (shouldRedirectToSchedule) {
+    redirectToScheduleSSO(redirectParams);
+  }
 };
 
 /**

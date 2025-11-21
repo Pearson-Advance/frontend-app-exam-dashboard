@@ -27,6 +27,7 @@ const DashboardPage = () => {
   const [tab, setTab] = useState(EXAM_TAB);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isReschedule, setIsReschedule] = useState(false);
   const [selectedExam, setSelectedExam] = useState(null);
 
   const {
@@ -52,6 +53,12 @@ const DashboardPage = () => {
     return { show: false, message: '' };
   }, [examsToast, vouchersToast]);
 
+  const handleRescheduleExam = useCallback((exam) => {
+    setSelectedExam({ ...exam });
+    setIsReschedule(true);
+    setIsTermsOpen(true);
+  }, []);
+
   const handleCloseToast = useCallback(() => {
     setExamsToast((prev) => ({ ...prev, show: false }));
     setVouchersToast((prev) => ({ ...prev, show: false }));
@@ -65,6 +72,7 @@ const DashboardPage = () => {
   const handleCloseTerms = useCallback(() => {
     setIsTermsOpen(false);
     setSelectedExam(null);
+    setIsReschedule(false);
   }, []);
 
   const handleAcceptTerms = useCallback((accepted) => {
@@ -72,6 +80,17 @@ const DashboardPage = () => {
   }, []);
 
   const handleFormSubmit = useCallback(async (formData) => {
+    if (isReschedule) {
+      await scheduleExam({
+        formData,
+        redirectParams: {},
+        shouldRedirectToSchedule: false,
+      });
+
+      actions.handleRescheduleUrl?.(selectedExam.vue_appointment_id);
+      return;
+    }
+
     await scheduleExam({
       formData,
       redirectParams: {
@@ -80,7 +99,14 @@ const DashboardPage = () => {
       },
     });
     handleCloseTerms();
-  }, [handleCloseTerms, selectedExam?.discount_code, selectedExam?.exam_series_code]);
+  }, [
+    handleCloseTerms,
+    isReschedule,
+    actions,
+    selectedExam?.discount_code,
+    selectedExam?.exam_series_code,
+    selectedExam?.vue_appointment_id,
+  ]);
 
   const vouchersAsExams = useMemo(
     () => vouchers.map((voucher, index) => ({
@@ -120,6 +146,8 @@ const DashboardPage = () => {
     return (
       <Row className="mb-4 p-3 p-md-4 px-md-5">
         {combinedItems.map((exam) => {
+          actions.handleRescheduleExam = handleRescheduleExam;
+
           const statusLabel = AVAILABLE_EXAM_CARD_STATUSES[exam.status];
           const { examDetails, dropdownItems } = getExamDetails(exam, statusLabel, { exams, actions });
 
@@ -137,7 +165,7 @@ const DashboardPage = () => {
         })}
       </Row>
     );
-  }, [isLoading, exams, vouchersAsExams, tab, actions, handleOpenTerms]);
+  }, [isLoading, exams, vouchersAsExams, tab, actions, handleOpenTerms, handleRescheduleExam]);
 
   const hasExams = exams.length > 0;
   const upcomingExamsCount = hasExams
