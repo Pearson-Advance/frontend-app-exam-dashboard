@@ -42,10 +42,12 @@ describe('ExamCard', () => {
     expect(screen.getByText('July 3, 2025')).toBeInTheDocument();
   });
 
-  test('renders background image when provided', () => {
+  test('renders image when provided', () => {
     render(<ExamCard {...baseProps} />);
-    const bgDiv = document.querySelector('.card-header-image');
-    expect(bgDiv).toHaveStyle(`background-image: url(${baseProps.image})`);
+    const img = document.querySelector('.card-header-image');
+
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('src', baseProps.image);
   });
 
   test('renders correct number of exam details', () => {

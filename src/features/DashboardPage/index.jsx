@@ -112,6 +112,7 @@ const DashboardPage = () => {
     () => vouchers.map((voucher, index) => ({
       id: `voucher-${index}`,
       name: voucher.exam_name,
+      icon_url: voucher?.icon_url,
       status: voucherStatus.UNSCHEDULED,
       discount_code: voucher.voucher_number,
       exam_series_code: voucher.exam_code,
@@ -156,6 +157,7 @@ const DashboardPage = () => {
               key={exam.id}
               examId={exam.id}
               title={exam?.exam_series_name || exam.name}
+              image={exam?.icon_url ?? undefined}
               status={statusLabel}
               examDetails={examDetails}
               dropdownItems={dropdownItems}
