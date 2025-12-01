@@ -155,7 +155,7 @@ const DashboardPage = () => {
             <ExamCard
               key={exam.id}
               examId={exam.id}
-              title={exam.name}
+              title={exam?.exam_series_name || exam.name}
               status={statusLabel}
               examDetails={examDetails}
               dropdownItems={dropdownItems}
