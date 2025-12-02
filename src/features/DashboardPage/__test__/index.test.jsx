@@ -86,6 +86,16 @@ const validExams = [
     start_at: '2025-07-20T16:30:00Z',
     ...examLocation,
   },
+  {
+    id: 4,
+    name: 'Old Exam Title',
+    status: 'APPT_CANCELED',
+    vue_appointment_id: 'xyz789',
+    created: '2025-07-01T12:00:00Z',
+    start_at: '2025-07-20T16:30:00Z',
+    exam_series_name: 'Tittle override Test',
+    ...examLocation,
+  },
 ];
 
 const validVouchers = [
@@ -136,6 +146,18 @@ describe('DashboardPage', () => {
     expect(examCards.length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText('Exam 1').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Voucher Exam').length).toBeGreaterThan(0);
+  });
+
+  test('renders exam_series_name if available', async () => {
+    jest.spyOn(api, 'getExams').mockResolvedValue({ data: { results: validExams } });
+    jest.spyOn(api, 'getVouchers').mockResolvedValue({ data: [...validVouchers] });
+
+    await act(async () => {
+      render(<DashboardPage />);
+    });
+
+    expect(screen.queryByText('Old Exam Title')).not.toBeInTheDocument();
+    expect(screen.getAllByText('Tittle override Test').length).toBe(1);
   });
 });
 
