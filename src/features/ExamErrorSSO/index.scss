@@ -1,0 +1,25 @@
+@import 'react-paragon-topaz/src/variables.scss';
+@import 'assets/variables.scss';
+
+.exam-sso-error-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 76px - 160px);
+}
+
+.error-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.error-message {
+  font-size: 18px;
+  color: $error-text-color;
+  margin-bottom: 40px;
+}

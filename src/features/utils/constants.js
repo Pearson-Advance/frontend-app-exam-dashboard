@@ -167,3 +167,81 @@ export const formatUserPayload = (formData) => {
     phone_number: formData.phone.value,
   };
 };
+
+/**
+ * Enum-like object containing all error codes returned by the SSO service.
+ * These values must match the "s" query parameter.
+ * @type {Record<string, string>}
+ */
+export const ERROR_CODES = {
+  CANDIDATE_NOT_FOUND: 'ERROR_CANDIDATE_NOT_FOUND',
+  CLIENT_NOT_SUPPORTED: 'ERROR_CLIENT_NOT_SUPPORTED',
+  INVALID_PAYLOAD: 'ERROR_INVALID_PAYLOAD',
+  MISSING_REQUIRED_PARAMETERS: 'ERROR_MISSING_REQUIRED_PARAMETERS',
+  REGISTRATION_NOT_FOUND: 'ERROR_REGISTRATION_NOT_FOUND',
+  SESSION_TIMEOUT: 'ERROR_SESSION_TIMEOUT',
+  TEMPORARY: 'ERROR_TEMPORARY',
+  VUE_WIDE_BLOCK: 'ERROR_VUE_WIDE_BLOCK',
+  GENERIC: 'ERROR',
+};
+
+/**
+ * Maps SSO error codes to their corresponding user-facing messages.
+ * Used by the ExamErrorSSO page to render descriptive error text.
+ * @type {Record<string, string>}
+ */
+export const ERROR_MESSAGES = {
+  [ERROR_CODES.CANDIDATE_NOT_FOUND]: 'Candidate ID was not sent.',
+  [ERROR_CODES.CLIENT_NOT_SUPPORTED]: 'Client is not configured in Pearson VUE website.',
+  [ERROR_CODES.INVALID_PAYLOAD]: 'Payload authentication hash did not match.',
+  [ERROR_CODES.MISSING_REQUIRED_PARAMETERS]: 'Required payload parameter was not sent.',
+  [ERROR_CODES.REGISTRATION_NOT_FOUND]: 'Exam Registration ID sent in the request payload was not found.',
+  [ERROR_CODES.SESSION_TIMEOUT]: 'Payload request has timed out.',
+  [ERROR_CODES.TEMPORARY]: 'Planned temporary system issue is preventing login.',
+  [ERROR_CODES.VUE_WIDE_BLOCK]: 'Your access to the Pearson VUE website has been restricted.',
+  [ERROR_CODES.GENERIC]: 'Unexpected system error has occurred for the Pearson VUE website.',
+};
+
+/**
+ * Workflow types passed through the "w" query parameter.
+ * Used to determine the redirect behavior after showing an SSO error.
+ * @type {{ PASSTHROUGH: string, DASHBOARD: string }}
+ */
+export const WORKFLOWS = {
+  PASSTHROUGH: 'passthrough',
+  DASHBOARD: 'dashboard',
+};
+
+/**
+ * Base URL for IT Specialist information page.
+ * @type {string}
+ */
+export const IT_SPECIALIST_URL = 'https://www.pearsonvue.com/us/en/itspecialist.html';
+
+/**
+ * Defines the redirect URLs used by the SSO error page.
+ * @type {Record<string, string>}
+ */
+export const REDIRECT_URLS = {
+  IT_SPECIALIST: IT_SPECIALIST_URL,
+  DASHBOARD: '/dashboard',
+  HOME: '/',
+};
+
+/**
+ * Button labels displayed on the SSO error page.
+ * @type {Record<string, string>}
+ */
+export const BUTTON_LABELS = {
+  PASSTHROUGH: 'Return to IT Specialist',
+  DASHBOARD: 'Return to Dashboard',
+};
+
+/**
+ * Maps workflow types to their corresponding button labels.
+ * @type {Record<string, string>}
+ */
+export const BUTTON_LABELS_MAP = {
+  [WORKFLOWS.PASSTHROUGH]: BUTTON_LABELS.PASSTHROUGH,
+  [WORKFLOWS.DASHBOARD]: BUTTON_LABELS.DASHBOARD,
+};
