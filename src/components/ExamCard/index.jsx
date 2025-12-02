@@ -85,7 +85,7 @@ const ExamCard = ({
         <Card className="card-wrapper w-100">
           <div className={`card-header-background ${customClass}`}>
             <span className={`custom-badge ${badge}`}>{text}</span>
-            {image && <div className="card-header-image" style={{ backgroundImage: `url(${image})` }} />}
+            {image && <img className="card-header-image" src={image} alt="Card logo" />}
           </div>
           <div className="card-header-container">
             <h2 className="px-4 text-truncate custom-card-header">{title}</h2>
