@@ -36,7 +36,7 @@ function buildExamDetails(exam, startAt) {
 
   if (showGrade) {
     const description = hasValidGrade ? formatGradeLabel(exam.grade) : 'N/A';
-    details.push({ title: 'Grade:', description, isBold: true });
+    details.push({ title: 'Result:', description, isBold: true });
   }
 
   return details;

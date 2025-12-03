@@ -28,7 +28,7 @@ describe('getExamDetails', () => {
       { title: 'Date:', description: formattedDate, isBold: true },
       { title: 'Time:', description: formattedTime, isBold: true },
       { title: 'Location:', description: 'Online' },
-      { title: 'Grade:', description: 'Pass', isBold: true },
+      { title: 'Result:', description: 'Pass', isBold: true },
     ]);
   });
 
@@ -43,7 +43,7 @@ describe('getExamDetails', () => {
     const result = getExamDetails(completeExam, examStatus.COMPLETE, {});
 
     expect(result.examDetails).toHaveLength(4);
-    expect(result.examDetails[3]).toEqual({ title: 'Grade:', description: 'Pass', isBold: true });
+    expect(result.examDetails[3]).toEqual({ title: 'Result:', description: 'Pass', isBold: true });
   });
 
   test('should show grade for status exams except for SCHEDULE', () => {
@@ -63,7 +63,7 @@ describe('getExamDetails', () => {
         {},
       );
 
-      const gradeDetail = result.examDetails.find(d => d.title === 'Grade:');
+      const gradeDetail = result.examDetails.find(d => d.title === 'Result:');
       expect(gradeDetail).toBeDefined();
       expect(gradeDetail.description).toBe('Pass');
     });
