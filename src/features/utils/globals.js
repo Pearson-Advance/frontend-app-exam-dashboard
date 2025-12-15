@@ -7,8 +7,36 @@ import {
   SCORE_REPORT_ENDPOINT,
   CANCEL_ENDPOINT,
   formatUserPayload,
+  WORKFLOWS,
 } from 'features/utils/constants';
 import { updateUserData, getVoucherDetails } from 'features/data/api';
+
+/**
+ * Determines the workflow type based on the current URL pathname.
+ *
+ * @function getWorkflowType
+ * @returns {string} - Returns either WORKFLOWS.PASSTHROUGH or WORKFLOWS.DASHBOARD
+ */
+function getWorkflowType() {
+  const pathname = window?.location?.pathname || '';
+  return pathname.includes('/exam') ? WORKFLOWS.PASSTHROUGH : WORKFLOWS.DASHBOARD;
+}
+
+/**
+ * Builds a query string from parameters, filtering out falsy values and adding workflow type.
+ *
+ * @function buildQueryString
+ * @param {Object} params - Object containing query parameters
+ * @returns {string} - URL-encoded query string with leading '?' if params exist, empty string otherwise
+ */
+function buildQueryString(params = {}) {
+  const filteredParams = Object.fromEntries(
+    Object.entries({ ...params, w: getWorkflowType() }).filter(([, value]) => value),
+  );
+
+  const queryString = new URLSearchParams(filteredParams).toString();
+  return queryString ? `?${queryString}` : '';
+}
 
 /**
  * Redirects the user to the schedule SSO endpoint.
@@ -22,14 +50,12 @@ import { updateUserData, getVoucherDetails } from 'features/data/api';
 export function redirectToScheduleSSO(redirectParams = {}) {
   const { exam_series_code: examSeriesCode, discount_code: discountCode } = redirectParams;
 
-  const query = new URLSearchParams({
-    ...(examSeriesCode && { exam_series_code: examSeriesCode }),
-    ...(discountCode && { discount_code: discountCode }),
-  }).toString();
+  const query = buildQueryString({
+    exam_series_code: examSeriesCode,
+    discount_code: discountCode,
+  });
 
-  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCHEDULE_SSO_ENDPOINT}${
-    query ? `?${query}` : ''
-  }`;
+  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCHEDULE_SSO_ENDPOINT}${query}`;
 }
 
 /**
@@ -64,7 +90,8 @@ export const scheduleExam = async ({ formData, redirectParams = {}, shouldRedire
  * @returns {void} - This function does not return a value, it triggers a page navigation.
  */
 export function redirectToReschedule(vueAppointmentId) {
-  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${RESCHEDULE_ENDPOINT}?registration_id=${vueAppointmentId}`;
+  const query = buildQueryString({ registration_id: vueAppointmentId });
+  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${RESCHEDULE_ENDPOINT}${query}`;
 }
 
 /**
@@ -78,7 +105,8 @@ export function redirectToReschedule(vueAppointmentId) {
  * @returns {void} - This function does not return a value, it triggers a page navigation.
  */
 export function redirectToScoreReport(vueAppointmentId) {
-  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCORE_REPORT_ENDPOINT}?registration_id=${vueAppointmentId}`;
+  const query = buildQueryString({ registration_id: vueAppointmentId });
+  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${SCORE_REPORT_ENDPOINT}${query}`;
 }
 
 /**
@@ -92,7 +120,8 @@ export function redirectToScoreReport(vueAppointmentId) {
  * @returns {void} - This function does not return a value, it triggers a page navigation.
  */
 export function redirectToCancelExam(vueAppointmentId) {
-  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${CANCEL_ENDPOINT}?registration_id=${vueAppointmentId}`;
+  const query = buildQueryString({ registration_id: vueAppointmentId });
+  window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${CANCEL_ENDPOINT}${query}`;
 }
 
 /**
