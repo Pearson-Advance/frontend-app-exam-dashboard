@@ -1,6 +1,7 @@
 import { logError } from '@edx/frontend-platform/logging';
 
-import { handleGetVoucherDetails } from 'features/utils/globals';
+import { handleGetVoucherDetails, getWorkflowType } from 'features/utils/globals';
+import { WORKFLOWS } from 'features/utils/constants';
 import * as api from 'features/data/api';
 
 jest.mock('features/data/api', () => ({
@@ -171,5 +172,87 @@ describe('handleGetVoucherDetails', () => {
       const result = await handleGetVoucherDetails(9);
       expect(result[0].description).toBe('💥SPECIAL-2025-¡OK!');
     });
+  });
+});
+
+describe('getWorkflowType', () => {
+  const originalWindow = global.window;
+
+  beforeEach(() => {
+    delete global.window;
+    global.window = {
+      location: {
+        pathname: '/',
+      },
+    };
+  });
+
+  afterEach(() => {
+    global.window = originalWindow;
+  });
+
+  test('returns PASSTHROUGH when pathname ends with exam', () => {
+    window.location.pathname = '/exam-dashboard/exam';
+    expect(getWorkflowType()).toBe(WORKFLOWS.PASSTHROUGH);
+  });
+
+  test('returns DASHBOARD when pathname ends with dashboard', () => {
+    window.location.pathname = '/exam-dashboard/dashboard';
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+
+  test('returns DASHBOARD for root path', () => {
+    window.location.pathname = '/';
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+
+  test('returns DASHBOARD for empty pathname', () => {
+    window.location.pathname = '';
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+
+  test('handles trailing slash on exam path', () => {
+    window.location.pathname = '/exam-dashboard/exam/';
+    expect(getWorkflowType()).toBe(WORKFLOWS.PASSTHROUGH);
+  });
+
+  test('handles trailing slash on dashboard path', () => {
+    window.location.pathname = '/exam-dashboard/dashboard/';
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+
+  test('returns DASHBOARD for unknown last segment', () => {
+    window.location.pathname = '/exam-dashboard/unknown';
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+
+  test('handles multiple slashes in path', () => {
+    window.location.pathname = '/exam-dashboard//exam';
+    expect(getWorkflowType()).toBe(WORKFLOWS.PASSTHROUGH);
+  });
+
+  test('ignores exam in middle of path', () => {
+    window.location.pathname = '/exam/dashboard';
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+
+  test('handles deeply nested exam path', () => {
+    window.location.pathname = '/a/b/c/d/exam';
+    expect(getWorkflowType()).toBe(WORKFLOWS.PASSTHROUGH);
+  });
+
+  test('handles window being undefined', () => {
+    const newWindow = global.window;
+    delete global.window;
+    global.window = undefined;
+
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+
+    global.window = newWindow;
+  });
+
+  test('handles location being undefined', () => {
+    global.window = {};
+    expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
   });
 });
