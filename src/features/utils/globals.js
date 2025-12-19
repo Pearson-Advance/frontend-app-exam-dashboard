@@ -17,9 +17,12 @@ import { updateUserData, getVoucherDetails } from 'features/data/api';
  * @function getWorkflowType
  * @returns {string} - Returns either WORKFLOWS.PASSTHROUGH or WORKFLOWS.DASHBOARD
  */
-function getWorkflowType() {
+export function getWorkflowType() {
   const pathname = window?.location?.pathname || '';
-  return pathname.includes('/exam') ? WORKFLOWS.PASSTHROUGH : WORKFLOWS.DASHBOARD;
+  const segments = pathname.split('/').filter(Boolean);
+  const lastSegment = segments[segments.length - 1] || '';
+
+  return lastSegment === 'exam' ? WORKFLOWS.PASSTHROUGH : WORKFLOWS.DASHBOARD;
 }
 
 /**
