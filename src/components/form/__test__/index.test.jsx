@@ -5,15 +5,10 @@ import {
   screen,
   fireEvent,
 } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 import { render } from 'test-utils';
 
 import IdentityForm from 'components/form';
-
-jest.mock('@edx/frontend-platform/logging', () => ({
-  logError: jest.fn(),
-}));
 
 jest.mock('react-paragon-topaz', () => {
   // eslint-disable-next-line global-require
@@ -89,18 +84,18 @@ jest.mock('react-paragon-topaz', () => {
   };
 
   const Button = ({
-    children, variant, type, className, onClick, disabled,
-  }) => (
-    <button
-      type={type || 'button'}
-      className={`btn ${variant} ${className}`}
-      onClick={onClick}
-      disabled={disabled}
-      data-testid={`button-${children?.toLowerCase().replace(/\s+/g, '-')}`}
-    >
-      {children}
-    </button>
-  );
+  children, variant, type, className, onClick, disabled,
+}) => (
+  <button
+    type={type || 'submit'}
+    className={`btn ${variant} ${className}`}
+    onClick={onClick}
+    disabled={disabled}
+    data-testid={`button-${children?.toLowerCase().replace(/\s+/g, '-')}`}
+  >
+    {children}
+  </button>
+);
 
   Button.propTypes = {
     children: PropTypes.node.isRequired,
@@ -164,6 +159,8 @@ describe('IdentityForm', () => {
     onSubmit: jest.fn(),
     onPrevious: jest.fn(),
   };
+
+  
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -353,8 +350,8 @@ describe('IdentityForm', () => {
       fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
       fireEvent.change(emailInput, { target: { value: 'john@example.com' } });
 
-      const submitButton = screen.getByTestId('button-submit');
-      fireEvent.click(submitButton);
+      const form = screen.getByRole('form');
+      fireEvent.submit(form);
 
       expect(mockProps.onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({

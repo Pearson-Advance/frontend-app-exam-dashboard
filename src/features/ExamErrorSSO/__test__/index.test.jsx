@@ -1,7 +1,6 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
-import { MemoryRouter, useHistory } from 'react-router-dom';
-import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 import {
   ERROR_CODES,
@@ -14,9 +13,11 @@ import {
 
 import ExamErrorSSO from 'features/ExamErrorSSO';
 
+const mockNavigate = jest.fn();
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useHistory: jest.fn(),
+  useNavigate: () => mockNavigate,
 }));
 
 const renderWithQuery = (query = '') => {
@@ -77,22 +78,16 @@ describe('ExamErrorSSO', () => {
   });
 
   test('redirects to dashboard when workflow is dashboard', () => {
-    const pushMock = jest.fn();
-    useHistory.mockReturnValue({ push: pushMock });
-
     renderWithQuery(`?w=${WORKFLOWS.DASHBOARD}`);
     fireEvent.click(screen.getByRole('button'));
 
-    expect(pushMock).toHaveBeenCalledWith(REDIRECT_URLS.DASHBOARD);
+    expect(mockNavigate).toHaveBeenCalledWith(REDIRECT_URLS.DASHBOARD);
   });
 
   test('redirects to home when workflow is invalid', () => {
-    const pushMock = jest.fn();
-    useHistory.mockReturnValue({ push: pushMock });
-
     renderWithQuery('?w=invalid');
     fireEvent.click(screen.getByRole('button'));
 
-    expect(pushMock).toHaveBeenCalledWith(REDIRECT_URLS.HOME);
+    expect(mockNavigate).toHaveBeenCalledWith(REDIRECT_URLS.HOME);
   });
 });
