@@ -112,11 +112,12 @@ export const PhoneInput = ({
           <Select
             label="Dialing code"
             className="form-input"
-            placeholder="Select"
+            placeholder="Dialing code *"
             options={parsedPhoneCountries}
             value={parsedPhoneCountries?.find((c) => c.value === dialingCodeValue)}
             onChange={(opt) => onDialingCodeChange(opt?.value || '')}
             isClearable
+            required
             isDisabled={dialingCodeDisabled || isLoading}
             styles={{
               control: (base) => ({
@@ -125,6 +126,7 @@ export const PhoneInput = ({
                 borderRight: 'none',
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
+                ...((dialingCodeError || phoneError) && { borderColor: 'var(--error-border-color)' }),
               }),
             }}
           />
@@ -141,13 +143,15 @@ export const PhoneInput = ({
             onChange={(e) => onPhoneChange(e.target.value)}
             required
           />
-          {(phoneError || dialingCodeError) && (
-            <Form.Control.Feedback type="invalid">
-              {phoneError || dialingCodeError}
-            </Form.Control.Feedback>
-          )}
         </Col>
       </div>
+      {(dialingCodeError || phoneError) && (
+        <Form.Control.Feedback type="invalid" className="mt-1">
+          {dialingCodeError}
+          {' '}
+          {phoneError}
+        </Form.Control.Feedback>
+      )}
     </Form.Row>
   </Form.Group>
 );
