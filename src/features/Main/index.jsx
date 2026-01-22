@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Route,
   Routes,
-  Navigate
+  Navigate,
 } from 'react-router-dom';
 import Footer from '@edx/frontend-component-footer';
 import Header from '@edx/frontend-component-header';
@@ -18,7 +18,7 @@ const Main = () => (
       <Route path="/error" element={<ExamErrorSSO />} />
       <Route path="/exam" element={<SchedulePage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-       <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
     <Footer />
   </>

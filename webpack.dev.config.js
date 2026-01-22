@@ -13,7 +13,7 @@ config.resolve.alias = {
   hooks: path.resolve(__dirname, 'src/hooks'),
 };
 
-// Allow access via local.openedx.io:1990
+// Allow access via local.openedx.io:2005
 config.devServer = config.devServer || {};
 config.devServer.allowedHosts = ['local.openedx.io'];
 config.devServer.host = '0.0.0.0';

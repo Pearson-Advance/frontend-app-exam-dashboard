@@ -84,18 +84,18 @@ jest.mock('react-paragon-topaz', () => {
   };
 
   const Button = ({
-  children, variant, type, className, onClick, disabled,
-}) => (
-  <button
-    type={type || 'submit'}
-    className={`btn ${variant} ${className}`}
-    onClick={onClick}
-    disabled={disabled}
-    data-testid={`button-${children?.toLowerCase().replace(/\s+/g, '-')}`}
-  >
-    {children}
-  </button>
-);
+    children, variant, type, className, onClick, disabled,
+  }) => (
+    <button
+      type={type || 'submit'}
+      className={`btn ${variant} ${className}`}
+      onClick={onClick}
+      disabled={disabled}
+      data-testid={`button-${children?.toLowerCase().replace(/\s+/g, '-')}`}
+    >
+      {children}
+    </button>
+  );
 
   Button.propTypes = {
     children: PropTypes.node.isRequired,
@@ -159,8 +159,6 @@ describe('IdentityForm', () => {
     onSubmit: jest.fn(),
     onPrevious: jest.fn(),
   };
-
-  
 
   beforeEach(() => {
     jest.clearAllMocks();
