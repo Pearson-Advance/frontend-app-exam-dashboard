@@ -1,7 +1,6 @@
 /* eslint-disable func-names, react/prop-types */
 import React from 'react';
 import { act, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 import { render } from 'test-utils';
 import DashboardPage from 'features/DashboardPage';
@@ -38,10 +37,6 @@ jest.mock('components/ExamCard', () => function ({
 jest.mock('features/DashboardPage/components/NoContentPlaceholder', () => function ({ title, description }) {
   return <div data-testid="no-content">{title || description}</div>;
 });
-
-jest.mock('@edx/frontend-platform/logging', () => ({
-  logError: jest.fn(),
-}));
 
 const VIEW_SCORE_REPORT_LABEL = 'View Score Report';
 

@@ -1,7 +1,6 @@
 /* eslint-disable func-names, react/prop-types */
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 import SchedulePage from 'features/SchedulePage';
 
@@ -12,14 +11,6 @@ jest.mock('constants', () => ({
   countries: [
     { name: 'United States of America', dialingCode: '+1', cca3: 'USA' },
   ],
-}));
-
-jest.mock('@edx/frontend-platform', () => ({
-  getConfig: () => ({
-    LOGO_URL: 'logo.png',
-    LMS_BASE_URL: 'https://lms.example.com',
-    WEBNG_PLUGIN_API_BASE_URL: 'https://mfe.example.com',
-  }),
 }));
 
 jest.mock('features/data/api', () => ({
