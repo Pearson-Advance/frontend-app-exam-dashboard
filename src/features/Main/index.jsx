@@ -1,11 +1,9 @@
 import React from 'react';
 import {
-  BrowserRouter,
   Route,
-  Switch,
-  Redirect,
+  Routes,
+  Navigate,
 } from 'react-router-dom';
-import { getConfig } from '@edx/frontend-platform';
 import Footer from '@edx/frontend-component-footer';
 import Header from '@edx/frontend-component-header';
 
@@ -14,16 +12,16 @@ import DashboardPage from 'features/DashboardPage';
 import ExamErrorSSO from 'features/ExamErrorSSO';
 
 const Main = () => (
-  <BrowserRouter basename={getConfig().EXAM_DASHBOARD_PATH}>
+  <>
     <Header />
-    <Switch>
-      <Route path="/error" component={ExamErrorSSO} />
-      <Route path="/exam" component={SchedulePage} />
-      <Route path="/dashboard" component={DashboardPage} />
-      <Redirect to="/dashboard" />
-    </Switch>
+    <Routes>
+      <Route path="/error" element={<ExamErrorSSO />} />
+      <Route path="/exam" element={<SchedulePage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
     <Footer />
-  </BrowserRouter>
+  </>
 );
 
 export default Main;

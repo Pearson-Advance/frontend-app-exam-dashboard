@@ -1,11 +1,6 @@
-import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import { updateUserData, getExams } from '../api';
-
-jest.mock('@edx/frontend-platform', () => ({
-  getConfig: jest.fn(),
-}));
 
 jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedHttpClient: jest.fn(),
@@ -19,10 +14,6 @@ describe('API service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    getConfig.mockReturnValue({
-      WEBNG_PLUGIN_API_BASE_URL: 'https://test.api',
-    });
 
     getAuthenticatedHttpClient.mockReturnValue(mockHttpClient);
   });
