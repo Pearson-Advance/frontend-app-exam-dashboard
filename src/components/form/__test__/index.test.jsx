@@ -5,15 +5,10 @@ import {
   screen,
   fireEvent,
 } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 import { render } from 'test-utils';
 
 import IdentityForm from 'components/form';
-
-jest.mock('@edx/frontend-platform/logging', () => ({
-  logError: jest.fn(),
-}));
 
 jest.mock('react-paragon-topaz', () => {
   // eslint-disable-next-line global-require
@@ -81,7 +76,7 @@ jest.mock('react-paragon-topaz', () => {
     children, variant, type, className, onClick, disabled,
   }) => (
     <button
-      type={type || 'button'}
+      type={type || 'submit'}
       className={`btn ${variant} ${className}`}
       onClick={onClick}
       disabled={disabled}

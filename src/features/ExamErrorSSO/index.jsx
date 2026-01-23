@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from 'react-paragon-topaz';
 
 import {
@@ -15,7 +15,7 @@ import './index.scss';
 
 const ExamErrorSSO = () => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const params = new URLSearchParams(location.search);
   const errorCode = params.get('s');
@@ -31,10 +31,10 @@ const ExamErrorSSO = () => {
       window.location.href = REDIRECT_URLS.IT_SPECIALIST;
     },
     [WORKFLOWS.DASHBOARD]: () => {
-      history.push(REDIRECT_URLS.DASHBOARD);
+      navigate(REDIRECT_URLS.DASHBOARD);
     },
     default: () => {
-      history.push(REDIRECT_URLS.HOME);
+      navigate(REDIRECT_URLS.HOME);
     },
   };
 
