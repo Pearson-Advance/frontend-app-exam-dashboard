@@ -348,6 +348,11 @@ describe('IdentityForm', () => {
       const firstNameInput = screen.getByLabelText('First Name *');
       const lastNameInput = screen.getByLabelText('Last Name *');
       const emailInput = screen.getByLabelText('Email *');
+      const [dialingCodeSelect] = screen.getAllByRole('combobox');
+
+      fireEvent.change(dialingCodeSelect, {
+        target: { value: 'CA' },
+      });
 
       fireEvent.change(firstNameInput, { target: { value: 'John' } });
       fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
@@ -361,6 +366,7 @@ describe('IdentityForm', () => {
           firstName: expect.objectContaining({ value: 'John' }),
           lastName: expect.objectContaining({ value: 'Doe' }),
           email: expect.objectContaining({ value: 'john@example.com' }),
+          dialingCode: expect.objectContaining({ value: 'CA' }),
         }),
       );
     });

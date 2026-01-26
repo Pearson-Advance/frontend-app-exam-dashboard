@@ -88,7 +88,7 @@ const initialFormState = {
   firstName: { isDisabled: false, value: '', error: null },
   lastName: { isDisabled: false, value: '', error: null },
   email: { isDisabled: false, value: '', error: null },
-  dialingCode: { isDisabled: false, value: UNITED_STATES, error: null },
+  dialingCode: { isDisabled: false, value: null, error: null },
   phone: { isDisabled: false, value: '', error: null },
   address: { isDisabled: false, value: '', error: null },
   apartment: { isDisabled: false, value: '', error: null },
@@ -168,6 +168,20 @@ const IdentityForm = ({
   const handleSubmit = async (e) => {
     setIsLoading(true);
     e.preventDefault();
+
+    if (!formData.dialingCode.value) {
+      setFormData({
+        ...formData,
+        dialingCode: {
+          ...formData.dialingCode,
+          error: 'Dialing code is required.',
+        },
+      });
+
+      setIsLoading(false);
+      return;
+    }
+
     try {
       await onSubmit(formData);
     } catch (error) {

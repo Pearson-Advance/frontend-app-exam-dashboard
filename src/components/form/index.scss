@@ -1,5 +1,14 @@
 @import 'react-paragon-topaz/src/variables.scss';
 
+:root {
+  // This is defined as a CSS variable instead of a Sass variable because
+  // Sass variables are resolved at build time and cannot be accessed from
+  // JavaScript or inline styles in React. CSS variables exist at runtime,
+  // which allows React components (e.g. react-select styles) to reference
+  // the same design token dynamically without duplicating values.
+  --error-border-color: #da3100;
+}
+
 .form-wrapper {
   background-color: #fff;
   border-radius: 8px;
@@ -44,7 +53,7 @@
 }
 
 .form-input input.form-control.is-invalid {
-  border-color: #da3100;
+  border-color: var(--error-border-color);
 }
 
 .form-input input.form-control:hover {
