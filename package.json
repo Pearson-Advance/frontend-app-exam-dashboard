@@ -13,11 +13,12 @@
     "build": "fedx-scripts webpack",
     "i18n_extract": "BABEL_ENV=i18n fedx-scripts babel src --quiet > /dev/null",
     "is-es5": "es-check es5 ./dist/*.js",
-    "lint": "fedx-scripts eslint --ext .js --ext .jsx .",
-    "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx .",
+    "lint": "fedx-scripts eslint --ext .js --ext .jsx --ext .ts --ext .tsx .",
+    "lint:fix": "fedx-scripts eslint --fix --ext .js --ext .jsx --ext .ts --ext .tsx .",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
-    "test": "jest --coverage --passWithNoTests"
+    "test": "fedx-scripts jest --coverage --passWithNoTests",
+    "types": "tsc --noEmit"
   },
   "husky": {
     "hooks": {
@@ -49,7 +50,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-intl": "^5.25.1",
-    "react-paragon-topaz": "1.39.0",
+    "react-paragon-topaz": "^2.0.0",
     "react-router": "^6.15.0",
     "react-router-dom": "^6.15.0",
     "regenerator-runtime": "0.13.11",
@@ -60,7 +61,7 @@
     "@edx/browserslist-config": "^1.1.1",
     "@edx/reactifex": "^2.1.1",
     "@openedx/frontend-build": "^14.6.2",
-    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "12.1.5",
     "@testing-library/react-hooks": "^8.0.1",
     "glob": "7.2.3",

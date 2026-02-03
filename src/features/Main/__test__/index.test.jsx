@@ -1,4 +1,4 @@
-/* eslint-disable func-names */
+/* eslint-disable func-names, react/prop-types */
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -22,6 +22,15 @@ jest.mock('@edx/frontend-component-footer', () => function () {
 jest.mock('@edx/frontend-component-header', () => function () {
   return <div>Mocked Header</div>;
 });
+
+jest.mock('react-paragon-topaz', () => ({
+  __esModule: true,
+  Button: ({ children, ...props }) => (
+    <button type="button" {...props}>
+      {children}
+    </button>
+  ),
+}));
 
 describe('Main Component ', () => {
   test('redirects unknown route to /schedule/dashboard', () => {

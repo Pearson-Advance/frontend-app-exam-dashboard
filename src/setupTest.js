@@ -28,3 +28,7 @@ jest.mock('@edx/frontend-platform', () => ({
   ensureConfig: jest.fn(),
   subscribe: jest.fn(),
 }));
+
+jest.mock('@edx/frontend-platform/auth', () => ({
+  getAuthenticatedHttpClient: jest.fn(),
+}));
