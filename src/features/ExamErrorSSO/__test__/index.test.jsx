@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -18,6 +19,15 @@ const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
+}));
+
+jest.mock('react-paragon-topaz', () => ({
+  __esModule: true,
+  Button: ({ children, ...props }) => (
+    <button type="button" {...props}>
+      {children}
+    </button>
+  ),
 }));
 
 const renderWithQuery = (query = '') => {
