@@ -38,6 +38,15 @@ jest.mock('features/DashboardPage/components/NoContentPlaceholder', () => functi
   return <div data-testid="no-content">{title || description}</div>;
 });
 
+jest.mock('react-paragon-topaz', () => ({
+  __esModule: true,
+  Button: ({ children, ...props }) => (
+    <button type="button" {...props}>
+      {children}
+    </button>
+  ),
+}));
+
 const VIEW_SCORE_REPORT_LABEL = 'View Score Report';
 
 const examLocation = {
