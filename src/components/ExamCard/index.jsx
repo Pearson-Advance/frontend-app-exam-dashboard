@@ -88,7 +88,7 @@ const ExamCard = ({
             {image && <img className="card-header-image" src={image} alt="Card logo" />}
           </div>
           <div className="card-header-container">
-            <h2 className="px-4 text-truncate custom-card-header">{title}</h2>
+            <h2 className="px-4 mr-5 text-truncate custom-card-header">{title}</h2>
             {
               (dropdownItems?.length > 0 && allowedStatuses.includes(status)) && (
                 <Dropdown id="dropdown-overlay">
