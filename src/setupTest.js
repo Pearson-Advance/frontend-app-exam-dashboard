@@ -32,3 +32,13 @@ jest.mock('@edx/frontend-platform', () => ({
 jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedHttpClient: jest.fn(),
 }));
+
+class ResizeObserver {
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+}
+
+global.ResizeObserver = ResizeObserver;

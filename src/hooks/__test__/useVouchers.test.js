@@ -1,5 +1,4 @@
-import { act, waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { act, waitFor, renderHook } from '@testing-library/react';
 
 import { useVouchers } from 'hooks/useVouchers';
 import { getVouchers } from 'features/data/api';
@@ -14,14 +13,12 @@ describe('useVouchers', () => {
   test('should initialize with default values', async () => {
     getVouchers.mockResolvedValue({ data: [] });
 
-    await act(async () => {
-      const { result } = renderHook(() => useVouchers());
+    const { result } = renderHook(() => useVouchers());
 
-      expect(result.current.vouchers).toEqual([]);
-      expect(result.current.isLoading).toBe(true);
-      expect(result.current.toast).toEqual({ show: false, message: '' });
-      expect(typeof result.current.setToast).toBe('function');
-    });
+    expect(result.current.vouchers).toEqual([]);
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.toast).toEqual({ show: false, message: '' });
+    expect(typeof result.current.setToast).toBe('function');
   });
 
   test('should fetch vouchers successfully on mount', async () => {
@@ -32,10 +29,7 @@ describe('useVouchers', () => {
     getVouchers.mockResolvedValue({ data: [...mockVouchers] });
 
     const { result } = renderHook(() => useVouchers());
-
-    await act(async () => {
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.vouchers).toEqual(mockVouchers);
     expect(result.current.toast).toEqual({ show: false, message: '' });
@@ -47,9 +41,7 @@ describe('useVouchers', () => {
 
     const { result } = renderHook(() => useVouchers());
 
-    await act(async () => {
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.vouchers).toEqual([]);
     expect(result.current.toast).toEqual({ show: false, message: '' });
@@ -60,9 +52,7 @@ describe('useVouchers', () => {
 
     const { result } = renderHook(() => useVouchers());
 
-    await act(async () => {
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.vouchers).toEqual([]);
     expect(result.current.toast).toEqual({
@@ -77,9 +67,7 @@ describe('useVouchers', () => {
 
     const { result } = renderHook(() => useVouchers());
 
-    await act(async () => {
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     const newToast = { show: true, message: 'Custom message' };
 
@@ -98,9 +86,7 @@ describe('useVouchers', () => {
 
     expect(result.current.isLoading).toBe(true);
 
-    await act(async () => {
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
   test('should set isLoading to false after failed fetch', async () => {
@@ -110,8 +96,6 @@ describe('useVouchers', () => {
 
     expect(result.current.isLoading).toBe(true);
 
-    await act(async () => {
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 });

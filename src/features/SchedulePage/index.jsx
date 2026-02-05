@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container } from '@edx/paragon';
+import { Container } from '@openedx/paragon';
 
 import { scheduleExam } from 'features/utils/globals';
 

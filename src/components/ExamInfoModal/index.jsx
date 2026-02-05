@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ModalDialog, Spinner } from '@edx/paragon';
+import { ModalDialog, Spinner } from '@openedx/paragon';
 
 import './index.scss';
 
