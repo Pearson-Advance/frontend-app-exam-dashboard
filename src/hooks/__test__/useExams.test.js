@@ -1,6 +1,5 @@
-import { waitFor } from '@testing-library/react';
+import { waitFor, act, renderHook } from '@testing-library/react';
 import { logError } from '@edx/frontend-platform/logging';
-import { renderHook, act } from '@testing-library/react-hooks';
 
 import { useExams } from 'hooks/useExams';
 import { getExams } from 'features/data/api';

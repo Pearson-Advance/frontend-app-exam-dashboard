@@ -1,7 +1,8 @@
 /* eslint-disable func-names, react/prop-types */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import ExamInfoModal from 'components/ExamInfoModal';
+import { render } from 'test-utils';
 
 describe('ExamInfoModal', () => {
   const mockOnClose = jest.fn();

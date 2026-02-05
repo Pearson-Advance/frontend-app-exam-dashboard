@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import {
   Tabs, Tab, Row, Spinner, Toast,
-} from '@edx/paragon';
+} from '@openedx/paragon';
 
 import ExamCard from 'components/ExamCard';
 import TermsAndScheduleModal from 'components/TermsAndScheduleModal';

@@ -7,8 +7,8 @@ import {
   IconButton,
   Icon,
   Dropdown,
-} from '@edx/paragon';
-import { MoreVert } from '@edx/paragon/icons';
+} from '@openedx/paragon';
+import { MoreVert } from '@openedx/paragon/icons';
 
 import './index.scss';
 import {

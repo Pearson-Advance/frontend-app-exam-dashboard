@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Col } from '@edx/paragon';
+import { Form, Col } from '@openedx/paragon';
 import { Select } from 'react-paragon-topaz';
 
 import { countries } from 'features/utils/constants';
