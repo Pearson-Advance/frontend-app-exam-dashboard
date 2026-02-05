@@ -1,7 +1,17 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import TermsConditions from 'components/TermsConditions';
+
+jest.mock('react-paragon-topaz', () => ({
+  __esModule: true,
+  Button: ({ children, ...props }) => (
+    <button type="button" {...props}>
+      {children}
+    </button>
+  ),
+}));
 
 describe('TermsConditions', () => {
   const onAcceptMock = jest.fn();
