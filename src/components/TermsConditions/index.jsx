@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Form } from '@edx/paragon';
+import { Form } from '@openedx/paragon';
 import { Button } from 'react-paragon-topaz';
 
 import { TermsText } from 'components/TermsConditions/TermsText';

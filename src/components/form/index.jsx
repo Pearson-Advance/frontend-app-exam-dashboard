@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Toast, Icon } from '@edx/paragon';
+import { Form, Toast, Icon } from '@openedx/paragon';
 import { Button } from 'react-paragon-topaz';
 import { logError } from '@edx/frontend-platform/logging';
 import { AppContext } from '@edx/frontend-platform/react';
-import { WarningFilled } from '@edx/paragon/icons';
+import { WarningFilled } from '@openedx/paragon/icons';
 
 import { Input, PhoneInput, SelectInput } from 'components/form/components';
 import { countries, unitedStates, canadianProvincesAndTerritories } from 'features/utils/constants';

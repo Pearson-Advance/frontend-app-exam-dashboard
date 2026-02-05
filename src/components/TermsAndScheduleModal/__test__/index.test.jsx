@@ -1,7 +1,8 @@
 /* eslint-disable func-names, react/prop-types */
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import TermsAndScheduleModal from 'components/TermsAndScheduleModal';
+import { render } from 'test-utils';
 
 jest.mock('components/TermsConditions', () => function ({ onAccept, onCancel }) {
   return (

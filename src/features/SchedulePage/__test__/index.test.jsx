@@ -26,8 +26,8 @@ jest.mock('react-paragon-topaz', () => ({
   ),
 }));
 
-jest.mock('@edx/paragon', () => {
-  const actualParagon = jest.requireActual('@edx/paragon');
+jest.mock('@openedx/paragon', () => {
+  const actualParagon = jest.requireActual('@openedx/paragon');
 
   return {
     ...actualParagon,

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ModalDialog } from '@edx/paragon';
+import { ModalDialog } from '@openedx/paragon';
 import TermsConditions from 'components/TermsConditions';
 import IdentityForm from 'components/form';
 
