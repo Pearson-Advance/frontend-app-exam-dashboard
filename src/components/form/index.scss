@@ -1,23 +1,11 @@
-@import 'react-paragon-topaz/src/variables.scss';
-@import 'assets/variables.scss';
-
-:root {
-  // This is defined as a CSS variable instead of a Sass variable because
-  // Sass variables are resolved at build time and cannot be accessed from
-  // JavaScript or inline styles in React. CSS variables exist at runtime,
-  // which allows React components (e.g. react-select styles) to reference
-  // the same design token dynamically without duplicating values.
-  --error-border-color: #da3100;
-}
-
 .form-wrapper {
-  background-color: #fff;
+  background-color: var(--pgn-color-white-100);
   border-radius: 8px;
-  border: 1px solid $border-form-color;
+  border: 1px solid var(--pgn-color-gray-300);
 }
 
 .form-title {
-  color: $primary-dark;
+  color: var(--pgn-color-primary-active);
 
   @media screen and (max-width: 576px) {
     font-size: 24px;
@@ -25,7 +13,7 @@
 }
 
 .form-subtitle {
-  color: #002646;
+  color: var(--pgn-color-blue-900);
   font-size: 16px;
 }
 
@@ -76,22 +64,22 @@
 }
 
 .form-input input.form-control {
-  border: 1px solid $border-form-color;
+  border: 1px solid var(--pgn-color-gray-300);
 }
 
 .form-input input.form-control.is-invalid {
-  border-color: var(--error-border-color);
+  border-color: var(--pgn-color-red-500);
 }
 
 .form-input input.form-control:hover {
-  outline: 2px solid $border-form-color;
+  outline: 2px solid var(--pgn-color-gray-300);
 }
 
 .form-input-disabled input.form-control,
 .form-input-disabled input.form-control:hover {
   padding-left: 0;
   outline: none;
-  background-color: #fff;
+  background-color: var(--pgn-color-white-100);
   border: none;
 }
 
