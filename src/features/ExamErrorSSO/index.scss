@@ -1,6 +1,3 @@
-@import 'react-paragon-topaz/src/variables.scss';
-@import 'assets/variables.scss';
-
 .exam-sso-error-page {
   max-width: 800px;
   margin: 0 auto;
@@ -20,6 +17,6 @@
 
 .error-message {
   font-size: 18px;
-  color: $error-text-color;
+  color: var( --pgn-color-gray-750);
   margin-bottom: 40px;
 }

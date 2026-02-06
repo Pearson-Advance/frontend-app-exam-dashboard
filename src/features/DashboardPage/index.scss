@@ -1,18 +1,15 @@
-@import 'react-paragon-topaz/src/variables.scss';
-@import 'assets/variables.scss';
-
 .dashboard-container {
-  background-color: $bg-dashboard-color;
+  background-color: var(--pgn-color-gray-075);
   min-height: 100vh;
 }
 
 .tabs-container {
-  background-color: $card-bg;
+  background-color: var(--pgn-color-white-100);
   border-radius: 8px;
-  box-shadow: 0 2px 4px $card-shadow;
+  box-shadow: 0 2px 4px var(--pgn-card-shadow);
   margin: 0 2rem;
   margin-top: 2rem;
-  border: 1px solid $gray-border;
+  border: 1px solid var(--pgn-color-gray-400);
 
   @media screen and (max-width: 576px) {
     margin: 0.5rem;
@@ -24,7 +21,7 @@
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   padding: 1.5em 1.5em 1.2em 1.5em;
-  background-color: $gray-20;
+  background-color: var(--pgn-color-gray-200);
 }
 
 nav[role='tablist'] {
@@ -32,15 +29,15 @@ nav[role='tablist'] {
 }
 
 a.nav-link:not(.active)[role='tab'][data-rb-event-key] {
-  border-color: $gray-border;
+  border-color: var(--pgn-color-gray-400);
 }
 
 a.nav-link.active[role='tab'][data-rb-event-key],
 #pgn__tab-toggle,
 #tabs-tab-null {
-  border-color: $blue-80;
-  background-color: $blue-80;
-  color: $white;
+  border-color: var(--pgn-color-blue-800);
+  background-color: var(--pgn-color-blue-800);
+  color: var(--pgn-color-white-100);
 }
 
 #tabs-tab-past-exams,
@@ -49,9 +46,9 @@ a.nav-link.active[role='tab'][data-rb-event-key],
 }
 
 div.pgn__bubble.pgn__bubble-error.pgn__tab-notification.expandable {
-  background-color: $bg-tab-notification;
-  border-color: $white;
-  color: $tab-notification-color;
+  background-color: var(--pgn-color-green-150);
+  border-color: var(--pgn-color-white-100);
+  color: var(--pgn-color-gray-900);
   right: 10px;
   top: 5px;
 }
@@ -71,10 +68,10 @@ div.pgn__bubble.pgn__bubble-error.pgn__tab-notification.expandable {
   align-items: center;
   justify-content: center;
   min-height: 160px;
-  color: $placeholder-text;
+  color: var(--pgn-color-gray-700);
   margin: 1em 3em;
   margin-top: 2.5em;
-  border: 1px solid $placeholder-border;
+  border: 1px solid var(--pgn-color-gray-300);
   border-radius: 8px;
 
   @media screen and (max-width: 576px) {
@@ -86,7 +83,7 @@ div.pgn__bubble.pgn__bubble-error.pgn__tab-notification.expandable {
 .no-content-placeholder-container h3 {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
-  color: $placeholder-title;
+  color: var(--pgn-color-gray-800);
 }
 
 .no-content-placeholder-container p {
