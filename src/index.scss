@@ -1,8 +1,5 @@
-@import "react-paragon-topaz/src/variables.scss";
-
 @import "@edx/brand/paragon/fonts.scss";
 @import "@edx/brand/paragon/variables.scss";
-@import "@openedx/paragon/scss/core/core.scss";
 @import "@edx/brand/paragon/overrides.scss";
 
 @import "~@edx/frontend-component-header/dist/index";
@@ -11,10 +8,9 @@
 @import "react-paragon-topaz/src/styles/Form/Form.scss";
 @import "react-paragon-topaz/src/styles/shared.scss";
 
-@import 'assets/variables.scss';
 
 .pageWrapper{
-  background-color: $bg-main-color;
+  background-color: var(--pgn-color-gray-050);
 }
 
 // Remove modal top and bottom shadows

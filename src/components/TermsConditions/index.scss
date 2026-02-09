@@ -1,13 +1,10 @@
-@import 'assets/variables.scss';
-@import 'react-paragon-topaz/src/variables.scss';
-
 .terms-section {
   padding: 2rem;
 
   h3 {
     font-size: 1.4rem;
     margin-bottom: 0.5rem;
-    color: $primary-dark;
+    color: var(--pgn-color-primary-active);
   }
 
   p {
@@ -17,12 +14,12 @@
   }
 
   .terms-content {
-    border: 1px solid $gray-20;
+    border: 1px solid var(--pgn-color-gray-200);
     border-radius: 8px;
   }
 
   .description-text {
-    color: $blue-90;
+    color: var(--pgn-color-blue-900);
   }
 
   .pgn__form-checkbox-input {
@@ -42,5 +39,5 @@
 
 .section-buttons {
   padding: 2rem;
-  border-top: 1px solid $gray-20;
+  border-top: 1px solid var(--pgn-color-gray-200);
 }
