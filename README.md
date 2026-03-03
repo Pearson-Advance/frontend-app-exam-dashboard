@@ -1,33 +1,57 @@
-# Frontend App Exam Dashboard
-## Introduction
-This MFE application for WebNG/CertPREP integrations offers an extensive range of features to vouchers and exam administration for users that are eligible. This MFE is placed on a top-level tab named "Exams", which is a peer to "Courses".
+# Open edX Frontend App Exam Dashboard
 
-## Cloning and Startup
-### Node setup
-It's important to note that this MFE is build with Node v16, so we shall ensure that that's the proper and only version instaled in our workspace.
-To do so please execute the following commands in your Ubuntu's terminal
+This MFE adds WebNG service integrations to the Open edX platform.
 
-```
-# installs nvm (Node Version Manager)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-# download and install Node.js (you may need to restart the terminal)
-nvm install 16
-# verifies the right Node.js version is in the environment
-node -v # should print 'v16.20.2'
-# verifies the right NPM version is in the environment
-npm -v # should print '8.19.4'
-```
+WebNG is a web interface through which candidates can schedule, reschedule,
+and pay for Pearson VUE exams and launch exams delivered through OnVUE.
 
-Once this was done, please excute `nvm ls` it shall show an output like this (please be aware of the version pointed by an arrow)
-![image](https://github.com/Pearson-Advance/frontend-app-skillable/assets/74993704/676f6dd9-3305-43ff-82db-2227ca560cf1)
-If there's any other prior or further version installed, please remove it with `nvm uninstall vXX.XX.X`
+This MFE allows users to schedule, reschedule, cancel their exams on the WebNG website, this MFE also allows displaying information about the user exam such has the date, location and grade of their exams. This MFE is placed on a top-level tab named "Exams", which is a peer to "Courses".
 
-### Project setup
-Clone this repo into the `/src` folder of your devstack installation, once it has been cloned, follow the next command:
-`cd frontend-app-exam-dashboard && npm install`
-It would place you onto the repository folder and install de dependencies nedeed for the project to run. With that just execute
-`npm start`. There shall be a frontend running in http://localhost:2002/
+## Getting Started
 
-## Testing
-- Jest test: `npm test`
-- Lint test: `npm run lint`
+### Development Setup
+
+1. Clone this repository:
+
+    ```bash
+    git clone https://github.com/Pearson-Advance/frontend-app-exam-dashboard.git ~/openedx/src/frontend-app-exam-dashboard
+    # Follow that repository's README for install and start instructions
+    ```
+
+3. Install nvm (Node Version Manager).
+
+    ```bash
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    ```
+
+3. Download and install Node.js (you may need to restart the terminal).
+
+    ```bash
+    nvm install 16
+    # Verifies the right Node.js version is in the environment.
+    node -v # Should print 'v16.20.2'
+    # Verifies the right NPM version is in the environment.
+    npm -v # Should print '8.19.4'
+    ```
+
+4. Install NPM dependencies:
+
+    ```bash
+    cd ~/openedx/src/frontend-app-exam-dashboard
+    npm install
+    ```
+
+5. Run tests:
+
+    ```bash
+    npm test  # Run Jest tests.
+    npm run lint  # Run lint tests.
+    ```
+
+6. Start the project:
+
+    ```bash
+    npm start
+    ```
+
+**NOTE:** Please make sure that the Node version is equal to `v16.20.2`. Execute `nvm ls` to list all the installed versions, if there's any other prior or further version installed, please remove it with `nvm uninstall vXX.XX.X`
