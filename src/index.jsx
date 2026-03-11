@@ -14,9 +14,6 @@ import Main from 'features/Main';
 
 import appMessages from './i18n';
 
-import '@openedx/paragon/dist/core.min.css';
-import '@openedx/paragon/dist/light.min.css';
-import 'react-paragon-topaz/src/styles/paragon-tokens.css';
 import './index.scss';
 
 const container = document.getElementById('root');

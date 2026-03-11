@@ -1,5 +1,5 @@
 .card-wrapper {
-  border: 1px solid var(--pgn-color-gray-400);
+  border: 1px solid var(--pgn-color-gray-vue-300);
   border-radius: 8px;
 }
 
@@ -36,7 +36,7 @@ div .pgn__card {
   background-size: cover;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: var(--pgn-color-gray-750);
+  background-color: var(--pgn-color-gray-vue-700);
 }
 
 .scheduled-background {
@@ -72,14 +72,14 @@ div .pgn__card {
 
 .scheduled-background,
 .completed-background {
-  background-color: var(--pgn-color-green-200);
+  background-color: var(--pgn-color-green-vue-200);
 }
 
 .expired-background,
 .nda-refused-background,
 .no-show-background,
 .canceled-background {
-  background-color: var(--pgn-color-gray-750);
+  background-color: var(--pgn-color-gray-vue-700);
 }
 
 .custom-badge {
@@ -113,41 +113,41 @@ div .pgn__card {
 }
 
 #dropdown-toggle:hover {
-  background-color: var(--pgn-color-primary-active);
-  color: var(--pgn-color-white-100);
+  background-color: var(--pgn-color-primary-base);
+  color: var(--pgn-color-white);
 }
 
 #dropdown-toggle {
-  outline-color: var(--pgn-color-primary-active);
-  border-color: var(--pgn-color-primary-active);
-  color: var(--pgn-color-primary-active);
+  outline-color: var(--pgn-color-primary-base);
+  border-color: var(--pgn-color-primary-base);
+  color: var(--pgn-color-primary-base);
 }
 
 .badge-complete {
-  background-color: var(--pgn-color-green-700);
-  color: var(--pgn-color-white-100);
+  background-color: var(--pgn-color-green-vue-700);
+  color: var(--pgn-color-white);
 }
 
 .badge-scheduled {
-  background-color: var(--pgn-color-green-400);
-  color: black;
+  background-color: var(--pgn-color-green-vue-400);
+  color: var(--pgn-color-black);
 }
 
 .badge-unscheduled {
-  background-color: var(--pgn-color-yellow-400);
-  color: var(-pgn-color-gray-900);
+  background-color: var(--pgn-color-yellow-vue-400);
+  color: var(--pgn-color-gray-800);
 }
 
 .badge-canceled,
 .badge-no-show,
 .badge-nda-refused,
 .badge-expired {
-  background-color: var(--pgn-color-red-800);
-  color: var(--pgn-color-white-100);
+  background-color: var(--pgn-color-red-vue-800);
+  color: var(--pgn-color-white);
 }
 
 .custom-card-header {
-  color: var(--pgn-color-primary-active);
+  color: var(--pgn-color-primary-base);
   font-size: 20px;
   padding-top: 40px;
 
@@ -158,7 +158,7 @@ div .pgn__card {
 
 .pgn__card .pgn__card-section,
 .list-item {
-  color: var(--pgn-color-blue-900);
+  color: var(--pgn-color-blue-vue-900);
   font-size: 14px;
 }
 
@@ -200,15 +200,15 @@ $content-max-height: 170px;
 }
 
 .custom-card-separator {
-  border-top: 1px solid var(--pgn-color-gray-200);
+  border-top: 1px solid var(--pgn-color-gray-vue-200);
   width: 100%;
   height: 3px;
   margin-bottom: 15px;
 }
 
 #custom-card-button-schedule {
-  background-color: var(--pgn-color-primary-active);
-  border-color: var(--pgn-color-primary-active);
+  background-color: var(--pgn-color-primary-base);
+  border-color: var(--pgn-color-primary-base);
   width: 100%;
   font-weight: 600;
 }
@@ -217,7 +217,7 @@ $content-max-height: 170px;
   background-color: transparent;
   border: none;
   width: 100%;
-  color: var(--pgn-color-blue-800);
+  color: var(--pgn-color-primary-base);
   text-decoration: underline;
   font-weight: 400;
 }
