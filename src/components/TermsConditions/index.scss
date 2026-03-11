@@ -4,7 +4,7 @@
   h3 {
     font-size: 1.4rem;
     margin-bottom: 0.5rem;
-    color: var(--pgn-color-primary-active);
+    color: var(--pgn-color-primary-base);
   }
 
   p {
@@ -14,12 +14,12 @@
   }
 
   .terms-content {
-    border: 1px solid var(--pgn-color-gray-200);
+    border: 1px solid var(--pgn-color-gray-vue-200);
     border-radius: 8px;
   }
 
   .description-text {
-    color: var(--pgn-color-blue-900);
+    color: var(--pgn-color-primary-base);
   }
 
   .pgn__form-checkbox-input {
@@ -39,5 +39,5 @@
 
 .section-buttons {
   padding: 2rem;
-  border-top: 1px solid var(--pgn-color-gray-200);
+  border-top: 1px solid var(--pgn-color-gray-vue-200);
 }
