@@ -33,10 +33,10 @@ const parsedCountries = countries?.map(country => ({
 const countriesWithStates = [UNITED_STATES, CANADA];
 
 const FormHeader = () => (
-  <Form.Row className="flex-column mb-4 pl-1">
-    <h3 className="form-title mb-4">Verify your identity</h3>
+  <Form.Row className="pl-1 mb-4 flex-column">
+    <h3 className="mb-4 form-title">Verify your identity</h3>
     <p className="form-subtitle">
-      <Icon src={WarningFilled} className="align-middle mr-1 text-danger icon-header" />
+      <Icon src={WarningFilled} className="mr-1 align-middle text-danger icon-header" />
       <strong className="pl-4">
         IMPORTANT: You must enter your first/given and last/surname/family name exactly as it appears
         on the identification (ID) you will present at the test center.
@@ -49,31 +49,31 @@ const FormHeader = () => (
 );
 
 const FormActions = ({ onCancel, onPrevious, isLoading }) => (
-  <div className="d-flex justify-content-between border-top px-3 px-md-4 p-md-4 py-4">
-    <div className="d-flex justify-content-start gap-2">
+  <div className="px-3 py-4 d-flex justify-content-between border-top px-md-4 p-md-4">
+    <div className="gap-2 d-flex justify-content-start">
       <Button
         variant="tertiary"
         type="button"
-        className="p-2 px-md-4 mr-1 mr-md-0"
+        className="p-2 mr-1 px-md-4 mr-md-0"
         onClick={onCancel}
         disabled={isLoading}
       >
         Cancel
       </Button>
     </div>
-    <div className="d-flex justify-content-end gap-2">
+    <div className="gap-2 d-flex justify-content-end">
       <Button
         variant="primary"
         text
         type="button"
-        className="mr-2 mr-md-3 p-2 px-md-4"
+        className="p-2 mr-2 mr-md-3 px-md-4"
         onClick={onPrevious}
         disabled={isLoading}
       >
         Previous
       </Button>
       <Button
-        className="p-2 px-md-4 py-3"
+        className="p-2 py-3 px-md-4"
         variant="outline-primary"
         type="submit"
         disabled={isLoading}
@@ -88,14 +88,14 @@ const initialFormState = {
   firstName: { isDisabled: false, value: '', error: null },
   lastName: { isDisabled: false, value: '', error: null },
   email: { isDisabled: false, value: '', error: null },
-  dialingCode: { isDisabled: false, value: null, error: null },
+  dialingCode: { isDisabled: false, value: 'US', error: null },
   phone: { isDisabled: false, value: '', error: null },
   address: { isDisabled: false, value: '', error: null },
   apartment: { isDisabled: false, value: '', error: null },
   city: { isDisabled: false, value: '', error: null },
   state: { isDisabled: false, value: '', error: null },
   postalCode: { isDisabled: false, value: '', error: null },
-  country: { isDisabled: false, value: '', error: null },
+  country: { isDisabled: false, value: 'USA', error: null },
 };
 
 /**
@@ -238,7 +238,7 @@ const IdentityForm = ({
         <div className="p-4">
           <FormHeader />
 
-          <Form.Row className="d-flex flex-wrap">
+          <Form.Row className="flex-wrap d-flex">
             <Input
               id="firstName"
               label="First Name *"
@@ -312,46 +312,6 @@ const IdentityForm = ({
           </Form.Row>
 
           <Form.Row>
-            <Input
-              id="city"
-              label="City *"
-              required
-              value={formData.city.value}
-              error={formData.city.error}
-              isDisabled={formData.city.isDisabled}
-              isLoading={isLoading}
-              onChange={(value) => handleInputChange('city', value)}
-            />
-
-            {showStateAndPostalCodeField && (
-              <SelectInput
-                id="state"
-                label="State / Province"
-                placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
-                options={getStateOptions(formData.country.value)}
-                value={formData.state.value}
-                error={formData.state.error}
-                isDisabled={formData.state.isDisabled}
-                isLoading={isLoading}
-                onChange={(value) => handleInputChange('state', value)}
-              />
-            )}
-          </Form.Row>
-
-          <Form.Row>
-            {showStateAndPostalCodeField && (
-              <Input
-                id="postalCode"
-                label="ZIP / Postal Code *"
-                required
-                value={formData.postalCode.value}
-                error={formData.postalCode.error}
-                isDisabled={formData.postalCode.isDisabled}
-                isLoading={isLoading}
-                onChange={(value) => handleInputChange('postalCode', value)}
-              />
-            )}
-
             <SelectInput
               id="country"
               label="Country / Region"
@@ -363,6 +323,42 @@ const IdentityForm = ({
               isDisabled={formData.country.isDisabled}
               isLoading={isLoading}
               onChange={(value) => handleInputChange('country', value)}
+            />
+
+            <SelectInput
+              id="state"
+              label="State / Province"
+              placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
+              options={getStateOptions(formData.country.value)}
+              value={formData.state.value}
+              error={formData.state.error}
+              isDisabled={formData.state.isDisabled || !showStateAndPostalCodeField}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('state', value)}
+            />
+          </Form.Row>
+
+          <Form.Row>
+            <Input
+              id="city"
+              label="City *"
+              required
+              value={formData.city.value}
+              error={formData.city.error}
+              isDisabled={formData.city.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('city', value)}
+            />
+
+            <Input
+              id="postalCode"
+              label="ZIP / Postal Code *"
+              required
+              value={formData.postalCode.value}
+              error={formData.postalCode.error}
+              isDisabled={formData.postalCode.isDisabled || !showStateAndPostalCodeField}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('postalCode', value)}
             />
           </Form.Row>
         </div>
