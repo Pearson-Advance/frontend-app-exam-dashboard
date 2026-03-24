@@ -29,7 +29,8 @@ export const countries = countriesData
     cca3,
     cca2,
   }))
-  .filter(({ dialingCode }) => dialingCode);
+  .filter(({ dialingCode }) => dialingCode)
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 /**
  * Returns the exam location formatted as a string.
