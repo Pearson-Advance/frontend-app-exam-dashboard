@@ -123,14 +123,29 @@ const IdentityForm = ({
   const [toast, setToast] = useState({ show: false, message: '' });
 
   const handleInputChange = (name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        value,
-        error: null,
-      },
-    }));
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [name]: {
+          ...prev[name],
+          value,
+          error: null,
+        },
+      };
+
+      if (name === 'country') {
+        if (!countriesWithStates.includes(value)) {
+          updated.state = {
+            ...prev.state, value: '', error: null, isDisabled: false,
+          };
+          updated.postalCode = {
+            ...prev.postalCode, value: '', error: null, isDisabled: false,
+          };
+        }
+      }
+
+      return updated;
+    });
   };
 
   const formatError = (val) => (Array.isArray(val) ? val.join(' ') : val || null);
@@ -328,6 +343,7 @@ const IdentityForm = ({
             <SelectInput
               id="state"
               label="State / Province"
+              key={`state-${formData.country.value}`}
               placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
               options={getStateOptions(formData.country.value)}
               value={formData.state.value}
@@ -352,6 +368,7 @@ const IdentityForm = ({
 
             <Input
               id="postalCode"
+              key={`state-${formData.country.value}`}
               label="ZIP / Postal Code *"
               required
               value={formData.postalCode.value}
