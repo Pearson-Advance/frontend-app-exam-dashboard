@@ -11,7 +11,7 @@ const baseSelectStyles = {
 };
 
 const parsedPhoneCountries = countries?.map(country => ({
-  label: `${JSON.parse(`"${country.flag}"`)} ${country.dialingCode}`,
+  label: `${JSON.parse(`"${country.flag}"`)} ${country.name} (${country.dialingCode})`,
   value: country.cca2,
 }));
 
@@ -106,52 +106,53 @@ export const PhoneInput = ({
   onPhoneChange,
 }) => (
   <Form.Group as={Col} xs={12} md={6} controlId="phone" isInvalid={!!phoneError}>
-    <Form.Row>
-      <div className="form-phone">
-        <Col xs={5} md={3} className="px-0 pl-1">
-          <Select
-            label="Dialing code"
-            className="form-input"
-            placeholder="Dialing code *"
-            options={parsedPhoneCountries}
-            value={parsedPhoneCountries?.find((c) => c.value === dialingCodeValue)}
-            onChange={(opt) => onDialingCodeChange(opt?.value || '')}
-            isClearable
-            required
-            isDisabled={dialingCodeDisabled || isLoading}
-            styles={{
-              control: (base) => ({
-                ...base,
-                ...baseSelectStyles,
-                borderRight: 'none',
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                ...((dialingCodeError || phoneError) && { borderColor: 'var(--error-border-color)' }),
-              }),
-            }}
-          />
-        </Col>
-        <Col xs={7} md={9} className="px-0">
-          <Form.Control
-            type="tel"
-            inputMode="numeric"
-            floatingLabel="(555) 555-5555"
-            placeholder="(555) 555-5555"
-            value={phoneValue}
-            disabled={phoneDisabled || isLoading}
-            className={`pr-1 form-phone-input ${phoneDisabled || isLoading ? 'form-input-disabled' : 'form-input'}`}
-            onChange={(e) => onPhoneChange(e.target.value)}
-            required
-          />
-        </Col>
-      </div>
+    <Form.Row className="form-phone">
+
+      <Col xs={12} md={6} className="px-0 pl-1">
+        <Select
+          label="Dialing code"
+          className="mb-3 mb-md-0 form-input select-dialing"
+          classNamePrefix="react-select"
+          placeholder="Dialing code *"
+          options={parsedPhoneCountries}
+          value={parsedPhoneCountries?.find((c) => c.value === dialingCodeValue)}
+          onChange={(opt) => onDialingCodeChange(opt?.value || '')}
+          isClearable
+          required
+          isDisabled={dialingCodeDisabled || isLoading}
+          styles={{
+            control: (base) => ({
+              ...base,
+              ...baseSelectStyles,
+              ...(dialingCodeError || phoneError
+                ? { borderColor: 'var(--error-border-color)' }
+                : {}),
+            }),
+          }}
+        />
+      </Col>
+
+      <Col xs={12} md={6} className="px-0">
+        <Form.Control
+          type="tel"
+          inputMode="numeric"
+          placeholder="(555) 555-5555"
+          value={phoneValue}
+          disabled={phoneDisabled || isLoading}
+          className={`pr-1 form-phone-input ${
+            phoneDisabled || isLoading ? 'form-input-disabled' : 'form-input'
+          }`}
+          onChange={(e) => onPhoneChange(e.target.value)}
+          required
+        />
+      </Col>
+
       {(dialingCodeError || phoneError) && (
         <Form.Control.Feedback type="invalid" className="mt-1">
-          {dialingCodeError}
-          {' '}
-          {phoneError}
+          {dialingCodeError} {phoneError}
         </Form.Control.Feedback>
       )}
+
     </Form.Row>
   </Form.Group>
 );
