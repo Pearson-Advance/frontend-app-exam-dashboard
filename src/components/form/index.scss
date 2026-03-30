@@ -1,7 +1,7 @@
 .form-wrapper {
   background-color: var(--pgn-color-white);
   border-radius: 8px;
-  border: 1px solid var(--pgn-color-gray-200);
+  border: 1px solid var(--pgn-color-gray-250);
 }
 
 .form-title {
@@ -26,19 +26,45 @@
   }
 }
 
-.form-phone {
-  display: flex;
-  width: 100%;
+@media (min-width: 768px) {
+  .select-dialing .react-select__control {
+    border-right: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .form-phone-input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .select-dialing .react-select__control {
+    border-radius: 0.25rem;
+    border-right: 1px solid var(--pgn-color-gray-250);
+  }
+
+  .form-phone-input {
+    border-radius: 0.25rem;
+  }
 }
 
 .form-phone-input input.form-control {
   border-left: none;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+
+  @media screen and (max-width: 767px) {
+    border-left: var(--pgn-color-gray-250);
+    border: 1px solid var(--pgn-color-gray-250);
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+  }
 }
 
 .form-input input.form-control {
-  border: 1px solid var(--pgn-color-gray-200);
+  border: 1px solid var(--pgn-color-gray-250);
 }
 
 .form-input input.form-control.is-invalid {
@@ -46,7 +72,7 @@
 }
 
 .form-input input.form-control:hover {
-  outline: 2px solid var(--pgn-color-gray-200);
+  outline: 2px solid var(--pgn-color-gray-250);
 }
 
 .form-input-disabled input.form-control,
