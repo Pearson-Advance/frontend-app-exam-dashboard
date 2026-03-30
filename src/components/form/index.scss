@@ -42,7 +42,7 @@
 @media (max-width: 767px) {
   .select-dialing .react-select__control {
     border-radius: 0.25rem;
-    border-right: 1px solid $border-form-color;
+    border-right: 1px solid var(--pgn-color-gray-vue-250);
   }
 
   .form-phone-input {
@@ -56,8 +56,8 @@
   border-bottom-left-radius: 0;
 
   @media screen and (max-width: 767px) {
-    border-left: $border-form-color;
-    border: 1px solid $border-form-color;
+    border-left: var(--pgn-color-gray-vue-250);
+    border: 1px solid var(--pgn-color-gray-vue-250);
     border-top-left-radius: 0.25rem;
     border-bottom-left-radius: 0.25rem;
   }
