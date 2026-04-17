@@ -147,9 +147,15 @@ export const PhoneInput = ({
         />
       </Col>
 
-      {(dialingCodeError || phoneError) && (
+      {dialingCodeError && (
         <Form.Control.Feedback type="invalid" className="mt-1">
-          {dialingCodeError} {phoneError}
+          {dialingCodeError}
+        </Form.Control.Feedback>
+      )}
+
+      {phoneError && (
+        <Form.Control.Feedback type="invalid" className="mt-1">
+          {phoneError.phone_number}
         </Form.Control.Feedback>
       )}
 
