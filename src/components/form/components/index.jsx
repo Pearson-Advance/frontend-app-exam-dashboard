@@ -5,10 +5,20 @@ import { Select } from 'react-paragon-topaz';
 
 import { countries } from 'features/utils/constants';
 
-const baseSelectStyles = {
+const baseSelectStyles = (baseStyles, state) => ({
   minHeight: 50,
   maxHeight: 50,
-};
+  // Change border color based on focus state
+  borderColor: state.isFocused ? 'var(--pgn-color-primary-base)' : 'var(--pgn-color-form-input-border)',
+  // Overwrite the default blue halo shadow
+  boxShadow: state.isFocused ? '0 0 0 1px var(--pgn-color-primary-base)' : 'none',
+  // Prevent the default hover border behavior from overriding focus
+  '&:hover': {
+    borderColor: state.isFocused ? 'var(--pgn-color-primary-base)' : 'var(--pgn-color-form-input-border)',
+  },
+  // Ensure the select input doesn't exceed the width of its container
+  maxWidth: '98.6%',
+});
 
 const parsedPhoneCountries = countries?.map(country => ({
   label: `${JSON.parse(`"${country.flag}"`)} ${country.name} (${country.dialingCode})`,
@@ -78,9 +88,9 @@ export const SelectInput = ({
       isDisabled={isDisabled || isLoading}
       isClearable={isClearable}
       styles={{
-        control: (base) => ({
+        control: (base, state) => ({
           ...base,
-          ...baseSelectStyles,
+          ...baseSelectStyles(base, state),
           ...styles.control,
         }),
         ...styles,
@@ -108,7 +118,7 @@ export const PhoneInput = ({
   <Form.Group as={Col} xs={12} md={6} controlId="phone" isInvalid={!!phoneError}>
     <Form.Row className="form-phone">
 
-      <Col xs={12} md={6} className="px-0 pl-1">
+      <Col xs={12} md={6}>
         <Select
           label="Dialing code"
           className="mb-3 mb-md-0 form-input select-dialing"
@@ -121,9 +131,9 @@ export const PhoneInput = ({
           required
           isDisabled={dialingCodeDisabled || isLoading}
           styles={{
-            control: (base) => ({
+            control: (base, state) => ({
               ...base,
-              ...baseSelectStyles,
+              ...baseSelectStyles(base, state),
               ...(dialingCodeError || phoneError
                 ? { borderColor: 'var(--error-border-color)' }
                 : {}),
@@ -132,14 +142,14 @@ export const PhoneInput = ({
         />
       </Col>
 
-      <Col xs={12} md={6} className="px-0">
+      <Col xs={12} md={6}>
         <Form.Control
           type="tel"
           inputMode="numeric"
           placeholder="(555) 555-5555"
           value={phoneValue}
           disabled={phoneDisabled || isLoading}
-          className={`pr-1 form-phone-input ${
+          className={`form-phone-input ${
             phoneDisabled || isLoading ? 'form-input-disabled' : 'form-input'
           }`}
           onChange={(e) => onPhoneChange(e.target.value)}

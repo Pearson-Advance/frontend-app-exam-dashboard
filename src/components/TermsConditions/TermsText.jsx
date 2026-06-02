@@ -6,7 +6,7 @@ export const TermsText = () => {
 
   return (
     <>
-      <h3>Pearson VUE privacy policy</h3>
+      <h3>Pearson VUE Privacy Policy</h3>
       <p> By accessing this website and checking the box below you understand and agree to the terms set forth
         in this Candidate Agreement (“Agreement”). This Agreement is entered into by and between you as a test
         taker, Pearson VUE, a business of NCS Pearson, Inc., and your testing program owner (“Test Sponsor”).
@@ -16,14 +16,14 @@ export const TermsText = () => {
         in conjunction with your acceptance of the policies and procedures as established by the Test Sponsor
         and our obligations to process your test results.
       </p>
-      <h3>Data Collection</h3>
+      <h4>Data Collection</h4>
       <p>You agree that for purposes of registering and scheduling your exam on Pearson VUE&apos;s website or during
         your testing process you may be asked to provide your personal information relating to your contact details
         (name, street address, email address, phone number). In some cases, we may request and process so-called
         &apos;special categories of personal information&apos; or &apos;sensitive data&apos; about you as set
         forth in our <a href={cookiesLink} target="_blank" rel="noopener noreferrer">Privacy and Cookies Policy</a>.
       </p>
-      <h3>Data Processing</h3>
+      <h4>Data Processing</h4>
       <p>You understand and agree that Pearson VUE, as a data processor for your Test Sponsor, the data controller,
         will collect, use, transfer, process, and store your personal information only for the purposes of handling
         your registration, scheduling you for a test date and time, administering the test, processing
@@ -37,7 +37,7 @@ export const TermsText = () => {
         and other benefits to you. For more detailed information about your Test Sponsor&apos;s policies,
         please contact your Test Sponsor.
       </p>
-      <h3>Data Transfer</h3>
+      <h4>Data Transfer</h4>
       <p>You agree to the transfer of your personal information by Pearson VUE to its headquarters in
         the United States, its authorized third parties (described below) and your Test Sponsor who
         may be located elsewhere in the world. You agree that Pearson VUE may employ other companies or
@@ -48,11 +48,11 @@ export const TermsText = () => {
         Pearson VUE&apos;s agents, sub-processors, Test Sponsors, or individuals&apos; providing other
         services on Pearson VUE&apos;s behalf, except as, in addition, you have authorized.
       </p>
-      <h3>CCTV</h3>
+      <h4>CCTV</h4>
       <p>You agree that during your entire testing session you may be monitored by CCTV for purposes of
         validating your compliance with the testing room rules.
       </p>
-      <h3>Palm Vein Consent</h3>
+      <h4>Palm Vein Consent</h4>
       <p> Where selected by your Test Sponsor, you agree that Pearson VUE will collect your palm vein
         pattern at the test center on the day of your exam and retain that information, to the extent
         permitted by law. Your palm vein scan will be used for the purposes of identification verification
