@@ -25,14 +25,14 @@ const TermsConditions = ({ onAccept, onCancel }) => {
   };
 
   return (
-    <Form onSubmit={handleContinueButton}>
-      <div className="terms-section">
-        <h3 className="pt-2">Terms and Conditions</h3>
-        <p className="pb-2 description-text">For security reasons, we need the following information to verify your identity</p>
-        <div className="p-4 terms-content">
+    <Form className="border rounded" onSubmit={handleContinueButton}>
+      <div className="p-5">
+        <h2 className="mb-4">Terms and Conditions</h2>
+        <p className="lead mb-4">For security reasons, we need the following information to verify your identity</p>
+        <div className="mb-4 p-5 border rounded">
           {TermsText()}
         </div>
-        <div className="d-flex pt-4 flex-column align-items-end">
+        <div className="d-flex flex-column align-items-end">
           <div>
             <Form.Checkbox
               name="terms"
@@ -50,20 +50,26 @@ const TermsConditions = ({ onAccept, onCancel }) => {
           </div>
         </div>
       </div>
-      <div className="d-flex justify-content-between section-buttons">
-        <Button
-          type="button"
-          className="btntpz btn-text btn-tertiary mr-2"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="outline-primary"
-        >
-          Continue
-        </Button>
+      <div className="p-4 d-flex justify-content-between border-top">
+        <div className="d-flex justify-content-start">
+          <Button
+            variant="tertiary"
+            type="button"
+            className="p-3"
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+        </div>
+        <div className="d-flex justify-content-end">
+          <Button
+            className="p-3"
+            variant="outline-primary"
+            type="submit"
+          >
+            Continue
+          </Button>
+        </div>
       </div>
     </Form>
   );

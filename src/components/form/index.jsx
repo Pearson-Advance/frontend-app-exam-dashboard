@@ -33,47 +33,47 @@ const parsedCountries = countries?.map(country => ({
 const countriesWithStates = [UNITED_STATES, CANADA];
 
 const FormHeader = () => (
-  <Form.Row className="pl-1 mb-4 flex-column">
-    <h3 className="mb-4 form-title">Verify your identity</h3>
-    <p className="form-subtitle">
-      <Icon src={WarningFilled} className="mr-1 align-middle text-danger icon-header" />
-      <strong className="pl-4">
-        IMPORTANT: You must enter your first/given and last/surname/family name exactly as it appears
-        on the identification (ID) you will present at the test center.
-      </strong>
-      <br />
+  <div className="mb-4">
+    <h2 className="mb-4">Verify your identity</h2>
+    <p className="lead">
+      <Icon src={WarningFilled} className="d-inline-block mr-2 text-danger" size="inline" />
+      <span className="text-danger">IMPORTANT: </span>
+      You must enter your first/given and last/surname/family name
+      exactly as it appears on the identification (ID) you will present at the test center.
+    </p>
+    <p>
       If there is not an exact match, you will not be able to take your test and
       you will not be reimbursed for any fees paid.
     </p>
-  </Form.Row>
+  </div>
 );
 
 const FormActions = ({ onCancel, onPrevious, isLoading }) => (
-  <div className="px-3 py-4 d-flex justify-content-between border-top px-md-4 p-md-4">
-    <div className="gap-2 d-flex justify-content-start">
+  <div className="p-4 d-flex justify-content-between border-top">
+    <div className="d-flex justify-content-start">
       <Button
         variant="tertiary"
         type="button"
-        className="p-2 mr-1 px-md-4 mr-md-0"
+        className="p-3"
         onClick={onCancel}
         disabled={isLoading}
       >
         Cancel
       </Button>
     </div>
-    <div className="gap-2 d-flex justify-content-end">
+    <div className="d-flex justify-content-end">
       <Button
         variant="primary"
         text
         type="button"
-        className="p-2 mr-2 mr-md-3 px-md-4"
+        className="p-3 mr-2"
         onClick={onPrevious}
         disabled={isLoading}
       >
         Previous
       </Button>
       <Button
-        className="p-2 py-3 px-md-4"
+        className="p-3"
         variant="outline-primary"
         type="submit"
         disabled={isLoading}
@@ -249,11 +249,11 @@ const IdentityForm = ({
           {toast.message}
         </Toast>
       )}
-      <Form onSubmit={handleSubmit} className="p-0 pt-3 form-wrapper" role="form">
-        <div className="p-4">
+      <Form onSubmit={handleSubmit} className="border rounded" role="form">
+        <div className="p-5">
           <FormHeader />
 
-          <Form.Row className="flex-wrap d-flex">
+          <Form.Row>
             <Input
               id="firstName"
               label="First Name *"
@@ -264,7 +264,6 @@ const IdentityForm = ({
               isLoading={isLoading}
               onChange={(value) => handleInputChange('firstName', value)}
             />
-
             <Input
               id="lastName"
               label="Last Name *"
@@ -280,8 +279,8 @@ const IdentityForm = ({
           <Form.Row>
             <Input
               id="email"
-              label="Email *"
               type="email"
+              label="Email *"
               required
               value={formData.email.value}
               error={formData.email.error}
@@ -289,7 +288,6 @@ const IdentityForm = ({
               isLoading={isLoading}
               onChange={(value) => handleInputChange('email', value)}
             />
-
             <PhoneInput
               dialingCodeValue={formData.dialingCode.value}
               dialingCodeError={formData.dialingCode.error}
@@ -300,29 +298,6 @@ const IdentityForm = ({
               isLoading={isLoading}
               onDialingCodeChange={(value) => handleInputChange('dialingCode', value)}
               onPhoneChange={(value) => handleInputChange('phone', value)}
-            />
-          </Form.Row>
-
-          <Form.Row>
-            <Input
-              id="address"
-              label="Address *"
-              required
-              value={formData.address.value}
-              error={formData.address.error}
-              isDisabled={formData.address.isDisabled}
-              isLoading={isLoading}
-              onChange={(value) => handleInputChange('address', value)}
-            />
-
-            <Input
-              id="apartment"
-              label="Apt #, Suite, Floor"
-              value={formData.apartment.value}
-              error={formData.apartment.error}
-              isDisabled={formData.apartment.isDisabled}
-              isLoading={isLoading}
-              onChange={(value) => handleInputChange('apartment', value)}
             />
           </Form.Row>
 
@@ -339,18 +314,15 @@ const IdentityForm = ({
               isLoading={isLoading}
               onChange={(value) => handleInputChange('country', value)}
             />
-
-            <SelectInput
-              id="state"
-              label="State / Province"
-              key={`state-${formData.country.value}`}
-              placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
-              options={getStateOptions(formData.country.value)}
-              value={formData.state.value}
-              error={formData.state.error}
-              isDisabled={formData.state.isDisabled || !showStateAndPostalCodeField}
+            <Input
+              id="address"
+              label="Address *"
+              required
+              value={formData.address.value}
+              error={formData.address.error}
+              isDisabled={formData.address.isDisabled}
               isLoading={isLoading}
-              onChange={(value) => handleInputChange('state', value)}
+              onChange={(value) => handleInputChange('address', value)}
             />
           </Form.Row>
 
@@ -365,10 +337,33 @@ const IdentityForm = ({
               isLoading={isLoading}
               onChange={(value) => handleInputChange('city', value)}
             />
+            <Input
+              id="apartment"
+              label="Apt #, Suite, Floor"
+              value={formData.apartment.value}
+              error={formData.apartment.error}
+              isDisabled={formData.apartment.isDisabled}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('apartment', value)}
+            />
+          </Form.Row>
 
+          <Form.Row>
+            <SelectInput
+              id="state"
+              label="State / Province"
+              key={`state-${formData.country.value}`}
+              placeholder={countryDivitionPlaceholder[formData.country.value] || 'State / Province *'}
+              options={getStateOptions(formData.country.value)}
+              value={formData.state.value}
+              error={formData.state.error}
+              isDisabled={formData.state.isDisabled || !showStateAndPostalCodeField}
+              isLoading={isLoading}
+              onChange={(value) => handleInputChange('state', value)}
+            />
             <Input
               id="postalCode"
-              key={`state-${formData.country.value}`}
+              key={`postalCode-${formData.country.value}`}
               label="ZIP / Postal Code *"
               required
               value={formData.postalCode.value}
