@@ -86,7 +86,7 @@ const examHandlers = {
         {
           label: 'Cancel Exam',
           disabled: exams.find((e) => e.vue_appointment_id === exam.vue_appointment_id)?.loadingCancel,
-          onClick: () => actions.handleCancelExam?.(exam.vue_appointment_id),
+          onClick: () => actions.handleCancelExam?.(exam),
         },
       ],
     };
@@ -167,6 +167,19 @@ const voucherHandler = {
 
 const availableHandlers = { ...examHandlers, ...voucherHandler };
 
+/**
+ * Returns display details and available actions for an exam or voucher card.
+ *
+ * Scheduled exam actions receive the full exam object so downstream redirects can include
+ * appointment and candidate identifiers. Score report actions use only the appointment ID.
+ *
+ * @param {Object} exam - Exam or voucher object to render.
+ * @param {string} statusLabel - Normalized status label used to select the matching handler.
+ * @param {Object} [services={}] - Handler dependencies.
+ * @param {Array<Object>} [services.exams] - Current exams, including any loading flags.
+ * @param {Object<string, Function>} [services.actions] - Action handlers for dropdown items.
+ * @returns {{ examDetails: Array<Object>, dropdownItems: Array<Object> }} Card details and actions.
+ */
 export const getExamDetails = (exam, statusLabel, services = {}) => {
   const handler = availableHandlers[statusLabel];
   return handler

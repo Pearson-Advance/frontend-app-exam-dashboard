@@ -16,6 +16,7 @@ describe('getExamDetails', () => {
   const baseExam = {
     start_at: '2025-01-01T10:00:00Z',
     vue_appointment_id: '123',
+    candidate: 77,
     grade: 'Pass',
   };
 
@@ -101,7 +102,7 @@ describe('getExamDetails', () => {
     result.dropdownItems[1].onClick();
 
     expect(handleRescheduleExam).toHaveBeenCalledWith(baseExam);
-    expect(handleCancelExam).toHaveBeenCalledWith('123');
+    expect(handleCancelExam).toHaveBeenCalledWith(baseExam);
   });
 
   test('should return "View Score Report" only if result_id exists', () => {

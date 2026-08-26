@@ -1,11 +1,24 @@
 import { logError } from '@edx/frontend-platform/logging';
 
-import { handleGetVoucherDetails, getWorkflowType } from 'features/utils/globals';
+import {
+  handleGetVoucherDetails,
+  getWorkflowType,
+  redirectToCancelExam,
+  redirectToReschedule,
+  scheduleExam,
+} from 'features/utils/globals';
 import { WORKFLOWS } from 'features/utils/constants';
 import * as api from 'features/data/api';
 
 jest.mock('features/data/api', () => ({
   getVoucherDetails: jest.fn(),
+  updateUserData: jest.fn(),
+}));
+
+jest.mock('@edx/frontend-platform', () => ({
+  getConfig: jest.fn(() => ({
+    WEBNG_PLUGIN_API_BASE_URL: 'https://example.com/api',
+  })),
 }));
 
 jest.mock('@edx/frontend-platform/logging', () => ({
@@ -254,5 +267,61 @@ describe('getWorkflowType', () => {
   test('handles location being undefined', () => {
     global.window = {};
     expect(getWorkflowType()).toBe(WORKFLOWS.DASHBOARD);
+  });
+});
+
+describe('redirect helpers', () => {
+  const originalWindow = global.window;
+
+  beforeEach(() => {
+    delete global.window;
+    global.window = {
+      location: {
+        href: '',
+        pathname: '/exam-dashboard/dashboard',
+      },
+    };
+  });
+
+  afterEach(() => {
+    global.window = originalWindow;
+  });
+
+  test('includes candidate_id when redirecting to reschedule', () => {
+    redirectToReschedule({ vue_appointment_id: '123', candidate: 77 });
+
+    expect(window.location.href).toBe('https://example.com/api/appointment/reschedule/?registration_id=123&candidate_id=77&w=dashboard');
+  });
+
+  test('includes candidate_id when redirecting to cancel', () => {
+    redirectToCancelExam({ vue_appointment_id: '456', candidate_id: 88 });
+
+    expect(window.location.href).toBe('https://example.com/api/appointment/cancel/?registration_id=456&candidate_id=88&w=dashboard');
+  });
+});
+
+describe('scheduleExam', () => {
+  test('includes candidate_id in CDD payload when provided', async () => {
+    api.updateUserData.mockResolvedValue({});
+
+    await scheduleExam({
+      formData: {
+        firstName: { value: 'John' },
+        lastName: { value: 'Doe' },
+        dialingCode: { value: 'US' },
+        phone: { value: '1111111111' },
+        address: { value: '123 Main St' },
+        city: { value: 'Miami' },
+        state: { value: 'FL' },
+        postalCode: { value: '12345' },
+        country: { value: 'USA' },
+      },
+      shouldRedirectToSchedule: false,
+      candidateId: 42,
+    });
+
+    expect(api.updateUserData).toHaveBeenCalledWith(expect.objectContaining({
+      candidate_id: 42,
+    }));
   });
 });

@@ -85,9 +85,10 @@ const DashboardPage = () => {
         formData,
         redirectParams: {},
         shouldRedirectToSchedule: false,
+        candidateId: selectedExam?.candidate_id ?? selectedExam?.candidate,
       });
 
-      actions.handleRescheduleUrl?.(selectedExam.vue_appointment_id);
+      actions.handleRescheduleUrl?.(selectedExam);
       return;
     }
 
@@ -103,9 +104,7 @@ const DashboardPage = () => {
     handleCloseTerms,
     isReschedule,
     actions,
-    selectedExam?.discount_code,
-    selectedExam?.exam_series_code,
-    selectedExam?.vue_appointment_id,
+    selectedExam,
   ]);
 
   const vouchersAsExams = useMemo(
