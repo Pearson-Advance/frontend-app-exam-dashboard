@@ -29,8 +29,8 @@ export function getWorkflowType() {
  * Builds a query string from parameters, filtering out falsy values and adding workflow type.
  *
  * @function buildQueryString
- * @param {Object} params - Object containing query parameters
- * @returns {string} - URL-encoded query string with leading '?' if params exist, empty string otherwise
+ * @param {Object} params - Query parameters to include before adding the workflow type.
+ * @returns {string} URL-encoded query string with a leading '?', or an empty string when no values exist.
  */
 function buildQueryString(params = {}) {
   const filteredParams = Object.fromEntries(
@@ -42,13 +42,40 @@ function buildQueryString(params = {}) {
 }
 
 /**
+ * Extracts the registration and candidate identifiers used by SSO redirects.
+ *
+ * @function getExamIdentifiers
+ * @param {string|Object} examOrAppointmentId - Vue appointment ID or full exam object.
+ * @param {string} [examOrAppointmentId.vue_appointment_id] - Vue appointment registration ID.
+ * @param {string|number} [examOrAppointmentId.candidate_id] - Candidate ID returned by newer API responses.
+ * @param {string|number} [examOrAppointmentId.candidate] - Candidate ID returned by existing API responses.
+ * @returns {{ registrationId: string, candidateId: string|number|undefined }} Identifiers for redirect query params.
+ */
+function getExamIdentifiers(examOrAppointmentId) {
+  if (typeof examOrAppointmentId === 'object' && examOrAppointmentId !== null) {
+    return {
+      registrationId: examOrAppointmentId.vue_appointment_id,
+      candidateId: examOrAppointmentId.candidate_id ?? examOrAppointmentId.candidate,
+    };
+  }
+
+  return {
+    registrationId: examOrAppointmentId,
+    candidateId: undefined,
+  };
+}
+
+/**
  * Redirects the user to the schedule SSO endpoint.
  *
  * Instead of performing an HTTP request, this function directly updates
  * `window.location.href` with the schedule endpoint URL.
  *
  * @function redirectToScheduleSSO
- * @returns {void} - This function does not return a value, it triggers a page navigation.
+ * @param {Object} [redirectParams={}] - Optional query params for the schedule SSO request.
+ * @param {string} [redirectParams.exam_series_code] - Exam series code for voucher-based scheduling.
+ * @param {string} [redirectParams.discount_code] - Discount or voucher code for scheduling.
+ * @returns {void} This function does not return a value; it triggers a page navigation.
  */
 export function redirectToScheduleSSO(redirectParams = {}) {
   const { exam_series_code: examSeriesCode, discount_code: discountCode } = redirectParams;
@@ -70,11 +97,17 @@ export function redirectToScheduleSSO(redirectParams = {}) {
  * @param {Object} params - The parameters for form submission.
  * @param {Object} params.formData - The raw form data to be formatted.
  * @param {Object} params.redirectParams - Additional information to include in the redirect request.
- * @param {Bool} params.shouldRedirectToSchedule - Determines if we should use the redirect to schedule endpoint.
+ * @param {boolean} params.shouldRedirectToSchedule - Determines if we should use the redirect to schedule endpoint.
+ * @param {string|number|null} params.candidateId - Candidate ID to include when updating data for an existing exam.
  * @returns {Promise<void>} Resolves when the process completes.
  */
-export const scheduleExam = async ({ formData, redirectParams = {}, shouldRedirectToSchedule = true }) => {
-  const payload = formatUserPayload(formData);
+export const scheduleExam = async ({
+  formData,
+  redirectParams = {},
+  shouldRedirectToSchedule = true,
+  candidateId = null,
+}) => {
+  const payload = formatUserPayload(formData, candidateId);
   await updateUserData(payload);
 
   if (shouldRedirectToSchedule) {
@@ -89,11 +122,12 @@ export const scheduleExam = async ({ formData, redirectParams = {}, shouldRedire
  * `window.location.href` with the reschedule endpoint URL.
  *
  * @function redirectToReschedule
- * @param {string} vueAppointmentId - The unique registration ID of the Vue exam appointment.
- * @returns {void} - This function does not return a value, it triggers a page navigation.
+ * @param {string|Object} examOrAppointmentId - Vue appointment ID or full exam object containing candidate data.
+ * @returns {void} This function does not return a value; it triggers a page navigation.
  */
-export function redirectToReschedule(vueAppointmentId) {
-  const query = buildQueryString({ registration_id: vueAppointmentId });
+export function redirectToReschedule(examOrAppointmentId) {
+  const { registrationId, candidateId } = getExamIdentifiers(examOrAppointmentId);
+  const query = buildQueryString({ registration_id: registrationId, candidate_id: candidateId });
   window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${RESCHEDULE_ENDPOINT}${query}`;
 }
 
@@ -105,7 +139,7 @@ export function redirectToReschedule(vueAppointmentId) {
  *
  * @function redirectToScoreReport
  * @param {string} vueAppointmentId - The unique registration ID of the Vue exam appointment.
- * @returns {void} - This function does not return a value, it triggers a page navigation.
+ * @returns {void} This function does not return a value; it triggers a page navigation.
  */
 export function redirectToScoreReport(vueAppointmentId) {
   const query = buildQueryString({ registration_id: vueAppointmentId });
@@ -119,11 +153,12 @@ export function redirectToScoreReport(vueAppointmentId) {
  * `window.location.href` with the cancel endpoint URL.
  *
  * @function redirectToCancelExam
- * @param {string} vueAppointmentId - The unique registration ID of the Vue exam appointment.
- * @returns {void} - This function does not return a value, it triggers a page navigation.
+ * @param {string|Object} examOrAppointmentId - Vue appointment ID or full exam object containing candidate data.
+ * @returns {void} This function does not return a value; it triggers a page navigation.
  */
-export function redirectToCancelExam(vueAppointmentId) {
-  const query = buildQueryString({ registration_id: vueAppointmentId });
+export function redirectToCancelExam(examOrAppointmentId) {
+  const { registrationId, candidateId } = getExamIdentifiers(examOrAppointmentId);
+  const query = buildQueryString({ registration_id: registrationId, candidate_id: candidateId });
   window.location.href = `${getConfig().WEBNG_PLUGIN_API_BASE_URL}${CANCEL_ENDPOINT}${query}`;
 }
 

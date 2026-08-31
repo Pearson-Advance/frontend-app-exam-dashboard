@@ -151,12 +151,28 @@ export const AVAILABLE_EXAM_CARD_STATUSES = {
 export const EXAMS_AVAILABLE = ['APPT_CREATED'];
 export const PAST_EXAMS_AVAILABLE = ['APPT_CANCELED', 'EXAM_DELIVERED', 'NO_SHOW', 'NDA_REFUSED', 'EXPIRED'];
 
-export const formatUserPayload = (formData) => {
+/**
+ * Formats CDD form data for the user data API request.
+ *
+ * @param {Object} formData - The submitted CDD form state.
+ * @param {Object} formData.dialingCode - Selected dialing code option.
+ * @param {Object} formData.firstName - First name field state.
+ * @param {Object} formData.lastName - Last name field state.
+ * @param {Object} formData.postalCode - Postal code field state.
+ * @param {Object} formData.state - State or province field state.
+ * @param {Object} formData.country - Country field state.
+ * @param {Object} formData.city - City field state.
+ * @param {Object} formData.address - Mailing address field state.
+ * @param {Object} formData.phone - Phone number field state.
+ * @param {string|number|null} [candidateId=null] - Candidate ID to include when updating an existing exam record.
+ * @returns {Object} Payload formatted for the backend user data endpoint.
+ */
+export const formatUserPayload = (formData, candidateId = null) => {
   const phoneCountryCode = countries.find(
     (c) => c.cca2 === formData.dialingCode.value,
   )?.dialingCode?.replace('+', '') || '1';
 
-  return {
+  const payload = {
     first_name: formData.firstName.value,
     last_name: formData.lastName.value,
     postal_code: formData.postalCode.value,
@@ -167,6 +183,12 @@ export const formatUserPayload = (formData) => {
     mailing_address: formData.address.value,
     phone_number: formData.phone.value,
   };
+
+  if (candidateId) {
+    payload.candidate_id = candidateId;
+  }
+
+  return payload;
 };
 
 /**

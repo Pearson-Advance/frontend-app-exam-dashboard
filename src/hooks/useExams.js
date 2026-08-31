@@ -9,22 +9,15 @@ import {
 } from 'features/utils/globals';
 
 /**
- * Returns exam details, additional details, and available dropdown actions
- * for a given exam based on its status.
+ * Fetches exams and exposes action handlers for exam redirects.
  *
  * @function useExams
- * @param {Object} exam - The exam object containing exam data.
- * @param {string} statusLabel - The status of the exam (e.g., "SCHEDULED", "COMPLETE").
- * @param {Array<Object>} exams - List of all exams for state lookups (loading flags, etc.).
- * @param {Object<string, Function>} actions - A map of functions keyed by action name
- * (e.g., { handleRescheduleUrl, handleCancelExam, handleGetScoreReportUrl }).
- * If a required action is missing, the dropdown item will be disabled by default.
- * @returns {Object} An object containing:
- *   @property {Array<Object>} examDetails - Primary details of the exam
- *     (e.g., date, time, voucher).
- *   @property {Array<Object>} additionalExamDetails - Supplementary details of the exam.
- *   @property {Array<Object>} dropdownItems - List of dropdown actions available
- *     for the current exam and status.
+ * @returns {Object} Exam state, toast state, and redirect action handlers.
+ * @returns {Array<Object>} returns.exams - Exams returned by the backend.
+ * @returns {boolean} returns.isLoadingExams - Whether exams are currently loading.
+ * @returns {{ show: boolean, message: string }} returns.toast - Current exam-related toast state.
+ * @returns {Function} returns.setToast - Setter for exam-related toast state.
+ * @returns {Object<string, Function>} returns.actions - Action handlers for exam card dropdown items.
  */
 export const useExams = () => {
   const [exams, setExams] = useState([]);
@@ -47,15 +40,29 @@ export const useExams = () => {
     }
   };
 
+  /**
+   * Runs an exam redirect action while toggling the matching loading flag.
+   *
+   * @param {Object} params - Exam action parameters.
+   * @param {string|Object} params.examOrAppointmentId - Vue appointment ID or full exam object.
+   * @param {Function} params.serviceFn - Redirect function to execute.
+   * @param {string} params.loadingKey - Exam loading flag to toggle while the action runs.
+   * @param {string} params.errorMessage - Toast message shown when the redirect action fails.
+   * @returns {Promise<void>} Resolves after the action finishes and loading state is reset.
+   */
   const handleExamAction = async ({
-    vueAppointmentId, serviceFn, loadingKey, errorMessage,
+    examOrAppointmentId, serviceFn, loadingKey, errorMessage,
   }) => {
+    const vueAppointmentId = typeof examOrAppointmentId === 'object' && examOrAppointmentId !== null
+      ? examOrAppointmentId.vue_appointment_id
+      : examOrAppointmentId;
+
     setExams((prev) => prev.map(
       (exam) => (exam.vue_appointment_id === vueAppointmentId ? { ...exam, [loadingKey]: true } : exam),
     ));
 
     try {
-      await serviceFn(vueAppointmentId);
+      await serviceFn(examOrAppointmentId);
     } catch {
       setToast({ show: true, message: errorMessage });
     } finally {
@@ -65,22 +72,22 @@ export const useExams = () => {
     }
   };
 
-  const handleRescheduleUrl = async (vueAppointmentId) => handleExamAction({
-    vueAppointmentId,
+  const handleRescheduleUrl = async (examOrAppointmentId) => handleExamAction({
+    examOrAppointmentId,
     serviceFn: redirectToReschedule,
     loadingKey: 'loadingReschedule',
     errorMessage: 'An error occurred while rescheduling the exam.',
   });
 
-  const handleGetScoreReportUrl = async (vueAppointmentId) => handleExamAction({
-    vueAppointmentId,
+  const handleGetScoreReportUrl = async (examOrAppointmentId) => handleExamAction({
+    examOrAppointmentId,
     serviceFn: redirectToScoreReport,
     loadingKey: 'loadingScoreReport',
     errorMessage: 'An error occurred while retrieving the exam score report.',
   });
 
-  const handleCancelExam = async (vueAppointmentId) => handleExamAction({
-    vueAppointmentId,
+  const handleCancelExam = async (examOrAppointmentId) => handleExamAction({
+    examOrAppointmentId,
     serviceFn: redirectToCancelExam,
     loadingKey: 'loadingCancel',
     errorMessage: 'An error occurred while canceling the exam.',
